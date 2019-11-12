@@ -1,0 +1,100 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="init_table" author="ductm">
+        <createTable tableName="user">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="uid" type="varchar(45)"/>
+            <column name="role" type="int(5)"/>
+            <column name="name" type="varchar(225)"/>
+            <column name="email" type="varchar(225)"/>
+            <column name="gender" type="int(2)"/>
+            <column name="dob" type="date"/>
+            <column name="password" type="varchar(45)"/>
+            <column name="phone_number" type="varchar(45)"/>
+            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
+            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
+            <column name="avatar" type="varchar(225)"/>
+            <column name="address" type="varchar(45)"/>
+        </createTable>
+       <createTable tableName="role">
+           <column name="id" type="int(11)" autoIncrement="true">
+               <constraints primaryKey="true"/>
+           </column>
+           <column name="role_detail" type="varchar(50)"/>
+       </createTable>
+        <createTable tableName="disease">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(225)"/>
+        </createTable>
+        <createTable tableName="medical_records">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="patient_id" type="int(11)"/>
+            <column name="doctor_id" type="int(11)"/>
+            <column name="specialist_id" type="int(11)"/>
+            <column name="record_type" type="int(11)"/>
+            <column name="diagnose" type="varchar(1000)"/>
+            <column name="prescription" type="varchar(1000)"/>
+            <column name="note" type="varchar(1000)"/>
+            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
+            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
+        </createTable>
+        <createTable tableName="question">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="patient_id" type="int(11)"/>
+            <column name="question_type" type="int(11)"/>
+            <column name="content" type="varchar(1000)"/>
+            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
+            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
+        </createTable>
+        <createTable tableName="reply">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="question_id" type="int(11)"/>
+            <column name="patient_id" type="int(11)"/>
+            <column name="doctor_id" type="int(11)"/>
+            <column name="content" type="varchar(1000)"/>
+            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
+            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
+        </createTable>
+        <createTable tableName="image">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="question_id" type="int(11)"/>
+            <column name="link_path" type="varchar(255)"/>
+            <column name="type" type="int(11)"/>
+        </createTable>
+        <createTable tableName="doctor_patient">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="doctor_id" type="int(11)"/>
+            <column name="patient_id" type="int(11)"/>
+        </createTable>
+        <createTable tableName="doctor_specialist">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="doctor_id" type="int(11)"/>
+            <column name="specialist_id" type="int(11)"/>
+        </createTable>
+    </changeSet>
+
+    <!--<changeSet id="add_column" author="donglt">
+        <addColumn tableName="table_name">
+            <column name="column_name"  type="varchar(255)" defaultValue=""/>
+        </addColumn>
+    </changeSet>-->
+</databaseChangeLog>
