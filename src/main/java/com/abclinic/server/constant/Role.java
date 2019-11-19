@@ -1,9 +1,30 @@
 package com.abclinic.server.constant;
 
-public class Role {
-    public static final int DOCTOR = 0;
-    public static final int SPECIALIST = 1;
-    public static final int DIETITIAN = 2;
-    public static final int COORDINATOR = 3;
-    public static final int PATIENT = 4;
+import com.abclinic.server.model.entity.*;
+
+import java.util.Arrays;
+import java.util.Optional;
+
+public enum Role {
+    DOCTOR(Doctor.class),
+    SPECIALIST(Specialist.class),
+    DIETITIAN(Dietitian.class),
+    COORDINATOR(Coordinator.class),
+    PATIENT(Patient.class);
+
+    public static Optional<Role> valueOf(int value) {
+        return Arrays.stream(values())
+                .filter(role -> role.ordinal() == value)
+                .findFirst();
+    }
+
+    private final Class roleClass;
+
+    Role(Class roleClass) {
+        this.roleClass = roleClass;
+    }
+
+    public Class getRoleClass() {
+        return roleClass;
+    }
 }

@@ -1,16 +1,21 @@
 package com.abclinic.server.model.entity;
 
 
+import com.abclinic.server.constant.Role;
+
 import javax.persistence.*;
 import java.util.Date;
 
-@MappedSuperclass
+@Entity
+@Table(name = "user")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.INTEGER)
 public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String uid;
-    private int role;
+
     private String name;
     private String email;
     private int gender;
@@ -28,8 +33,7 @@ public abstract class User {
 
     public User() {};
 
-    public User(int role, String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber) {
-        this.role = role;
+    public User(String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber) {
         this.name = name;
         this.email = email;
         this.gender = gender;
@@ -54,12 +58,8 @@ public abstract class User {
         this.uid = uid;
     }
 
-    public int getRole() {
-        return role;
-    }
-
-    public void setRole(int role) {
-        this.role = role;
+    public Role getRole() {
+        return Role.valueOf(Integer.parseInt(this.getClass().getAnnotation(DiscriminatorValue.class).value())).get();
     }
 
     public String getName() {
