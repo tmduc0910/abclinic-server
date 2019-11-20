@@ -3,6 +3,8 @@ package com.abclinic.server.base;
 import com.abclinic.server.model.entity.*;
 import com.abclinic.server.repository.*;
 import org.slf4j.Logger;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
@@ -49,5 +51,11 @@ public abstract class BaseController {
             dietitianRepository.save((Dietitian) t);
         else if (t instanceof Specialist)
             specialistRepository.save((Specialist) t);
+    }
+
+    @ExceptionHandler(value = BaseRuntimeException.class)
+    public ResponseEntity<Object> handleException(BaseRuntimeException e) {
+        logger.error(e.getMessage());
+        return new ResponseEntity<>(e.getStatus());
     }
 }
