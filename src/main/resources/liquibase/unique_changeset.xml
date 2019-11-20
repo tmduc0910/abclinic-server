@@ -5,7 +5,10 @@
     <changeSet id="add_unique_constraint" author="ductm">
         <addUniqueConstraint
                 tableName="user"
-                columnNames="email, phone_number"/>
+                columnNames="email"/>
+        <addUniqueConstraint
+                tableName="user"
+                columnNames="phone_number"/>
         <addUniqueConstraint
                 tableName="disease"
                 columnNames="name"/>

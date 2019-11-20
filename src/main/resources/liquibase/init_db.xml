@@ -9,7 +9,6 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="uid" type="varchar(45)"/>
-            <column name="role" type="int(5)"/>
             <column name="name" type="varchar(225)"/>
             <column name="email" type="varchar(225)"/>
             <column name="gender" type="int(2)"/>
@@ -19,20 +18,71 @@
             <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
             <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
             <column name="avatar" type="varchar(225)"/>
-            <column name="address" type="varchar(45)"/>
         </createTable>
-       <createTable tableName="role">
-           <column name="id" type="int(11)" autoIncrement="true">
-               <constraints primaryKey="true"/>
-           </column>
-           <column name="role_detail" type="varchar(50)"/>
-       </createTable>
+
+        <createTable tableName="patient">
+            <column name="id" type="int(11)">
+                <constraints primaryKey="true" foreignKeyName="fk_patient_user" references="user(id)"/>
+            </column>
+            <column name="address" type="varchar(45)"/>
+            <column name="dietitian_id" type="int(11)"/>
+            <column name="practitioner_id" type="int(11)"/>
+        </createTable>
+
+        <createTable tableName="practitioner">
+            <column name="id" type="int(11)">
+                <constraints primaryKey="true" foreignKeyName="fk_practitioner_user" references="user(id)"/>
+            </column>
+            <column name="description" type="varchar(500)"/>
+            <column name="experience" type="int(11)"/>
+        </createTable>
+
+        <createTable tableName="dietitian">
+            <column name="id" type="int(11)">
+                <constraints primaryKey="true" foreignKeyName="fk_dietitian_user" references="user(id)"/>
+            </column>
+            <column name="description" type="varchar(500)"/>
+            <column name="specialty_id" type="int(11)"/>
+            <column name="experience" type="int(11)"/>
+        </createTable>
+
+        <createTable tableName="specialist">
+            <column name="id" type="int(11)">
+                <constraints primaryKey="true" foreignKeyName="fk_specialist_user" references="user(id)"/>
+            </column>
+            <column name="practitioner_id" type="int(11)"/>
+            <column name="description" type="varchar(1000)"/>
+            <column name="specialty_id" type="int(11)"/>
+            <column name="experience" type="int(11)"/>
+        </createTable>
+
+        <createTable tableName="coordinator">
+            <column name="id" type="int(11)">
+                <constraints primaryKey="true" foreignKeyName="fk_coordinator_user" references="user(id)"/>
+            </column>
+            <column name="doctor_id" type="int(11)"/>
+        </createTable>
+
+        <createTable tableName="specialty">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="specialty_detail" type="varchar(50)"/>
+        </createTable>
+
+        <createTable tableName="practitioner_specialty">
+            <column name="practitioner_id" type="int(11)"/>
+            <column name="specialty_id" type="int(11)"/>
+        </createTable>
+
         <createTable tableName="disease">
             <column name="id" type="int(11)" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="varchar(225)"/>
+            <column name="description" type="varchar(1000)"/>
         </createTable>
+
         <createTable tableName="medical_records">
             <column name="id" type="int(11)" autoIncrement="true">
                 <constraints primaryKey="true"/>
@@ -41,12 +91,14 @@
             <column name="doctor_id" type="int(11)"/>
             <column name="specialist_id" type="int(11)"/>
             <column name="record_type" type="int(11)"/>
+            <column name="disease_id" type="int(11)"/>
             <column name="diagnose" type="varchar(1000)"/>
             <column name="prescription" type="varchar(1000)"/>
             <column name="note" type="varchar(1000)"/>
             <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
             <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
         </createTable>
+
         <createTable tableName="question">
             <column name="id" type="int(11)" autoIncrement="true">
                 <constraints primaryKey="true"/>
@@ -57,6 +109,7 @@
             <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
             <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
         </createTable>
+
         <createTable tableName="reply">
             <column name="id" type="int(11)" autoIncrement="true">
                 <constraints primaryKey="true"/>
@@ -68,6 +121,7 @@
             <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
             <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
         </createTable>
+
         <createTable tableName="image">
             <column name="id" type="int(11)" autoIncrement="true">
                 <constraints primaryKey="true"/>
@@ -76,20 +130,43 @@
             <column name="link_path" type="varchar(255)"/>
             <column name="type" type="int(11)"/>
         </createTable>
-        <createTable tableName="doctor_patient">
-            <column name="id" type="int(11)" autoIncrement="true">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="doctor_id" type="int(11)"/>
-            <column name="patient_id" type="int(11)"/>
-        </createTable>
-        <createTable tableName="doctor_specialist">
-            <column name="id" type="int(11)" autoIncrement="true">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="doctor_id" type="int(11)"/>
-            <column name="specialist_id" type="int(11)"/>
-        </createTable>
+        
+<!--        <createTable tableName="sequences">-->
+<!--            <column name="id" type="int(11)" autoIncrement="true">-->
+<!--                <constraints primaryKey="true" nullable="false"/>-->
+<!--            </column>-->
+<!--            <column name="sequence_next_hi_value" type="int(11)" defaultValue="1">-->
+<!--                <constraints nullable="false"/>-->
+<!--            </column>-->
+<!--            <column name="sequence_name" type="varchar(255)">-->
+<!--                <constraints nullable="false"/>-->
+<!--            </column>-->
+<!--        </createTable>-->
+
+<!--        <createTable tableName="doctor_patient">-->
+<!--            <column name="id" type="int(11)" autoIncrement="true">-->
+<!--                <constraints primaryKey="true"/>-->
+<!--            </column>-->
+<!--            <column name="doctor_id" type="int(11)"/>-->
+<!--            <column name="patient_id" type="int(11)"/>-->
+<!--        </createTable>-->
+
+<!--        <createTable tableName="doctor_specialist">-->
+<!--            <column name="id" type="int(11)" autoIncrement="true">-->
+<!--                <constraints primaryKey="true"/>-->
+<!--            </column>-->
+<!--            <column name="doctor_id" type="int(11)"/>-->
+<!--            <column name="specialist_id" type="int(11)"/>-->
+<!--        </createTable>-->
+
+<!--        <createTable tableName="specialist_patient">-->
+<!--            <column name="id" type="int(11)" autoIncrement="true">-->
+<!--                <constraints primaryKey="true"/>-->
+<!--            </column>-->
+<!--            <column name="specialist_id" type="int(11)"/>-->
+<!--            <column name="patient_id" type="int(11)"/>-->
+<!--        </createTable>-->
+
     </changeSet>
 
     <!--<changeSet id="add_column" author="donglt">

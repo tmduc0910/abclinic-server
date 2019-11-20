@@ -1,17 +1,10 @@
 package com.abclinic.server.model.entity;
 
-import com.abclinic.server.constant.Role;
-import com.abclinic.server.constant.RoleValue;
-import org.hibernate.annotations.Where;
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Where(clause = ("role = " + RoleValue.COORDINATOR))
-@DiscriminatorValue("" + RoleValue.COORDINATOR)
+@Table(name = "coordinator")
 public class Coordinator extends User {
     public Coordinator() {
     }

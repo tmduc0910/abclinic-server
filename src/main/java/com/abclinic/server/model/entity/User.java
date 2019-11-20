@@ -2,15 +2,16 @@ package com.abclinic.server.model.entity;
 
 
 import com.abclinic.server.constant.Role;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "user")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.INTEGER)
-public abstract class User {
+@Inheritance(strategy = InheritanceType.JOINED)
+public class User {
+    @Column(name = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -27,7 +28,6 @@ public abstract class User {
     @Column(name = "phone_number")
     private String phoneNumber;
     private String avatar;
-    private String address;
     private Date createdAt;
     private Date updatedAt;
 
@@ -116,14 +116,6 @@ public abstract class User {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public Date getCreatedAt() {
