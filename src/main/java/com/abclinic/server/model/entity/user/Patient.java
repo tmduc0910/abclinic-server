@@ -1,4 +1,7 @@
-package com.abclinic.server.model.entity;
+package com.abclinic.server.model.entity.user;
+
+import com.abclinic.server.constant.Role;
+import com.abclinic.server.constant.RoleValue;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -20,11 +23,11 @@ public class Patient extends User {
     }
 
     public Patient(String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber) {
-        super(name, email, gender, dateOfBirth, password, phoneNumber);
+        super(RoleValue.PATIENT, name, email, gender, dateOfBirth, password, phoneNumber);
     }
 
     public Patient(String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber, String address) {
-        super(name, email, gender, dateOfBirth, password, phoneNumber);
+        super(RoleValue.PATIENT, name, email, gender, dateOfBirth, password, phoneNumber);
         this.address = address;
     }
 

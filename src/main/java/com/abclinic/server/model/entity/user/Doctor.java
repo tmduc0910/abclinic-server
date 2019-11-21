@@ -1,4 +1,4 @@
-package com.abclinic.server.model.entity;
+package com.abclinic.server.model.entity.user;
 
 import javax.persistence.MappedSuperclass;
 import java.util.Date;
@@ -11,12 +11,12 @@ public abstract class Doctor extends User {
     public Doctor() {
     }
 
-    public Doctor(String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber) {
-        super(name, email, gender, dateOfBirth, password, phoneNumber);
+    public Doctor(int role, String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber) {
+        super(role, name, email, gender, dateOfBirth, password, phoneNumber);
     }
 
-    public Doctor(String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber, String description, int experience) {
-        super(name, email, gender, dateOfBirth, password, phoneNumber);
+    public Doctor(int role, String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber, String description, int experience) {
+        super(role, name, email, gender, dateOfBirth, password, phoneNumber);
         this.description = description;
         this.experience = experience;
     }

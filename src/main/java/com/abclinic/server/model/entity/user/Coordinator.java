@@ -1,4 +1,6 @@
-package com.abclinic.server.model.entity;
+package com.abclinic.server.model.entity.user;
+
+import com.abclinic.server.constant.RoleValue;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -10,6 +12,6 @@ public class Coordinator extends User {
     }
 
     public Coordinator(String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber) {
-        super(name, email, gender, dateOfBirth, password, phoneNumber);
+        super(RoleValue.COORDINATOR, name, email, gender, dateOfBirth, password, phoneNumber);
     }
 }

@@ -1,6 +1,6 @@
 package com.abclinic.server.constant;
 
-import com.abclinic.server.model.entity.*;
+import com.abclinic.server.model.entity.user.*;
 
 import java.util.Arrays;
 import java.util.Optional;

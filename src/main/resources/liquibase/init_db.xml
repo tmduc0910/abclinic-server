@@ -9,6 +9,7 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="uid" type="varchar(45)"/>
+            <column name="role" type="int(1)"/>
             <column name="name" type="varchar(225)"/>
             <column name="email" type="varchar(225)"/>
             <column name="gender" type="int(2)"/>
@@ -115,8 +116,17 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="question_id" type="int(11)"/>
+            <column name="user_id" type="int(11)"/>
+            <column name="content" type="varchar(1000)"/>
+            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
+            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="album">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
             <column name="patient_id" type="int(11)"/>
-            <column name="doctor_id" type="int(11)"/>
             <column name="content" type="varchar(1000)"/>
             <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
             <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
@@ -126,7 +136,7 @@
             <column name="id" type="int(11)" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="question_id" type="int(11)"/>
+            <column name="album_id" type="int(11)"/>
             <column name="link_path" type="varchar(255)"/>
             <column name="type" type="int(11)"/>
         </createTable>

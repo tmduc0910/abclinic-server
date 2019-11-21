@@ -1,6 +1,6 @@
 package com.abclinic.server.repository;
 
-import com.abclinic.server.model.entity.Patient;
+import com.abclinic.server.model.entity.user.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.abclinic.server.model.entity;
+package com.abclinic.server.model.entity.user;
 
 
 import com.abclinic.server.constant.Role;
@@ -16,6 +16,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String uid;
+    private int role;
 
     private String name;
     private String email;
@@ -33,7 +34,8 @@ public class User {
 
     public User() {};
 
-    public User(String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber) {
+    public User(int role, String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber) {
+        this.role = role;
         this.name = name;
         this.email = email;
         this.gender = gender;
@@ -59,7 +61,7 @@ public class User {
     }
 
     public Role getRole() {
-        return Role.valueOf(Integer.parseInt(this.getClass().getAnnotation(DiscriminatorValue.class).value())).get();
+        return Role.valueOf(role).get();
     }
 
     public String getName() {

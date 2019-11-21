@@ -5,7 +5,7 @@ import com.abclinic.server.constant.RoleValue;
 import com.abclinic.server.exception.DuplicateValueException;
 import com.abclinic.server.exception.UnauthorizedActionException;
 import com.abclinic.server.exception.WrongCredentialException;
-import com.abclinic.server.model.entity.*;
+import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.PatientRepository;
 import com.abclinic.server.repository.UserRepository;
 import org.slf4j.LoggerFactory;
@@ -95,7 +95,7 @@ public class AuthController extends BaseController {
                 doc = null;
                 break;
         }
-        userRepository.save(doc);
+        save(doc);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

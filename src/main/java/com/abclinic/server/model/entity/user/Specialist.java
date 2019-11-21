@@ -1,4 +1,7 @@
-package com.abclinic.server.model.entity;
+package com.abclinic.server.model.entity.user;
+
+import com.abclinic.server.constant.RoleValue;
+import com.abclinic.server.model.entity.Specialty;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -19,15 +22,15 @@ public class Specialist extends Doctor {
     }
 
     public Specialist(String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber) {
-        super(name, email, gender, dateOfBirth, password, phoneNumber);
+        super(RoleValue.SPECIALIST, name, email, gender, dateOfBirth, password, phoneNumber);
     }
 
     public Specialist(String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber, String description, int experience) {
-        super(name, email, gender, dateOfBirth, password, phoneNumber, description, experience);
+        super(RoleValue.SPECIALIST, name, email, gender, dateOfBirth, password, phoneNumber, description, experience);
     }
 
     public Specialist(String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber, String description, int experience, Practitioner practitioner, Specialty specialty) {
-        super(name, email, gender, dateOfBirth, password, phoneNumber, description, experience);
+        super(RoleValue.SPECIALIST, name, email, gender, dateOfBirth, password, phoneNumber, description, experience);
         this.practitioner = practitioner;
         this.specialty = specialty;
     }

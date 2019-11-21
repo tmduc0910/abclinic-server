@@ -1,6 +1,6 @@
 package com.abclinic.server.base;
 
-import com.abclinic.server.model.entity.*;
+import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.*;
 import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
