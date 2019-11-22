@@ -1,33 +1,45 @@
 package com.abclinic.server.model.entity;
 
+import com.abclinic.server.base.Views;
 import com.abclinic.server.model.entity.user.Patient;
+import com.fasterxml.jackson.annotation.JsonView;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "album")
-public class Album {
+public class ImageAlbum {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonView(Views.Public.class)
     private int id;
-
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = Image.class, mappedBy = "album")
+    @JsonView(Views.Private.class)
+    private String uid;
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = Image.class, mappedBy = "imageAlbum")
+    @JsonView(Views.Public.class)
     private List<Image> images;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id")
+    @JsonView(Views.Private.class)
     private Patient patient;
+    @JsonView(Views.Public.class)
     private String content;
-    private Date createdAt;
-    private Date updatedAt;
+    @CreationTimestamp
+    @JsonView(Views.Public.class)
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    @JsonView(Views.Public.class)
+    private LocalDateTime updatedAt;
 
-    public Album() {
+    public ImageAlbum() {
     }
 
-    public Album(List<Image> images, Patient patient, String content) {
-        this.images = images;
+    public ImageAlbum(String uid, Patient patient, String content) {
+        this.uid = uid;
         this.patient = patient;
         this.content = content;
     }
@@ -38,6 +50,14 @@ public class Album {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public List<Image> getImages() {
@@ -64,19 +84,19 @@ public class Album {
         this.content = content;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

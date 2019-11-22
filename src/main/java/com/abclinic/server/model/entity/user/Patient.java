@@ -1,7 +1,9 @@
 package com.abclinic.server.model.entity.user;
 
+import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.Role;
 import com.abclinic.server.constant.RoleValue;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -9,12 +11,13 @@ import java.util.Date;
 @Entity
 @Table(name = "patient")
 public class Patient extends User {
+    @JsonView(Views.Private.class)
     private String address;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dietitian_id")
+    @JsonView(Views.Private.class)
     private Dietitian dietitian;
-
+    @JsonView(Views.Private.class)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "practitioner_id")
     private Practitioner practitioner;

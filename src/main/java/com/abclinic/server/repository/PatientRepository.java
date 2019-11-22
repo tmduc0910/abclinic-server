@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PatientRepository extends JpaRepository<Patient, Integer> {
+    Optional<Patient> findById(int id);
     Optional<Patient> findByPhoneNumberAndPassword(String phoneNumber, String password);
     Optional<Patient> findByEmailAndPassword(String email, String password);
-    List<Patient> findAll();
 }

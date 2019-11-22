@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "keen-optics-259713",
+  "private_key_id": "ca49388b3de4ec5c627af685aed5a3119f59aae8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDQXjNgZgkZjt1g\nmUweACXbFRJUN2Jjm8/e+NDzivf54HepJ4rZN8uqlslLA4q+XISz2awUphHJnA5B\nbESRB1PlELtXaff69qtQC8/9EATREoU5uzyMNoec3CPV+CVBxV9rcZ6PEzyBk+sp\nufzaIwxkvIvusaToRnDSudgbQtG6+RYqWhQejUeKVoTjEPi4EHsPjWbqYjoVVQeA\n1Vmx8eP2i8WQog/Zsb5rDO4QUMs5GL9vaCDhHxZTT6HQ/c3qY6li/zfGVBmsZfEg\nQMcpS3RwdJUSiUXMuRMKv6V+bHsucYfMQmzcJIvnhNqPzV1lbYXC0N+LffxxKD5i\n50y/czK7AgMBAAECggEAEcHFXRS099Gd+gp2WyQmFbqA+l5R6y0vFNBddjPEmC3R\n5L9y7Ln9iEcbVmIx47Ecufr12Dii0WyUJm0klrtqId5AKN3l/SQiS0sGaYmA75RF\neDsFmOlYuzxjbWudOTKpxA1FtumrwVsqsj6gVrKf7sHGpwvKguTl3n9p9EDIgMdr\n8bNTaVQ65h4ZyFDiKNsSMzi14EYI1nj1xGiFkmyl21z5ymJzmIB5DdRzM88ML+UH\nC2OXtct77omHWE4P7/efDfVaI5y2O6KKpo4xePXpHVEaCZkEr0BDmQOA4iJmPAWg\nnuLh7U3Tl9u1Kag0USukJboApXhnzruCNJl9mkPJ4QKBgQD2v9BMqyd9IArC1ohB\nPVwBFdUz3lOnZ76Zs7qc28T7fG6eJhO5aQg/gUVtvu6y0hM59I/MYyrHTF/7N0SR\ne5TgTIdphI197EpjBiRS+NAeRvs4vsDI9QugONIX6PtQhlfFEGB1XY4g7drJfqzg\nVXRurdCNru6dNn3dZKzFTczqMQKBgQDYLgVZx0u+qj0YP9dONBr3MFyFU0q0wfLT\nUDslNcgNvfXdU7fSM8mOZGqKzX+dVSKhd5t0MYj4iBV4xWM8EJZEdF6XQQyb04HN\n8tYAQqlagZAgHHSMDE0DpwUSe2TGEiDKRgM1C4w/K2I9MPeC6ZA/CPwtZkCQuhP9\nhY22zgoEqwKBgQCxnpILHolmgNI+PsAGdmzsOxMmKzx8nSmO6tnCYFED1yapoS9B\noGHXlO6teWvKPX6pkWqR7jC1Fj1hUP+C2jro2y3+vvQ7WQSTE7DCKWlm4iGlT2rn\nPb4Ir95MZ+HArXQw3wEQey/8dDuyIAXB1sHhii0+UFZjxP4FiJr1zHNdgQKBgH4T\nUOGMHnui8yCKUvnz32ocFUlYSzBiEEj2+Jd55yNEjvg2U/VOaJUXsR8kO/G47gp3\nI/0+ymAPlV4q1/X2wnxH1camlEDouEIxBmd+eSAkgbaIgdwPbHbd2FJwDlSJy//L\nlyE/i9pnZdLEFQWPS6XHirK7eJovO2tWkVB0l1kjAoGATBUQnyWQU2g18yEuzJKb\nBErt+do0sULeElRn3Iwhm5dul4hKvKyooi8QvD3FdIPhmk1o9Ito2IOYN+mrnMAG\nND9Vf5uf+qfxxt/S6DLSBG61MDBQmEb22gHpQftRTg6CePcv4i39NpREAmRCtT2s\nlcmtGqkhhgxi1gO674Dfpi0=\n-----END PRIVATE KEY-----\n",
+  "client_email": "tmduc0910@keen-optics-259713.iam.gserviceaccount.com",
+  "client_id": "109898263913788304707",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/tmduc0910%40keen-optics-259713.iam.gserviceaccount.com"
+}

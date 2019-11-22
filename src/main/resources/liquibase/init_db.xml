@@ -89,7 +89,7 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="patient_id" type="int(11)"/>
-            <column name="doctor_id" type="int(11)"/>
+            <column name="practitioner_id" type="int(11)"/>
             <column name="specialist_id" type="int(11)"/>
             <column name="record_type" type="int(11)"/>
             <column name="disease_id" type="int(11)"/>
@@ -126,8 +126,10 @@
             <column name="id" type="int(11)" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
+            <column name="uid" type="varchar(255)"/>
             <column name="patient_id" type="int(11)"/>
             <column name="content" type="varchar(1000)"/>
+            <column name="type" type="int(1)"/>
             <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
             <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
         </createTable>
@@ -137,8 +139,9 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="album_id" type="int(11)"/>
-            <column name="link_path" type="varchar(255)"/>
-            <column name="type" type="int(11)"/>
+            <column name="file_name" type="varchar(45)"/>
+            <column name="file_type" type="varchar(5)"/>
+            <column name="link" type="varchar(255)"/>
         </createTable>
         
 <!--        <createTable tableName="sequences">-->

@@ -1,0 +1,4 @@
+http://localhost:8109/auth/google/callback
+
+812164127454-1l7f3msjise87nugmne7b5k4bgb0ml9r.apps.googleusercontent.com
+B3eGe4xYFun_3DQEKoDPMo0w

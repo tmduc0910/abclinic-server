@@ -1,53 +1,63 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.base.BaseController;
+import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.RoleValue;
 import com.abclinic.server.exception.DuplicateValueException;
 import com.abclinic.server.exception.UnauthorizedActionException;
 import com.abclinic.server.exception.WrongCredentialException;
 import com.abclinic.server.model.entity.user.*;
-import com.abclinic.server.repository.PatientRepository;
-import com.abclinic.server.repository.UserRepository;
+import com.abclinic.server.repository.*;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthController extends BaseController {
+
+    @Autowired
+    public AuthController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository) {
+        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository);
+    }
 
     @Override
     public void init() {
         logger = LoggerFactory.getLogger(AuthController.class);
     }
 
-    @Autowired
-    public AuthController(PatientRepository patientRepository, UserRepository userRepository) {
-        this.patientRepository = patientRepository;
-        this.userRepository = userRepository;
-    }
-
-    @PostMapping(value = "/auth/login/phone")
+    @PostMapping(value = "/login/phone")
+    @JsonView(Views.Public.class)
     public ResponseEntity<Patient> processLoginByPhoneNumber(@RequestParam(name = "phone") String phoneNumber, @RequestParam(name = "password") String password) {
         Optional<Patient> opt = patientRepository.findByPhoneNumberAndPassword(phoneNumber, password);
-        return opt.map(patient -> new ResponseEntity<>(patient, HttpStatus.OK)).orElseGet(() -> {
-            throw new WrongCredentialException();
-        } );
+        return opt.map(patient -> {
+            patient.setUid(UUID.randomUUID().toString());
+            save(patient);
+            return new ResponseEntity<>(patient, HttpStatus.OK);
+        }).orElseThrow(WrongCredentialException::new);
     }
 
-    @PostMapping(value = "/auth/login/email")
+    @PostMapping(value = "/login/email")
+    @JsonView(Views.Public.class)
     public ResponseEntity<Patient> processLoginByEmail(@RequestParam(name = "email") String email, @RequestParam(name = "password") String password) {
-        return patientRepository.findByEmailAndPassword(email, password).map(patient -> new ResponseEntity<>(patient, HttpStatus.OK)).orElseGet(() -> {
-            throw new WrongCredentialException();
-        });
+        return patientRepository.findByEmailAndPassword(email, password).map(patient -> {
+            patient.setUid(UUID.randomUUID().toString());
+            save(patient);
+            return new ResponseEntity<>(patient, HttpStatus.OK);
+        }).orElseThrow(WrongCredentialException::new);
     }
 
-    @PostMapping(value = "/admin/auth/login")
+    @PostMapping(value = "/admin/login")
+    @JsonView(Views.Public.class)
     public ResponseEntity<? extends User> processDoctorLogin(@RequestParam(name = "email") String email, @RequestParam(name = "password") String password) {
         Optional<User> opt = userRepository.findByEmailAndPassword(email, password);
         if (opt.isPresent()) {
@@ -57,12 +67,15 @@ public class AuthController extends BaseController {
 //                case Role.COORDINATOR:
 //                        return new ResponseEntity<>((Coordinator) opt.get())
 //            }
-            Class roleClass = opt.get().getRole().getRoleClass();
-            return new ResponseEntity(roleClass.cast(opt.get()), HttpStatus.OK);
+            User user = opt.get();
+            user.setUid(UUID.randomUUID().toString());
+            Class roleClass = user.getRole().getRoleClass();
+            save(user);
+            return new ResponseEntity(roleClass.cast(user), HttpStatus.OK);
         } else throw new WrongCredentialException();
     }
 
-    @PostMapping(value = "/auth/sign_up")
+    @PostMapping(value = "/sign_up")
     public ResponseEntity<Patient> processSignUp(@RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "name") String name, @RequestParam(name = "gender") int gender, @RequestParam(name = "dob") String dateOfBirth, @RequestParam(name = "phone") String phoneNumber) {
         if (userRepository.findByEmail(email).isPresent() || userRepository.findByPhoneNumber(phoneNumber).isPresent())
             throw new DuplicateValueException();
@@ -71,7 +84,7 @@ public class AuthController extends BaseController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping(value = "/admin/auth/sign_up")
+    @PostMapping(value = "/admin/sign_up")
     public ResponseEntity<? extends User> processDoctorSignUp(@RequestParam(name = "role") int role, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "name") String name, @RequestParam(name = "gender") int gender, @RequestParam(name = "dob") String dateOfBirth, @RequestParam(name = "phone") String phoneNumber) {
         if (role > RoleValue.COORDINATOR)
             throw new UnauthorizedActionException();

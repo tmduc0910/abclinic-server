@@ -1,10 +1,15 @@
 package com.abclinic.server.model.entity.user;
 
 
+import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.Role;
-import org.hibernate.annotations.GenericGenerator;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonView;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -14,23 +19,35 @@ public class User {
     @Column(name = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonView(Views.Public.class)
     private int id;
+    @JsonView(Views.Private.class)
     private String uid;
+    @JsonView(Views.Private.class)
     private int role;
-
+    @JsonView(Views.Public.class)
     private String name;
+    @JsonView(Views.Public.class)
     private String email;
+    @JsonView(Views.Public.class)
     private int gender;
-
     @Column(name = "dob")
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonView(Views.Public.class)
     private Date dateOfBirth;
+    @JsonView(Views.Private.class)
     private String password;
-
+    @JsonView(Views.Public.class)
     @Column(name = "phone_number")
     private String phoneNumber;
+    @JsonView(Views.Public.class)
     private String avatar;
-    private Date createdAt;
-    private Date updatedAt;
+    @CreationTimestamp
+    @JsonView(Views.Public.class)
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    @JsonView(Views.Public.class)
+    private LocalDateTime updatedAt;
 
     public User() {};
 
@@ -120,19 +137,19 @@ public class User {
         this.avatar = avatar;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

@@ -1,11 +1,16 @@
 package com.abclinic.server.model.entity.user;
 
+import com.abclinic.server.base.Views;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import javax.persistence.MappedSuperclass;
 import java.util.Date;
 
 @MappedSuperclass
 public abstract class Doctor extends User {
+    @JsonView(Views.Public.class)
     private String description;
+    @JsonView(Views.Public.class)
     private int experience;
 
     public Doctor() {

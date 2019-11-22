@@ -1,7 +1,9 @@
 package com.abclinic.server.model.entity.user;
 
+import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.RoleValue;
 import com.abclinic.server.model.entity.Specialty;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -10,11 +12,11 @@ import java.util.List;
 @Entity
 @Table(name = "Practitioner")
 public class Practitioner extends Doctor {
-
     @OneToMany(targetEntity = Patient.class, mappedBy = "practitioner")
+    @JsonView(Views.Private.class)
     private List<Patient> patients;
-
     @OneToMany(targetEntity = Specialist.class, mappedBy = "practitioner")
+    @JsonView(Views.Private.class)
     private List<Specialist> specialists;
 
     @ManyToMany

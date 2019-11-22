@@ -1,10 +1,13 @@
 package com.abclinic.server.model.entity;
 
 import com.abclinic.server.model.entity.user.Patient;
+import com.abclinic.server.model.entity.user.Practitioner;
 import com.abclinic.server.model.entity.user.Specialist;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "medical_records")
@@ -18,6 +21,10 @@ public class MedicalRecord {
     private Patient patient;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "practitioner_id")
+    private Practitioner practitioner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "specialist_id")
     private Specialist specialist;
 
@@ -29,14 +36,23 @@ public class MedicalRecord {
     private String diagnose;
     private String prescription;
     private String note;
-    private Date createdAt;
-    private Date updatedAt;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     public MedicalRecord() {
     }
 
-    public MedicalRecord(Patient patient, Specialist specialist, Disease disease, int recordType) {
+    public MedicalRecord(Patient patient, Disease disease, int recordType) {
         this.patient = patient;
+        this.disease = disease;
+        this.recordType = recordType;
+    }
+
+    public MedicalRecord(Patient patient, Practitioner practitioner, Specialist specialist, Disease disease, int recordType) {
+        this.patient = patient;
+        this.practitioner = practitioner;
         this.specialist = specialist;
         this.disease = disease;
         this.recordType = recordType;
@@ -56,6 +72,14 @@ public class MedicalRecord {
 
     public void setPatient(Patient patient) {
         this.patient = patient;
+    }
+
+    public Practitioner getPractitioner() {
+        return practitioner;
+    }
+
+    public void setPractitioner(Practitioner practitioner) {
+        this.practitioner = practitioner;
     }
 
     public Specialist getSpecialist() {
@@ -106,19 +130,19 @@ public class MedicalRecord {
         this.note = note;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

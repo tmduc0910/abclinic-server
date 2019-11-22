@@ -1,8 +1,11 @@
 package com.abclinic.server.base;
 
+import com.abclinic.server.model.entity.ImageAlbum;
+import com.abclinic.server.model.entity.Image;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.*;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +27,23 @@ public abstract class BaseController {
     protected CoordinatorRepository coordinatorRepository;
     protected DietitianRepository dietitianRepository;
     protected SpecialistRepository specialistRepository;
+    protected AlbumRepository albumRepository;
+    protected ImageRepository imageRepository;
+    protected MedicalRecordRepository medicalRecordRepository;
     protected Logger logger;
+
+    @Autowired
+    public BaseController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository) {
+        this.userRepository = userRepository;
+        this.practitionerRepository = practitionerRepository;
+        this.patientRepository = patientRepository;
+        this.coordinatorRepository = coordinatorRepository;
+        this.dietitianRepository = dietitianRepository;
+        this.specialistRepository = specialistRepository;
+        this.albumRepository = albumRepository;
+        this.imageRepository = imageRepository;
+        this.medicalRecordRepository = medicalRecordRepository;
+    }
 
     @PostConstruct
     public abstract void init();
@@ -40,17 +59,21 @@ public abstract class BaseController {
         return null;
     }
 
-    public <T extends User> void save(T t) {
-        if (t instanceof Practitioner)
-            practitionerRepository.save((Practitioner) t);
-        else if (t instanceof Patient)
-            patientRepository.save((Patient) t);
-        else if (t instanceof Coordinator)
-            coordinatorRepository.save((Coordinator) t);
-        else if (t instanceof Dietitian)
-            dietitianRepository.save((Dietitian) t);
-        else if (t instanceof Specialist)
-            specialistRepository.save((Specialist) t);
+    public void save(Object o) {
+        if (o instanceof Practitioner)
+            practitionerRepository.save((Practitioner) o);
+        else if (o instanceof Patient)
+            patientRepository.save((Patient) o);
+        else if (o instanceof Coordinator)
+            coordinatorRepository.save((Coordinator) o);
+        else if (o instanceof Dietitian)
+            dietitianRepository.save((Dietitian) o);
+        else if (o instanceof Specialist)
+            specialistRepository.save((Specialist) o);
+        else if (o instanceof ImageAlbum)
+            albumRepository.save((ImageAlbum) o);
+        else if (o instanceof Image)
+            imageRepository.save((Image) o);
     }
 
     @ExceptionHandler(value = BaseRuntimeException.class)
