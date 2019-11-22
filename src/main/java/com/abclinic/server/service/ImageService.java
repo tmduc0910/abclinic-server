@@ -23,7 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ImageService {
-    private static final String CREDENTIAL_PATH = "src\\main\\resources\\google-photos\\client_secret.json";
+    //TODO: Adjust the path according to yours
+    private static final String CREDENTIAL_PATH = "C:\\Users\\ADMIN\\Desktop\\google-photos\\client_secret.json";
     private static final List<String> REQUIRED_SCOPES =
             ImmutableList.of(
                     "https://www.googleapis.com/auth/photoslibrary.readonly",
