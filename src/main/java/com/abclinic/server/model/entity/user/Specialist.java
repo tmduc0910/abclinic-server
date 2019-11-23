@@ -6,7 +6,7 @@ import com.abclinic.server.model.entity.Specialty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "specialist")
@@ -23,15 +23,15 @@ public class Specialist extends Doctor {
     public Specialist() {
     }
 
-    public Specialist(String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber) {
+    public Specialist(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber) {
         super(RoleValue.SPECIALIST, name, email, gender, dateOfBirth, password, phoneNumber);
     }
 
-    public Specialist(String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber, String description, int experience) {
+    public Specialist(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String description, int experience) {
         super(RoleValue.SPECIALIST, name, email, gender, dateOfBirth, password, phoneNumber, description, experience);
     }
 
-    public Specialist(String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber, String description, int experience, Practitioner practitioner, Specialty specialty) {
+    public Specialist(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String description, int experience, Practitioner practitioner, Specialty specialty) {
         super(RoleValue.SPECIALIST, name, email, gender, dateOfBirth, password, phoneNumber, description, experience);
         this.practitioner = practitioner;
         this.specialty = specialty;

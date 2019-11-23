@@ -4,7 +4,7 @@ import com.abclinic.server.base.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.MappedSuperclass;
-import java.util.Date;
+import java.time.LocalDate;
 
 @MappedSuperclass
 public abstract class Doctor extends User {
@@ -16,11 +16,11 @@ public abstract class Doctor extends User {
     public Doctor() {
     }
 
-    public Doctor(int role, String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber) {
+    public Doctor(int role, String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber) {
         super(role, name, email, gender, dateOfBirth, password, phoneNumber);
     }
 
-    public Doctor(int role, String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber, String description, int experience) {
+    public Doctor(int role, String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String description, int experience) {
         super(role, name, email, gender, dateOfBirth, password, phoneNumber);
         this.description = description;
         this.experience = experience;

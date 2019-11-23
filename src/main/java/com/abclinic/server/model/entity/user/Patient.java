@@ -1,12 +1,11 @@
 package com.abclinic.server.model.entity.user;
 
 import com.abclinic.server.base.Views;
-import com.abclinic.server.constant.Role;
 import com.abclinic.server.constant.RoleValue;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "patient")
@@ -25,11 +24,11 @@ public class Patient extends User {
     public Patient() {
     }
 
-    public Patient(String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber) {
+    public Patient(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber) {
         super(RoleValue.PATIENT, name, email, gender, dateOfBirth, password, phoneNumber);
     }
 
-    public Patient(String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber, String address) {
+    public Patient(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String address) {
         super(RoleValue.PATIENT, name, email, gender, dateOfBirth, password, phoneNumber);
         this.address = address;
     }

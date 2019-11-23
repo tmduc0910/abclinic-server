@@ -9,8 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "user")
@@ -34,7 +34,7 @@ public class User {
     @Column(name = "dob")
     @JsonFormat(pattern = "dd-MM-yyyy")
     @JsonView(Views.Public.class)
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     @JsonView(Views.Private.class)
     private String password;
     @JsonView(Views.Public.class)
@@ -51,7 +51,7 @@ public class User {
 
     public User() {};
 
-    public User(int role, String name, String email, int gender, Date dateOfBirth, String password, String phoneNumber) {
+    public User(int role, String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber) {
         this.role = role;
         this.name = name;
         this.email = email;
@@ -105,11 +105,11 @@ public class User {
         this.gender = gender;
     }
 
-    public Date getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

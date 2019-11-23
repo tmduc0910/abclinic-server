@@ -3,7 +3,9 @@ package com.abclinic.server.service;
 import com.google.api.gax.rpc.ApiException;
 import com.google.common.collect.ImmutableList;
 import com.google.photos.library.v1.PhotosLibraryClient;
+import com.google.photos.library.v1.internal.InternalPhotosLibraryClient;
 import com.google.photos.library.v1.proto.BatchCreateMediaItemsResponse;
+import com.google.photos.library.v1.proto.Filters;
 import com.google.photos.library.v1.proto.NewMediaItem;
 import com.google.photos.library.v1.proto.NewMediaItemResult;
 import com.google.photos.library.v1.upload.UploadMediaItemRequest;
@@ -22,12 +24,12 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-public class ImageService {
+public class GooglePhotosService {
     //TODO: Adjust the path according to yours
     private static final String CREDENTIAL_PATH = "C:\\Users\\ADMIN\\Desktop\\google-photos\\client_secret.json";
     private static final List<String> REQUIRED_SCOPES =
             ImmutableList.of(
-                    "https://www.googleapis.com/auth/photoslibrary.readonly",
+                    "https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata",
                     "https://www.googleapis.com/auth/photoslibrary.appendonly");
     private static PhotosLibraryClient client;
 

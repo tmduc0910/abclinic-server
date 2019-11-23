@@ -1,25 +1,19 @@
 package com.abclinic.server.base;
 
-import com.abclinic.server.model.entity.ImageAlbum;
-import com.abclinic.server.model.entity.Image;
+import com.abclinic.server.model.entity.*;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.*;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 public abstract class BaseController {
-    private final List<String> formats = Arrays.asList("dd-MM-yyyy", "dd/MM/yyyy");
 
     protected UserRepository userRepository;
     protected PractitionerRepository practitionerRepository;
@@ -30,33 +24,16 @@ public abstract class BaseController {
     protected AlbumRepository albumRepository;
     protected ImageRepository imageRepository;
     protected MedicalRecordRepository medicalRecordRepository;
+    protected QuestionRepository questionRepository;
+    protected ReplyRepository replyRepository;
     protected Logger logger;
-
-    @Autowired
-    public BaseController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository) {
-        this.userRepository = userRepository;
-        this.practitionerRepository = practitionerRepository;
-        this.patientRepository = patientRepository;
-        this.coordinatorRepository = coordinatorRepository;
-        this.dietitianRepository = dietitianRepository;
-        this.specialistRepository = specialistRepository;
-        this.albumRepository = albumRepository;
-        this.imageRepository = imageRepository;
-        this.medicalRecordRepository = medicalRecordRepository;
-    }
 
     @PostConstruct
     public abstract void init();
 
-    protected Date tryParse(String date) {
-        for (String format : formats) {
-            try {
-                return new SimpleDateFormat(format).parse(date);
-            } catch (ParseException ignored) {
-
-            }
-        }
-        return null;
+    protected LocalDate tryParse(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        return LocalDate.parse(date, formatter);
     }
 
     public void save(Object o) {
@@ -74,6 +51,12 @@ public abstract class BaseController {
             albumRepository.save((ImageAlbum) o);
         else if (o instanceof Image)
             imageRepository.save((Image) o);
+        else if (o instanceof MedicalRecord)
+            medicalRecordRepository.save((MedicalRecord) o);
+        else if (o instanceof Question)
+            questionRepository.save((Question) o);
+        else if (o instanceof Reply)
+            replyRepository.save((Reply) o);
     }
 
     @ExceptionHandler(value = BaseRuntimeException.class)
