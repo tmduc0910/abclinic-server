@@ -30,10 +30,8 @@ import java.util.UUID;
 @RequestMapping("/auth")
 public class AuthController extends BaseController {
 
-    @Autowired
-    public AuthController(UserRepository userRepository, PatientRepository patientRepository) {
-        this.userRepository = userRepository;
-        this.patientRepository = patientRepository;
+    public AuthController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository) {
+        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, questionRepository, replyRepository);
     }
 
     @Override

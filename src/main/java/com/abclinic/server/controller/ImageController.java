@@ -41,10 +41,8 @@ public class ImageController extends BaseController {
     private String uploadDirectory;
 
     @Autowired
-    public ImageController(AlbumRepository albumRepository, ImageRepository imageRepository, PatientRepository patientRepository) {
-        this.albumRepository = albumRepository;
-        this.imageRepository = imageRepository;
-        this.patientRepository = patientRepository;
+    public ImageController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository) {
+        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, questionRepository, replyRepository);
     }
 
     @Override

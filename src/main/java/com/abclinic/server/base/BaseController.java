@@ -28,6 +28,20 @@ public abstract class BaseController {
     protected ReplyRepository replyRepository;
     protected Logger logger;
 
+    public BaseController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository) {
+        this.userRepository = userRepository;
+        this.practitionerRepository = practitionerRepository;
+        this.patientRepository = patientRepository;
+        this.coordinatorRepository = coordinatorRepository;
+        this.dietitianRepository = dietitianRepository;
+        this.specialistRepository = specialistRepository;
+        this.albumRepository = albumRepository;
+        this.imageRepository = imageRepository;
+        this.medicalRecordRepository = medicalRecordRepository;
+        this.questionRepository = questionRepository;
+        this.replyRepository = replyRepository;
+    }
+
     @PostConstruct
     public abstract void init();
 

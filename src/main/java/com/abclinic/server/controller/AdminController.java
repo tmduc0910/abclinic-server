@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AdminController extends BaseController {
 
+    public AdminController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository) {
+        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, questionRepository, replyRepository);
+    }
+
     @Override
     public void init() {
         logger = LoggerFactory.getLogger(AdminController.class);
