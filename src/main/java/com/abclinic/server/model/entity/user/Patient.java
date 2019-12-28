@@ -12,10 +12,7 @@ import java.time.LocalDate;
 public class Patient extends User {
     @JsonView(Views.Private.class)
     private String address;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dietitian_id")
-    @JsonView(Views.Private.class)
-    private Dietitian dietitian;
+
     @JsonView(Views.Private.class)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "practitioner_id")
@@ -39,14 +36,6 @@ public class Patient extends User {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public Dietitian getDietitian() {
-        return dietitian;
-    }
-
-    public void setDietitian(Dietitian dietitian) {
-        this.dietitian = dietitian;
     }
 
     public Practitioner getPractitioner() {

@@ -1,7 +1,7 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.base.BaseController;
-import com.abclinic.server.base.Views;
+import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.ImageAlbum;
@@ -12,6 +12,7 @@ import com.abclinic.server.service.GooglePhotosService;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.google.photos.types.proto.Album;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,23 +27,23 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
- * @package com.abclinic.server.controller
  * @author tmduc
+ * @package com.abclinic.server.controller
  * @created 11/23/2019 3:38 PM
  */
 @RestController
-@RequestMapping(value = "/image")
+@RequestMapping(value = "/images")
 public class ImageController extends BaseController {
 
     @Value("${file.upload-dir}")
     private String uploadDirectory;
 
-    @Autowired
-    public ImageController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository) {
-        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, questionRepository, replyRepository);
+    public ImageController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository) {
+        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, questionRepository, replyRepository, specialtyRepository);
     }
 
     @Override
@@ -51,28 +52,30 @@ public class ImageController extends BaseController {
     }
 
     /**
+     * @param userId mã người dùng được lưu vào HttpHeader
+     * @param files các file ảnh được gửi lên
+     * @return HTTPStatus 200 OK
+     * @throws BadRequestException HTTPStatus 400 Bad Request
+     * @throws ForbiddenException HTTPStatus 403 Forbidden
      * @apiNote hàm xử lý việc upload ảnh hoặc nhiều ảnh lên server
      * @uri /image/upload
-     * @param userId mã người dùng được lưu vào HttpHeader
-     * @param fileName tên file ảnh
-     * @param fileType đuôi của file ảnh. VD: "jpg", "png", "gif"...
-     * @param files
-     * @return
      */
     @PostMapping(value = "/upload")
-    @JsonView(Views.Public.class)
-    public ResponseEntity processUpload(@NotNull @RequestHeader("user-id") int userId, @RequestParam("file-name") String fileName, @RequestParam("file-type") String fileType, @RequestParam("file") MultipartFile... files) {
+    public ResponseEntity processUpload(@NotNull @RequestHeader("user-id") int userId, @RequestParam("files") MultipartFile[] files) {
         Optional<Patient> patient = patientRepository.findById(userId);
         if (!patient.isPresent())
             throw new ForbiddenException(userId);
+        if (files.length == 0)
+            throw new BadRequestException(userId, "must upload at least 1 image");
         Album album = GooglePhotosService.makeAlbum();
         ImageAlbum imageAlbum = new ImageAlbum(album.getId(), patient.get(), album.getTitle());
         save(imageAlbum);
 
         try {
             List<Image> images = new ArrayList<>();
-            imageAlbum = albumRepository.findById(imageAlbum.getId()).get();
             for (MultipartFile file: files) {
+                String fileName = Objects.requireNonNull(file.getOriginalFilename()).substring(0, file.getOriginalFilename().lastIndexOf('.'));
+                String fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
                 File f = toFile(fileName, fileType, file.getBytes());
                 String token = GooglePhotosService.getToken(fileName, f.getPath());
                 String path = GooglePhotosService.createItem(token, album.getId(), f.getName());
@@ -81,13 +84,11 @@ public class ImageController extends BaseController {
             images.forEach(this::save);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
-            logger.error(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new BadRequestException(userId);
         }
     }
 
-    @GetMapping(value = "/album/all")
-    @JsonView(Views.Public.class)
+    @GetMapping(value = "/albums")
     public ResponseEntity<List<ImageAlbum>> processGetAllAlbums(@NotNull @RequestHeader("user-id") int userId) {
         Patient patient = patientRepository.findById(userId).get();
         Optional<List<ImageAlbum>> opt = albumRepository.findByPatient(patient);
@@ -96,8 +97,7 @@ public class ImageController extends BaseController {
         } else throw new NotFoundException(userId);
     }
 
-    @GetMapping(value = "/album/{album-id}")
-    @JsonView(Views.Private.class)
+    @GetMapping(value = "/albums/{album-id}")
     public ResponseEntity<ImageAlbum> processGetAlbum(@NotNull @RequestHeader("user-id") int userId, @PathVariable("album-id") int albumId) {
         Patient patient = patientRepository.findById(userId).get();
         Optional<ImageAlbum> opt = albumRepository.findById(albumId);

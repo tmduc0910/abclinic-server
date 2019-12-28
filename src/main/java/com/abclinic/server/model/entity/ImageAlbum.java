@@ -17,20 +17,26 @@ public class ImageAlbum {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Public.class)
     private int id;
+
     @JsonView(Views.Private.class)
     private String uid;
+
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Image.class, mappedBy = "imageAlbum")
     @JsonView(Views.Public.class)
     private List<Image> images;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id")
     @JsonView(Views.Private.class)
     private Patient patient;
+
     @JsonView(Views.Public.class)
     private String content;
+
     @CreationTimestamp
     @JsonView(Views.Public.class)
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
     @JsonView(Views.Public.class)
     private LocalDateTime updatedAt;

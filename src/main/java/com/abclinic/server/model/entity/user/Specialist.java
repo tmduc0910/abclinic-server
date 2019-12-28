@@ -12,10 +12,6 @@ import java.time.LocalDate;
 @Table(name = "specialist")
 public class Specialist extends Doctor {
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "practitioner_id")
-    @JsonView(Views.Private.class)
-    private Practitioner practitioner;
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "specialty_id")
     @JsonView(Views.Public.class)
     private Specialty specialty;
@@ -31,18 +27,9 @@ public class Specialist extends Doctor {
         super(RoleValue.SPECIALIST, name, email, gender, dateOfBirth, password, phoneNumber, description, experience);
     }
 
-    public Specialist(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String description, int experience, Practitioner practitioner, Specialty specialty) {
+    public Specialist(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String description, int experience, Specialty specialty) {
         super(RoleValue.SPECIALIST, name, email, gender, dateOfBirth, password, phoneNumber, description, experience);
-        this.practitioner = practitioner;
         this.specialty = specialty;
-    }
-
-    public Practitioner getPractitioner() {
-        return practitioner;
-    }
-
-    public void setPractitioner(Practitioner practitioner) {
-        this.practitioner = practitioner;
     }
 
     public Specialty getSpecialty() {

@@ -10,6 +10,5 @@ import java.util.Optional;
 
 public interface SpecialistRepository extends JpaRepository<Specialist, Integer> {
     Optional<Specialist> findById(int id);
-    Optional<List<Specialist>> findByPractitioner(Practitioner practitioner);
     Optional<List<Specialist>> findBySpecialty(Specialty specialty);
 }

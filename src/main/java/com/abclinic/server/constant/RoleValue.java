@@ -6,4 +6,5 @@ public class RoleValue {
     public static final int DIETITIAN = 2;
     public static final int COORDINATOR = 3;
     public static final int PATIENT = 4;
+    public static final int ALL = 10;
 }

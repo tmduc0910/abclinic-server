@@ -1,5 +1,6 @@
 package com.abclinic.server.base;
 
+import com.abclinic.server.model.dto.ErrorDto;
 import com.abclinic.server.model.entity.*;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.*;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 @RestController
 public abstract class BaseController {
@@ -26,9 +28,10 @@ public abstract class BaseController {
     protected MedicalRecordRepository medicalRecordRepository;
     protected QuestionRepository questionRepository;
     protected ReplyRepository replyRepository;
+    protected SpecialtyRepository specialtyRepository;
     protected Logger logger;
 
-    public BaseController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository) {
+    public BaseController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository) {
         this.userRepository = userRepository;
         this.practitionerRepository = practitionerRepository;
         this.patientRepository = patientRepository;
@@ -40,6 +43,7 @@ public abstract class BaseController {
         this.medicalRecordRepository = medicalRecordRepository;
         this.questionRepository = questionRepository;
         this.replyRepository = replyRepository;
+        this.specialtyRepository = specialtyRepository;
     }
 
     @PostConstruct
@@ -74,8 +78,8 @@ public abstract class BaseController {
     }
 
     @ExceptionHandler(value = BaseRuntimeException.class)
-    public ResponseEntity<Object> handleException(BaseRuntimeException e) {
+    public ResponseEntity<ErrorDto> handleException(BaseRuntimeException e) {
         logger.error(e.getMessage());
-        return new ResponseEntity<>(e.getStatus());
+        return new ResponseEntity<>(new ErrorDto(e.getMessage()), e.getStatus());
     }
 }

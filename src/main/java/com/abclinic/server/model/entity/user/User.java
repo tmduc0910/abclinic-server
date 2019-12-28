@@ -21,30 +21,41 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Public.class)
     private int id;
+
     @JsonView(Views.Private.class)
     private String uid;
+
     @JsonView(Views.Private.class)
     private int role;
+
     @JsonView(Views.Public.class)
     private String name;
+
     @JsonView(Views.Public.class)
     private String email;
+
     @JsonView(Views.Public.class)
     private int gender;
+
     @Column(name = "dob")
     @JsonFormat(pattern = "dd-MM-yyyy")
     @JsonView(Views.Public.class)
     private LocalDate dateOfBirth;
+
     @JsonView(Views.Private.class)
     private String password;
+
     @JsonView(Views.Public.class)
     @Column(name = "phone_number")
     private String phoneNumber;
+
     @JsonView(Views.Public.class)
     private String avatar;
+
     @CreationTimestamp
     @JsonView(Views.Public.class)
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
     @JsonView(Views.Public.class)
     private LocalDateTime updatedAt;

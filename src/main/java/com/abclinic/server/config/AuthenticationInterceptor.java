@@ -1,5 +1,7 @@
 package com.abclinic.server.config;
 
+import com.abclinic.server.constant.Role;
+import com.abclinic.server.constant.RoleValue;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.UnauthorizedActionException;
 import com.abclinic.server.model.entity.user.User;
@@ -24,8 +26,8 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String requestUri = request.getRequestURI();
-        if (requestUri.startsWith("/error"))
-            return false;
+        if (requestUri.startsWith("/api/error") || requestUri.contains("swagger") || requestUri.contains("api-docs"))
+            return true;
 
         response.addHeader("Access-Control-Allow-Origin", "*");
         response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
@@ -36,17 +38,22 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
         try {
             if (!requestUri.startsWith("/auth")) {
                 int id = Integer.parseInt(request.getHeader("User-Id"));
-                if (userRepository.findById(id).getUid() == null)
+                User user = userRepository.findById(id);
+                if (user.getUid() == null)
                     throw new UnauthorizedActionException(id);
+                else if (requestUri.contains("/admin") && user.getRole() == Role.PATIENT)
+                    throw new UnauthorizedActionException(id);
+                request.setAttribute("user-role", user.getRole());
             } else {
                 String req = request.getParameterMap().entrySet().iterator().next().getValue()[0];
                 Optional<User> user = userRepository.findByEmailOrPhoneNumber(req, req);
                 if (user.isPresent()) {
                     if (user.get().getUid() != null)
-                        throw new NullPointerException();
+                        throw new ForbiddenException();
                 }
             }
         } catch (NumberFormatException | NullPointerException e) {
+            System.out.println(requestUri);
             throw new ForbiddenException();
         }
         return super.preHandle(request, response, handler);

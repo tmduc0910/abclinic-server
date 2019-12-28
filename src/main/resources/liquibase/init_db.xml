@@ -16,18 +16,17 @@
             <column name="dob" type="date"/>
             <column name="password" type="varchar(45)"/>
             <column name="phone_number" type="varchar(45)"/>
+            <column name="status" type="int(11)" defaultValue="0"/>
             <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
             <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
             <column name="avatar" type="varchar(225)"/>
         </createTable>
 
-        <createTable tableName="patient">
-            <column name="id" type="int(11)">
-                <constraints primaryKey="true" foreignKeyName="fk_patient_user" references="user(id)"/>
+        <createTable tableName="specialty">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
             </column>
-            <column name="address" type="varchar(45)"/>
-            <column name="dietitian_id" type="int(11)"/>
-            <column name="practitioner_id" type="int(11)"/>
+            <column name="specialty_detail" type="varchar(50)"/>
         </createTable>
 
         <createTable tableName="practitioner">
@@ -43,7 +42,9 @@
                 <constraints primaryKey="true" foreignKeyName="fk_dietitian_user" references="user(id)"/>
             </column>
             <column name="description" type="varchar(500)"/>
-            <column name="specialty_id" type="int(11)"/>
+            <column name="specialty_id" type="int(11)">
+                <constraints foreignKeyName="fk_dietitian_specialty" references="specialty(id)"/>
+            </column>
             <column name="experience" type="int(11)"/>
         </createTable>
 
@@ -51,9 +52,10 @@
             <column name="id" type="int(11)">
                 <constraints primaryKey="true" foreignKeyName="fk_specialist_user" references="user(id)"/>
             </column>
-            <column name="practitioner_id" type="int(11)"/>
             <column name="description" type="varchar(1000)"/>
-            <column name="specialty_id" type="int(11)"/>
+            <column name="specialty_id" type="int(11)">
+                <constraints foreignKeyName="fk_specialist_specialty" references="specialty(id)"/>
+            </column>
             <column name="experience" type="int(11)"/>
         </createTable>
 
@@ -61,19 +63,16 @@
             <column name="id" type="int(11)">
                 <constraints primaryKey="true" foreignKeyName="fk_coordinator_user" references="user(id)"/>
             </column>
-            <column name="doctor_id" type="int(11)"/>
         </createTable>
 
-        <createTable tableName="specialty">
-            <column name="id" type="int(11)" autoIncrement="true">
-                <constraints primaryKey="true"/>
+        <createTable tableName="patient">
+            <column name="id" type="int(11)">
+                <constraints primaryKey="true" foreignKeyName="fk_patient_user" references="user(id)"/>
             </column>
-            <column name="specialty_detail" type="varchar(50)"/>
-        </createTable>
-
-        <createTable tableName="practitioner_specialty">
-            <column name="practitioner_id" type="int(11)"/>
-            <column name="specialty_id" type="int(11)"/>
+            <column name="address" type="varchar(45)"/>
+            <column name="practitioner_id" type="int(11)">
+                <constraints foreignKeyName="fk_patient_practitioner" references="practitioner(id)"/>
+            </column>
         </createTable>
 
         <createTable tableName="disease">
@@ -84,40 +83,27 @@
             <column name="description" type="varchar(1000)"/>
         </createTable>
 
-        <createTable tableName="medical_records">
+        <createTable tableName="medical_record">
             <column name="id" type="int(11)" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="patient_id" type="int(11)"/>
-            <column name="practitioner_id" type="int(11)"/>
-            <column name="specialist_id" type="int(11)"/>
+            <column name="patient_id" type="int(11)">
+                <constraints foreignKeyName="fk_record_patient" references="patient(id)"/>
+            </column>
+            <column name="practitioner_id" type="int(11)">
+                <constraints foreignKeyName="fk_record_practitioner" references="practitioner(id)"/>
+            </column>
+            <column name="specialist_id" type="int(11)">
+                <constraints foreignKeyName="fk_record_specialist" references="specialist(id)"/>
+            </column>
             <column name="record_type" type="int(11)"/>
-            <column name="disease_id" type="int(11)"/>
+            <column name="disease_id" type="int(11)">
+                <constraints foreignKeyName="fk_record_disease" references="disease(id)"/>
+            </column>
             <column name="diagnose" type="varchar(1000)"/>
             <column name="prescription" type="varchar(1000)"/>
             <column name="note" type="varchar(1000)"/>
-            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
-            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
-        </createTable>
-
-        <createTable tableName="question">
-            <column name="id" type="int(11)" autoIncrement="true">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="patient_id" type="int(11)"/>
-            <column name="question_type" type="int(11)"/>
-            <column name="content" type="varchar(1000)"/>
-            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
-            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
-        </createTable>
-
-        <createTable tableName="reply">
-            <column name="id" type="int(11)" autoIncrement="true">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="question_id" type="int(11)"/>
-            <column name="user_id" type="int(11)"/>
-            <column name="content" type="varchar(1000)"/>
+            <column name="status" type="int(11)" defaultValue="0"/>
             <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
             <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
         </createTable>
@@ -127,9 +113,12 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="uid" type="varchar(255)"/>
-            <column name="patient_id" type="int(11)"/>
+            <column name="patient_id" type="int(11)">
+                <constraints foreignKeyName="fk_album_patient" references="patient(id)"/>
+            </column>
             <column name="content" type="varchar(1000)"/>
             <column name="type" type="int(1)"/>
+            <column name="status" type="int(11)" defaultValue="0"/>
             <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
             <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
         </createTable>
@@ -138,10 +127,100 @@
             <column name="id" type="int(11)" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="album_id" type="int(11)"/>
-            <column name="file_name" type="varchar(45)"/>
+            <column name="album_id" type="int(11)">
+                <constraints foreignKeyName="fk_image_album" references="album(id)"/>
+            </column>
+            <column name="file_name" type="varchar(255)"/>
             <column name="file_type" type="varchar(5)"/>
             <column name="link" type="varchar(255)"/>
+            <column name="status" type="int(11)" defaultValue="0"/>
+        </createTable>
+
+        <createTable tableName="question">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="patient_id" type="int(11)">
+                <constraints foreignKeyName="fk_question_patient" references="patient(id)"/>
+            </column>
+            <column name="album_id" type="int(11)">
+                <constraints foreignKeyName="fk_question_album" references="album(id)"/>
+            </column>
+            <column name="question_type" type="int(11)"/>
+            <column name="content" type="varchar(1000)"/>
+            <column name="status" type="int(11)" defaultValue="0"/>
+            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
+            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="reply">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="question_id" type="int(11)">
+                <constraints foreignKeyName="fk_reply_question" references="question(id)"/>
+            </column>
+            <column name="user_id" type="int(11)">
+                <constraints foreignKeyName="fk_reply_user" references="user(id)"/>
+            </column>
+            <column name="content" type="varchar(1000)"/>
+            <column name="status" type="int(11)" defaultValue="0"/>
+            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
+            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="practitioner_specialty">
+            <column name="practitioner_id" type="int(11)">
+                <constraints foreignKeyName="fk_ps_practitioner" references="practitioner(id)"/>
+            </column>
+            <column name="specialty_id" type="int(11)">
+                <constraints foreignKeyName="fk_ps_specialty" references="specialty(id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="dietitian_record">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="dietitian_id" type="int(11)">
+                <constraints foreignKeyName="fk_dr_dietitian" references="dietitian(id)"/>
+            </column>
+            <column name="patient_id" type="int(11)">
+                <constraints foreignKeyName="fk_dr_patient" references="patient(id)"/>
+            </column>
+            <column name="note" type="varchar(1000)"/>
+            <column name="prescription" type="varchar(1000)"/>
+            <column name="status" type="int(11)" defaultValue="0"/>
+            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
+            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="health_index">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)"/>
+            <column name="description" type="varchar(255)"/>
+        </createTable>
+
+        <createTable tableName="patient_health_index">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="record_id" type="int(11)">
+                <constraints foreignKeyName="fk_hi_record" references="medical_record(id)"/>
+            </column>
+            <column name="doctor_id" type="int(11)">
+                <constraints foreignKeyName="fk_hi_doctor" references="user(id)"/>
+            </column>
+            <column name="index_id" type="int(11)">
+                <constraints foreignKeyName="fk_hi_index" references="health_index(id)"/>
+            </column>
+            <column name="status" type="int(11)" defaultValue="0"/>
+            <column name="scheduled" type="int(11)"/>
+            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
+            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
+            <column name="started_at" type="TIMESTAMP"/>
         </createTable>
         
 <!--        <createTable tableName="sequences">-->

@@ -15,9 +15,6 @@ public class Practitioner extends Doctor {
     @OneToMany(targetEntity = Patient.class, mappedBy = "practitioner")
     @JsonView(Views.Private.class)
     private List<Patient> patients;
-    @OneToMany(targetEntity = Specialist.class, mappedBy = "practitioner")
-    @JsonView(Views.Private.class)
-    private List<Specialist> specialists;
 
     @ManyToMany
     @JoinTable(
@@ -48,18 +45,6 @@ public class Practitioner extends Doctor {
 
     public void addPatients(Patient patient) {
         this.patients.add(patient);
-    }
-
-    public List<Specialist> getSpecialists() {
-        return specialists;
-    }
-
-    public void setSpecialists(List<Specialist> specialists) {
-        this.specialists = specialists;
-    }
-
-    public void addSpecialist(Specialist specialist) {
-        this.specialists.add(specialist);
     }
 
     public List<Specialty> getSpecialties() {

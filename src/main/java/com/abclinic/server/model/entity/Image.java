@@ -12,14 +12,18 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Public.class)
     private int id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id")
     @JsonView(Views.Public.class)
     private ImageAlbum imageAlbum;
+
     @JsonView(Views.Public.class)
     private String fileName;
+
     @JsonView(Views.Public.class)
     private String fileType;
+
     @Column(name = "link")
     @JsonView(Views.Public.class)
     private String path;

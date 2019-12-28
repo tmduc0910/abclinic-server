@@ -10,6 +10,7 @@ import java.time.LocalDate;
 public abstract class Doctor extends User {
     @JsonView(Views.Public.class)
     private String description;
+
     @JsonView(Views.Public.class)
     private int experience;
 

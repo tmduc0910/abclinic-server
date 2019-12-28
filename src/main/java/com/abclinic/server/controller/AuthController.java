@@ -1,7 +1,6 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.base.BaseController;
-import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.RoleValue;
 import com.abclinic.server.exception.DuplicateValueException;
 import com.abclinic.server.exception.UnauthorizedActionException;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,8 +30,8 @@ import java.util.UUID;
 @RequestMapping("/auth")
 public class AuthController extends BaseController {
 
-    public AuthController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository) {
-        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, questionRepository, replyRepository);
+    public AuthController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository) {
+        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, questionRepository, replyRepository, specialtyRepository);
     }
 
     @Override
@@ -47,7 +47,6 @@ public class AuthController extends BaseController {
      * @throws WrongCredentialException HTTPStatus 404 NOT FOUND
      */
     @PostMapping(value = "/login/phone")
-    @JsonView(Views.Public.class)
     public ResponseEntity<Patient> processLoginByPhoneNumber(@RequestParam(name = "phone") String phoneNumber, @RequestParam(name = "password") String password) {
         Optional<Patient> opt = patientRepository.findByPhoneNumberAndPassword(phoneNumber, password);
         /**
@@ -70,7 +69,6 @@ public class AuthController extends BaseController {
      * @throws WrongCredentialException HTTPStatus 404 NOT FOUND
      */
     @PostMapping(value = "/login/email")
-    @JsonView(Views.Public.class)
     public ResponseEntity<Patient> processLoginByEmail(@RequestParam(name = "email") String email, @RequestParam(name = "password") String password) {
         return patientRepository.findByEmailAndPassword(email, password).map(patient -> {
             patient.setUid(UUID.randomUUID().toString());
@@ -89,7 +87,6 @@ public class AuthController extends BaseController {
      * @throws WrongCredentialException HTTPStatus 404 NOT FOUND
      */
     @PostMapping(value = "/admin/login")
-    @JsonView(Views.Public.class)
     public ResponseEntity<? extends User> processDoctorLogin(@RequestParam(name = "email") String email, @RequestParam(name = "password") String password) {
         Optional<User> opt = userRepository.findByEmailAndPassword(email, password);
         if (opt.isPresent()) {
@@ -145,7 +142,7 @@ public class AuthController extends BaseController {
      * @throws UnauthorizedActionException HTTPStatus 401 UNAUTHORIZED
      */
     @PostMapping(value = "/admin/sign_up")
-    public ResponseEntity<? extends User> processDoctorSignUp(@RequestParam(name = "role") int role, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "name") String name, @RequestParam(name = "gender") int gender, @RequestParam(name = "dob") String dateOfBirth, @RequestParam(name = "phone") String phoneNumber) {
+    public ResponseEntity<? extends User> processDoctorSignUp(@NotNull @RequestParam(name = "role") int role, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "name") String name, @RequestParam(name = "gender") int gender, @RequestParam(name = "dob") String dateOfBirth, @RequestParam(name = "phone") String phoneNumber) {
         if (role > RoleValue.COORDINATOR)
             throw new UnauthorizedActionException();
         if (userRepository.findByEmail(email).isPresent() || userRepository.findByPhoneNumber(phoneNumber).isPresent())
