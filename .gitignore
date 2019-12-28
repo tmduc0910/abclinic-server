@@ -29,3 +29,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Local temp folder ###
+**/src/main/resources/uploads/**
