@@ -1,77 +1,59 @@
 package com.abclinic.server.model.entity;
 
+import com.abclinic.server.base.Views;
+import com.abclinic.server.constant.RecordType;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.Practitioner;
 import com.abclinic.server.model.entity.user.Specialist;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "medical_records")
-public class MedicalRecord {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "patient_id")
-    private Patient patient;
+@Table(name = "medical_record")
+public class MedicalRecord extends Record {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "practitioner_id")
+    @JsonView(Views.Public.class)
     private Practitioner practitioner;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "specialist_id")
+    @JsonView(Views.Private.class)
     private Specialist specialist;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "disease_id")
+    @JsonView(Views.Public.class)
     private Disease disease;
 
-    private int recordType;
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = HealthIndexSchedule.class, mappedBy = "record")
+    @JsonView(Views.Public.class)
+    private List<HealthIndexSchedule<MedicalRecord>> schedules;
+
+    @JsonView(Views.Public.class)
     private String diagnose;
+
+    @JsonView(Views.Public.class)
     private String prescription;
+
+    @JsonView(Views.Public.class)
     private String note;
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
     public MedicalRecord() {
+
     }
 
-    public MedicalRecord(Patient patient, Disease disease, int recordType) {
-        this.patient = patient;
-        this.disease = disease;
-        this.recordType = recordType;
-    }
-
-    public MedicalRecord(Patient patient, Practitioner practitioner, Specialist specialist, Disease disease, int recordType) {
-        this.patient = patient;
+    public MedicalRecord(Patient patient, Practitioner practitioner, Specialist specialist, Disease disease) {
+        super(patient, RecordType.MEDICAL.getValue());
         this.practitioner = practitioner;
         this.specialist = specialist;
         this.disease = disease;
-        this.recordType = recordType;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public void setPatient(Patient patient) {
-        this.patient = patient;
     }
 
     public Practitioner getPractitioner() {
@@ -98,12 +80,12 @@ public class MedicalRecord {
         this.disease = disease;
     }
 
-    public int getRecordType() {
-        return recordType;
+    public List<HealthIndexSchedule<MedicalRecord>> getSchedules() {
+        return schedules;
     }
 
-    public void setRecordType(int recordType) {
-        this.recordType = recordType;
+    public void setSchedules(List<HealthIndexSchedule<MedicalRecord>> schedules) {
+        this.schedules = schedules;
     }
 
     public String getDiagnose() {
@@ -128,21 +110,5 @@ public class MedicalRecord {
 
     public void setNote(String note) {
         this.note = note;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

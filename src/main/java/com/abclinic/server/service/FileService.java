@@ -68,7 +68,7 @@ public class FileService {
 
     public boolean isFileOld(File file) {
         LocalDate fileDate = Instant.ofEpochMilli(file.lastModified()).atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate oldDate = LocalDate.now().minusDays(1);
+        LocalDate oldDate = LocalDate.now().minusDays(7);
         return fileDate.isBefore(oldDate);
     }
 }

@@ -83,12 +83,22 @@
             <column name="description" type="varchar(1000)"/>
         </createTable>
 
-        <createTable tableName="medical_record">
+        <createTable tableName="record">
             <column name="id" type="int(11)" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="patient_id" type="int(11)">
                 <constraints foreignKeyName="fk_record_patient" references="patient(id)"/>
+            </column>
+            <column name="record_type" type="int(11)"/>
+            <column name="status" type="int(11)" defaultValue="0"/>
+            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
+            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="medical_record">
+            <column name="id" type="int(11)">
+                <constraints primaryKey="true" foreignKeyName="fk_medical_record" references="record(id)"/>
             </column>
             <column name="practitioner_id" type="int(11)">
                 <constraints foreignKeyName="fk_record_practitioner" references="practitioner(id)"/>
@@ -96,16 +106,23 @@
             <column name="specialist_id" type="int(11)">
                 <constraints foreignKeyName="fk_record_specialist" references="specialist(id)"/>
             </column>
-            <column name="record_type" type="int(11)"/>
             <column name="disease_id" type="int(11)">
                 <constraints foreignKeyName="fk_record_disease" references="disease(id)"/>
             </column>
             <column name="diagnose" type="varchar(1000)"/>
             <column name="prescription" type="varchar(1000)"/>
             <column name="note" type="varchar(1000)"/>
-            <column name="status" type="int(11)" defaultValue="0"/>
-            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
-            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="dietitian_record">
+            <column name="id" type="int(11)">
+                <constraints primaryKey="true" foreignKeyName="fk_dietitian_record" references="record(id)"/>
+            </column>
+            <column name="dietitian_id" type="int(11)">
+                <constraints foreignKeyName="fk_dr_dietitian" references="dietitian(id)"/>
+            </column>
+            <column name="note" type="varchar(1000)"/>
+            <column name="prescription" type="varchar(1000)"/>
         </createTable>
 
         <createTable tableName="album">
@@ -176,23 +193,6 @@
             <column name="specialty_id" type="int(11)">
                 <constraints foreignKeyName="fk_ps_specialty" references="specialty(id)"/>
             </column>
-        </createTable>
-
-        <createTable tableName="dietitian_record">
-            <column name="id" type="int(11)" autoIncrement="true">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="dietitian_id" type="int(11)">
-                <constraints foreignKeyName="fk_dr_dietitian" references="dietitian(id)"/>
-            </column>
-            <column name="patient_id" type="int(11)">
-                <constraints foreignKeyName="fk_dr_patient" references="patient(id)"/>
-            </column>
-            <column name="note" type="varchar(1000)"/>
-            <column name="prescription" type="varchar(1000)"/>
-            <column name="status" type="int(11)" defaultValue="0"/>
-            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
-            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
         </createTable>
 
         <createTable tableName="health_index">
@@ -266,4 +266,5 @@
             <column name="column_name"  type="varchar(255)" defaultValue=""/>
         </addColumn>
     </changeSet>-->
+
 </databaseChangeLog>

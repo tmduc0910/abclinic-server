@@ -8,7 +8,7 @@ public class NotFoundException extends BaseRuntimeException {
         super("Resource not found", HttpStatus.NOT_FOUND);
     }
 
-    public NotFoundException(int userId) {
+    public NotFoundException(long userId) {
         super("Resource not found", userId, HttpStatus.NOT_FOUND);
     }
 }

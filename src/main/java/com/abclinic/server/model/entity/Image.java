@@ -11,11 +11,11 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Public.class)
-    private int id;
+    private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Private.class)
     private ImageAlbum imageAlbum;
 
     @JsonView(Views.Public.class)
@@ -38,11 +38,11 @@ public class Image {
         this.path = path;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

@@ -5,9 +5,15 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
 
+/**
+ * @author tmduc
+ * @package com.abclinic.server.model.entity
+ * @created 12/30/2019 3:07 PM
+ */
+
 @Entity
-@Table(name = "disease")
-public class Disease {
+@Table(name = "health_index")
+public class HealthIndex {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Public.class)
@@ -19,10 +25,7 @@ public class Disease {
     @JsonView(Views.Public.class)
     private String description;
 
-    public Disease() {
-    }
-
-    public Disease(String name, String description) {
+    public HealthIndex(String name, String description) {
         this.name = name;
         this.description = description;
     }

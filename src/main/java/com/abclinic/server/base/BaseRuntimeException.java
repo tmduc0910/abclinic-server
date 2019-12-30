@@ -9,7 +9,7 @@ import java.util.Map;
 public abstract class BaseRuntimeException extends RuntimeException {
     private static final String TEMPLATE = "Invalid attempt: ${error}. " +
             "Caused by: User ${userId}.";
-    private final int userId;
+    private final long userId;
     private final HttpStatus status;
 
     public BaseRuntimeException(String error, HttpStatus status) {
@@ -18,13 +18,13 @@ public abstract class BaseRuntimeException extends RuntimeException {
         this.status = status;
     }
 
-    public BaseRuntimeException(String error, int userId, HttpStatus status) {
+    public BaseRuntimeException(String error, long userId, HttpStatus status) {
         super(pack(error, userId));
         this.userId = userId;
         this.status = status;
     }
 
-    private static String pack(String error, int userId) {
+    private static String pack(String error, long userId) {
         Map<String, String> values = new HashMap<>();
         values.put("error", error);
         values.put("userId", String.valueOf(userId));
@@ -32,7 +32,7 @@ public abstract class BaseRuntimeException extends RuntimeException {
         return substitutor.replace(TEMPLATE);
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 

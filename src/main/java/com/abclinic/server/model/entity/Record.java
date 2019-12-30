@@ -8,30 +8,28 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
+/**
+ * @author tmduc
+ * @package com.abclinic.server.model.entity
+ * @created 12/30/2019 3:21 PM
+ */
 @Entity
-@Table(name = "album")
-public class ImageAlbum {
+@Table(name = "record")
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Record {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Public.class)
     private long id;
 
-    @JsonView(Views.Confidential.class)
-    private String uid;
-
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = Image.class, mappedBy = "imageAlbum")
-    @JsonView(Views.Public.class)
-    private List<Image> images;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "patient_id")
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Public.class)
     private Patient patient;
 
-    @JsonView(Views.Public.class)
-    private String content;
+    @JsonView(Views.Confidential.class)
+    private int recordType;
 
     @JsonView(Views.Confidential.class)
     private int status;
@@ -44,13 +42,13 @@ public class ImageAlbum {
     @JsonView(Views.Public.class)
     private LocalDateTime updatedAt;
 
-    public ImageAlbum() {
+    public Record() {
+
     }
 
-    public ImageAlbum(String uid, Patient patient, String content) {
-        this.uid = uid;
+    public Record(Patient patient, int recordType) {
         this.patient = patient;
-        this.content = content;
+        this.recordType = recordType;
     }
 
     public long getId() {
@@ -61,22 +59,6 @@ public class ImageAlbum {
         this.id = id;
     }
 
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public List<Image> getImages() {
-        return images;
-    }
-
-    public void setImages(List<Image> images) {
-        this.images = images;
-    }
-
     public Patient getPatient() {
         return patient;
     }
@@ -85,12 +67,12 @@ public class ImageAlbum {
         this.patient = patient;
     }
 
-    public String getContent() {
-        return content;
+    public int getRecordType() {
+        return recordType;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setRecordType(int recordType) {
+        this.recordType = recordType;
     }
 
     public int getStatus() {

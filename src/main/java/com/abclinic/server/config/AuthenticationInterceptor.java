@@ -2,6 +2,7 @@ package com.abclinic.server.config;
 
 import com.abclinic.server.constant.Role;
 import com.abclinic.server.constant.RoleValue;
+import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.UnauthorizedActionException;
 import com.abclinic.server.model.entity.user.User;
@@ -37,13 +38,16 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
 
         try {
             if (!requestUri.startsWith("/auth")) {
-                int id = Integer.parseInt(request.getHeader("User-Id"));
-                User user = userRepository.findById(id);
+                int id = Integer.parseInt(request.getHeader("Authentication"));
+                Optional<User> op = userRepository.findById(id);
+                if (!op.isPresent())
+                    throw new BadRequestException(id, "Authentication failed");
+                User user = op.get();
                 if (user.getUid() == null)
                     throw new UnauthorizedActionException(id);
                 else if (requestUri.contains("/admin") && user.getRole() == Role.PATIENT)
                     throw new UnauthorizedActionException(id);
-                request.setAttribute("user-role", user.getRole());
+                request.setAttribute("User-Role", user.getRole());
             } else {
                 String req = request.getParameterMap().entrySet().iterator().next().getValue()[0];
                 Optional<User> user = userRepository.findByEmailOrPhoneNumber(req, req);

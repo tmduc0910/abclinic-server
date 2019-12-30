@@ -61,7 +61,7 @@ public class ImageController extends BaseController {
      * @uri /image/upload
      */
     @PostMapping(value = "/upload")
-    public ResponseEntity processUpload(@NotNull @RequestHeader("user-id") int userId, @RequestParam("files") MultipartFile[] files) {
+    public ResponseEntity processUpload(@NotNull @RequestHeader("Authentication") int userId, @RequestParam("files") MultipartFile[] files) {
         Optional<Patient> patient = patientRepository.findById(userId);
         if (!patient.isPresent())
             throw new ForbiddenException(userId);
@@ -89,7 +89,7 @@ public class ImageController extends BaseController {
     }
 
     @GetMapping(value = "/albums")
-    public ResponseEntity<List<ImageAlbum>> processGetAllAlbums(@NotNull @RequestHeader("user-id") int userId) {
+    public ResponseEntity<List<ImageAlbum>> processGetAllAlbums(@NotNull @RequestHeader("Authentication") int userId) {
         Patient patient = patientRepository.findById(userId).get();
         Optional<List<ImageAlbum>> opt = albumRepository.findByPatient(patient);
         if (opt.isPresent()) {
@@ -98,7 +98,7 @@ public class ImageController extends BaseController {
     }
 
     @GetMapping(value = "/albums/{album-id}")
-    public ResponseEntity<ImageAlbum> processGetAlbum(@NotNull @RequestHeader("user-id") int userId, @PathVariable("album-id") int albumId) {
+    public ResponseEntity<ImageAlbum> processGetAlbum(@NotNull @RequestHeader("Authentication") int userId, @PathVariable("album-id") int albumId) {
         Patient patient = patientRepository.findById(userId).get();
         Optional<ImageAlbum> opt = albumRepository.findById(albumId);
         if (opt.isPresent()) {

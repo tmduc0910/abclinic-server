@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface PatientRepository extends JpaRepository<Patient, Integer> {
-    Optional<Patient> findById(int id);
+public interface PatientRepository extends JpaRepository<Patient, Long> {
+    Optional<Patient> findById(long id);
     Optional<Patient> findByPhoneNumberAndPassword(String phoneNumber, String password);
     Optional<Patient> findByEmailAndPassword(String email, String password);
 }

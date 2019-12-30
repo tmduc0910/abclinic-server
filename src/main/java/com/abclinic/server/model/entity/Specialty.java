@@ -1,5 +1,8 @@
 package com.abclinic.server.model.entity;
 
+import com.abclinic.server.base.Views;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import javax.persistence.*;
 
 @Entity
@@ -7,16 +10,18 @@ import javax.persistence.*;
 public class Specialty {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @JsonView(Views.Public.class)
+    private long id;
 
     @Column(name = "specialty_detail")
+    @JsonView(Views.Public.class)
     private String detail;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

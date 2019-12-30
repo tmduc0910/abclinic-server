@@ -20,12 +20,12 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Public.class)
-    private int id;
+    private long id;
 
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Confidential.class)
     private String uid;
 
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Confidential.class)
     private int role;
 
     @JsonView(Views.Public.class)
@@ -52,12 +52,15 @@ public class User {
     @JsonView(Views.Public.class)
     private String avatar;
 
+    @JsonView(Views.Confidential.class)
+    private int status;
+
     @CreationTimestamp
     @JsonView(Views.Public.class)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Confidential.class)
     private LocalDateTime updatedAt;
 
     public User() {};
@@ -72,11 +75,11 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -146,6 +149,14 @@ public class User {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public LocalDateTime getCreatedAt() {

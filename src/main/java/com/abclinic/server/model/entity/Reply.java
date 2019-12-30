@@ -1,32 +1,44 @@
 package com.abclinic.server.model.entity;
 
+import com.abclinic.server.base.Views;
 import com.abclinic.server.model.entity.user.User;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "reply")
 public class Reply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @JsonView(Views.Public.class)
+    private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
+    @JsonView(Views.Private.class)
     private Question question;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonView(Views.Public.class)
     private User user;
 
+    @JsonView(Views.Public.class)
     private String content;
+
+    @JsonView(Views.Confidential.class)
+    private int status;
+
     @CreationTimestamp
+    @JsonView(Views.Public.class)
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
+    @JsonView(Views.Public.class)
     private LocalDateTime updatedAt;
 
     public Reply() {
@@ -38,11 +50,11 @@ public class Reply {
         this.content = content;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -68,6 +80,14 @@ public class Reply {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public LocalDateTime getCreatedAt() {
