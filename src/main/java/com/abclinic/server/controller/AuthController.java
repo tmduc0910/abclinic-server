@@ -42,7 +42,8 @@ public class AuthController extends BaseController {
     }
 
     @PostMapping(value = "/login/phone")
-    @ApiOperation(value = "Bệnh nhân đăng nhập qua SĐT", notes = "Trả về thông tin cá nhân hoặc 404 NOT FOUND")
+    @ApiOperation(value = "Bệnh nhân đăng nhập qua SĐT", notes = "Trả về thông tin cá nhân hoặc 404 NOT FOUND.\n" +
+            "Trường UID được trả về sẽ được gán vào header Authorization ở tất cả các API sau đó.")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "phoneNumber", value = "SĐT của người dùng", required = true, dataType = "string"),
             @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string")
@@ -55,9 +56,7 @@ public class AuthController extends BaseController {
     public ResponseEntity<Patient> processLoginByPhoneNumber(@RequestParam(name = "phone") String phoneNumber,
                                                              @RequestParam(name = "password") String password) {
         Optional<Patient> opt = patientRepository.findByPhoneNumberAndPassword(phoneNumber, password);
-        /**
-         * Gán giá trị session cho người dùng
-         */
+        //Gán giá trị session cho người dùng
         return opt.map(patient -> {
             patient.setUid(UUID.randomUUID().toString());
             save(patient);
@@ -66,7 +65,8 @@ public class AuthController extends BaseController {
     }
 
     @PostMapping(value = "/login/email")
-    @ApiOperation(value = "Bệnh nhân đăng nhập qua email", notes = "Trả về thông tin cá nhân hoặc 404 NOT FOUND")
+    @ApiOperation(value = "Bệnh nhân đăng nhập qua email", notes = "Trả về thông tin cá nhân hoặc 404 NOT FOUND\n" +
+            "Trường UID được trả về sẽ được gán vào header Authorization ở tất cả các API sau đó.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "email", value = "Email của người dùng", required = true, dataType = "string"),
             @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string")
@@ -86,7 +86,8 @@ public class AuthController extends BaseController {
     }
 
     @PostMapping(value = "/admin/login")
-    @ApiOperation(value = "Bác sĩ đăng nhập qua email", notes = "Trả về thông tin cá nhân hoặc 404 NOT FOUND")
+    @ApiOperation(value = "Bác sĩ đăng nhập qua email", notes = "Trả về thông tin cá nhân hoặc 404 NOT FOUND\n" +
+            "Trường UID được trả về sẽ được gán vào header Authorization ở tất cả các API sau đó.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "email", value = "Email của người dùng", required = true, dataType = "string"),
             @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string")
@@ -117,12 +118,12 @@ public class AuthController extends BaseController {
     @PostMapping(value = "/sign_up")
     @ApiOperation(value = "Đăng kí tài khoản cho bệnh nhân", notes = "Trả về 201 CREATED hoặc 409 CONFLICT")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "email", value = "Email của người dùng", required = true, dataType = "string", paramType = "form"),
-            @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string", paramType = "form"),
-            @ApiImplicitParam(name = "name", value = "Họ tên người dùng", required = true, dataType = "string", paramType = "form"),
-            @ApiImplicitParam(name = "gender", value = "Giới tính người dùng (nam, nữ, khác)", allowableValues = "0, 1, 2", required = true, dataType = "int", paramType = "form"),
-            @ApiImplicitParam(name = "dateOfBirth", value = "Ngày tháng năm sinh của người dùng", allowableValues = "YYYY-MM-dd", required = true, dataType = "string", paramType = "form"),
-            @ApiImplicitParam(name = "phoneNumber", value = "SĐT của người dùng", required = true, dataType = "string", paramType = "form")
+            @ApiImplicitParam(name = "email", value = "Email của người dùng", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "name", value = "Họ tên người dùng", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "gender", value = "Giới tính người dùng (nam, nữ, khác)", allowableValues = "0, 1, 2", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "dob", value = "Ngày tháng năm sinh của người dùng", format = "YYYY-MM-dd", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "phone", value = "SĐT của người dùng", required = true, dataType = "string")
     })
     @ApiResponses({
             @ApiResponse(code = 201, message = "Đăng kí thành công"),
@@ -149,13 +150,13 @@ public class AuthController extends BaseController {
     @PostMapping(value = "/admin/sign_up")
     @ApiOperation(value = "Đăng kí tài khoản cho bác sĩ", notes = "Trả về 201 CREATED hoặc 409 CONFLICT")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "role", value = "Kiểu bác sĩ (đa khoa, chuyên khoa, dinh dưỡng, điều phối)", required = true, allowableValues = "0, 1, 2, 3", dataType = "int", paramType = "body"),
-            @ApiImplicitParam(name = "email", value = "Email của người dùng", required = true, dataType = "string", paramType = "form"),
-            @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string", paramType = "form"),
-            @ApiImplicitParam(name = "name", value = "Họ tên người dùng", required = true, dataType = "string", paramType = "form"),
-            @ApiImplicitParam(name = "gender", value = "Giới tính người dùng (nam, nữ, khác)", allowableValues = "0, 1, 2", required = true, dataType = "int", paramType = "form"),
-            @ApiImplicitParam(name = "dateOfBirth", value = "Ngày tháng năm sinh của người dùng", allowableValues = "YYYY-MM-dd", required = true, dataType = "string", paramType = "form"),
-            @ApiImplicitParam(name = "phoneNumber", value = "SĐT của người dùng", required = true, dataType = "string", paramType = "form")
+            @ApiImplicitParam(name = "role", value = "Kiểu bác sĩ (đa khoa, chuyên khoa, dinh dưỡng, điều phối)", required = true, allowableValues = "0, 1, 2, 3", dataType = "int"),
+            @ApiImplicitParam(name = "email", value = "Email của người dùng", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "name", value = "Họ tên người dùng", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "gender", value = "Giới tính người dùng (nam, nữ, khác)", allowableValues = "0, 1, 2", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "dob", value = "Ngày tháng năm sinh của người dùng", format = "YYYY-MM-dd", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "phone", value = "SĐT của người dùng", required = true, dataType = "string")
     })
     @ApiResponses({
             @ApiResponse(code = 201, message = "Đăng kí thành công"),

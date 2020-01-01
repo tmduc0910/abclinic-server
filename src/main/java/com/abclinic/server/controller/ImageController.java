@@ -55,7 +55,7 @@ public class ImageController extends BaseController {
 
     @PostMapping(value = "/upload")
     @ApiOperation(value = "Upload một hoặc nhiều ảnh", notes = "Trả về 201 CREATED hoặc 400 BAD REQUEST")
-    @ApiImplicitParams(@ApiImplicitParam(name = "files", value = "Các file ảnh được gửi lên", required = true, allowMultiple = true, dataType = "MultipartFile[]", paramType = "body"))
+    @ApiImplicitParams(@ApiImplicitParam(name = "files", value = "Các file ảnh được gửi lên", required = true, allowMultiple = true, dataType = "file[]"))
     @ApiResponses({
             @ApiResponse(code = 201, message = "Upload ảnh thành công"),
             @ApiResponse(code = 400, message = "File không hợp lệ")
@@ -105,7 +105,7 @@ public class ImageController extends BaseController {
     @GetMapping(value = "/albums/{album-id}")
     @ApiOperation(value = "Lấy tất cả ảnh của một album", notes = "Trả về danh sách ảnh hoặc 404 NOT FOUND")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "albumId", value = "Mã ID của album", required = true, dataType = "long", paramType = "path")
+            @ApiImplicitParam(name = "album-id", value = "Mã ID của album", required = true, dataType = "long", paramType = "path")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Lấy danh sách ảnh thành công"),
