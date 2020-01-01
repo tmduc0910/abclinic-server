@@ -24,8 +24,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * @package com.abclinic.server.controller
  * @author tmduc
+ * @package com.abclinic.server.controller
  * @created 11/23/2019 3:38 PM
  */
 @RestController
@@ -170,8 +170,6 @@ public class AuthController extends BaseController {
                                                               @RequestParam(name = "gender") int gender,
                                                               @RequestParam(name = "dob") String dateOfBirth,
                                                               @RequestParam(name = "phone") String phoneNumber) {
-        if (role > RoleValue.COORDINATOR)
-            throw new ForbiddenException();
         if (userRepository.findByEmail(email).isPresent() || userRepository.findByPhoneNumber(phoneNumber).isPresent())
             throw new DuplicateValueException();
         User doc;

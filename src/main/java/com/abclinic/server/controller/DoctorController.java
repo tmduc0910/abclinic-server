@@ -6,6 +6,7 @@ import com.abclinic.server.constant.Role;
 import com.abclinic.server.constant.RoleValue;
 import com.abclinic.server.constant.Status;
 import com.abclinic.server.exception.BadRequestException;
+import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.Specialty;
 import com.abclinic.server.model.entity.user.*;
@@ -87,6 +88,7 @@ public class DoctorController extends BaseController {
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Danh sách bác sĩ theo yêu cầu"),
+            @ApiResponse(code = 403, message = "Bệnh nhân không được phép xem danh sách bác sĩ"),
             @ApiResponse(code = 404, message = "Không tìm thấy bác sĩ nào đúng yêu cầu")
     })
     @JsonView(Views.Public.class)
@@ -94,6 +96,8 @@ public class DoctorController extends BaseController {
                                         @RequestParam(value = "type", required = false) String type,
                                         @RequestParam("page") int page,
                                         @RequestParam("size") int size) {
+        if (user.getRole() == Role.PATIENT)
+            throw new ForbiddenException(user.getId(), "Only doctor can access doctors list");
         Pageable pageable = PageRequest.of(page-1, size, Sort.by("role"));
         Optional result;
         try {
@@ -109,7 +113,7 @@ public class DoctorController extends BaseController {
     @GetMapping("/doctors/{id}")
     @ApiOperation(value = "Lấy thông tin chi tiết bác sĩ", notes = "Trả về thông tin chi tiết của một bác sĩ hoặc 404 NOT FOUND")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "ID của bác sĩ", required = true, allowEmptyValue = false, paramType = "query")
+            @ApiImplicitParam(name = "id", value = "ID của bác sĩ", required = true, allowEmptyValue = false, dataType = "long", paramType = "path")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Thông tin chi tiết bác sĩ"),

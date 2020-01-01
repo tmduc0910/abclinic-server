@@ -53,12 +53,12 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
                 Optional<User> user = userRepository.findByEmailOrPhoneNumber(req, req);
                 if (user.isPresent()) {
                     if (user.get().getUid() != null)
-                        throw new ForbiddenException();
+                        throw new ForbiddenException(user.get().getId(), "This account is still logged in");
                 }
             }
         } catch (NumberFormatException | NullPointerException e) {
             System.out.println(requestUri);
-            throw new ForbiddenException();
+            throw new ForbiddenException(-1);
         }
         return super.preHandle(request, response, handler);
     }
