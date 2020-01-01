@@ -22,7 +22,7 @@ public class User {
     @JsonView(Views.Public.class)
     private long id;
 
-    @JsonView(Views.Confidential.class)
+    @JsonView(Views.Private.class)
     private String uid;
 
     @JsonView(Views.Confidential.class)
@@ -42,7 +42,7 @@ public class User {
     @JsonView(Views.Public.class)
     private LocalDate dateOfBirth;
 
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Confidential.class)
     private String password;
 
     @JsonView(Views.Public.class)

@@ -1,21 +1,23 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.base.BaseController;
+import com.abclinic.server.base.Views;
+import com.abclinic.server.constant.Role;
 import com.abclinic.server.constant.RoleValue;
 import com.abclinic.server.exception.DuplicateValueException;
+import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.UnauthorizedActionException;
 import com.abclinic.server.exception.WrongCredentialException;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.*;
 import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
@@ -39,15 +41,19 @@ public class AuthController extends BaseController {
         logger = LoggerFactory.getLogger(AuthController.class);
     }
 
-    /**
-     * @apiNote hàm xử lý đăng nhập của bệnh nhân bằng số điện thoại
-     * @param phoneNumber SĐT của người dùng. VD: "01234567"
-     * @param password mật khẩu cá nhân của người dùng. VD: "abcxyz"
-     * @return object chứa thông tin cá nhân của bệnh nhân và HTTPStatus 200 OK
-     * @throws WrongCredentialException HTTPStatus 404 NOT FOUND
-     */
     @PostMapping(value = "/login/phone")
-    public ResponseEntity<Patient> processLoginByPhoneNumber(@RequestParam(name = "phone") String phoneNumber, @RequestParam(name = "password") String password) {
+    @ApiOperation(value = "Bệnh nhân đăng nhập qua SĐT", notes = "Trả về thông tin cá nhân hoặc 404 NOT FOUND")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "phoneNumber", value = "SĐT của người dùng", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Đăng nhập thành công"),
+            @ApiResponse(code = 404, message = "Đăng nhập thất bại")
+    })
+    @JsonView(Views.Private.class)
+    public ResponseEntity<Patient> processLoginByPhoneNumber(@RequestParam(name = "phone") String phoneNumber,
+                                                             @RequestParam(name = "password") String password) {
         Optional<Patient> opt = patientRepository.findByPhoneNumberAndPassword(phoneNumber, password);
         /**
          * Gán giá trị session cho người dùng
@@ -59,17 +65,19 @@ public class AuthController extends BaseController {
         }).orElseThrow(WrongCredentialException::new);
     }
 
-    /**
-     * @apiNote hàm xử lý đăng nhập của bệnh nhân bằng email
-     * @uri /auth/login/email
-     * @httpMethod POST
-     * @param email email của người dùng. VD: "mail@example.com"
-     * @param password mật khẩu cá nhân của người dùng. VD: "abcxyz"
-     * @return object chứa thông tin cá nhân của bệnh nhân và HTTPStatus 200 OK
-     * @throws WrongCredentialException HTTPStatus 404 NOT FOUND
-     */
     @PostMapping(value = "/login/email")
-    public ResponseEntity<Patient> processLoginByEmail(@RequestParam(name = "email") String email, @RequestParam(name = "password") String password) {
+    @ApiOperation(value = "Bệnh nhân đăng nhập qua email", notes = "Trả về thông tin cá nhân hoặc 404 NOT FOUND")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "email", value = "Email của người dùng", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Đăng nhập thành công", response = Patient.class),
+            @ApiResponse(code = 404, message = "Đăng nhập thất bại")
+    })
+    @JsonView(Views.Private.class)
+    public ResponseEntity<Patient> processLoginByEmail(@RequestParam(name = "email") String email,
+                                                       @RequestParam(name = "password") String password) {
         return patientRepository.findByEmailAndPassword(email, password).map(patient -> {
             patient.setUid(UUID.randomUUID().toString());
             save(patient);
@@ -77,17 +85,19 @@ public class AuthController extends BaseController {
         }).orElseThrow(WrongCredentialException::new);
     }
 
-    /**
-     * @apiNote hàm xử lý đăng nhập của bác sĩ bằng email
-     * @uri /auth/admin/login
-     * @httpMethod POST
-     * @param email email của người dùng. VD: "mail@example.com"
-     * @param password mật khẩu cá nhân của người dùng. VD: "abcxyz"
-     * @return object chứa thông tin cá nhân của bác sĩ và HTTPStatus 200 OK
-     * @throws WrongCredentialException HTTPStatus 404 NOT FOUND
-     */
     @PostMapping(value = "/admin/login")
-    public ResponseEntity<? extends User> processDoctorLogin(@RequestParam(name = "email") String email, @RequestParam(name = "password") String password) {
+    @ApiOperation(value = "Bác sĩ đăng nhập qua email", notes = "Trả về thông tin cá nhân hoặc 404 NOT FOUND")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "email", value = "Email của người dùng", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Đăng nhập thành công", response = Patient.class),
+            @ApiResponse(code = 404, message = "Đăng nhập thất bại")
+    })
+    @JsonView(Views.Private.class)
+    public ResponseEntity<? extends User> processDoctorLogin(@RequestParam(name = "email") String email,
+                                                             @RequestParam(name = "password") String password) {
         Optional<User> opt = userRepository.findByEmailAndPassword(email, password);
         if (opt.isPresent()) {
 //            switch (opt.get().getRole()) {
@@ -104,47 +114,64 @@ public class AuthController extends BaseController {
         } else throw new WrongCredentialException();
     }
 
-    /**
-     * @apiNote hàm xử lý đăng ký tài khoản của bệnh nhân
-     * @uri /auth/sigh_up
-     * @httpMethod POST
-     * @param email email của người dùng. VD: "mail@example.com"
-     * @param password mật khẩu cá nhân của người dùng. VD: "abcxyz"
-     * @param name họ và tên đầy đủ của bệnh nhân. VD: "Trần Văn A"
-     * @param gender giới tính của bệnh nhân. Nam(1), Nữ(2), Khác(3)
-     * @param dateOfBirth ngày, tháng, năm sinh của bệnh nhân, dưới dạng "dd/MM/yyyy"
-     * @param phoneNumber số điện thoại của bệnh nhân. VD: "01234567"
-     * @return HTTPStatus 200 OK
-     * @throws DuplicateValueException HTTPStatus 409 CONFLICT
-     */
     @PostMapping(value = "/sign_up")
-    public ResponseEntity<Patient> processSignUp(@RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "name") String name, @RequestParam(name = "gender") int gender, @RequestParam(name = "dob") String dateOfBirth, @RequestParam(name = "phone") String phoneNumber) {
+    @ApiOperation(value = "Đăng kí tài khoản cho bệnh nhân", notes = "Trả về 201 CREATED hoặc 409 CONFLICT")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "email", value = "Email của người dùng", required = true, dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "name", value = "Họ tên người dùng", required = true, dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "gender", value = "Giới tính người dùng (nam, nữ, khác)", allowableValues = "0, 1, 2", required = true, dataType = "int", paramType = "form"),
+            @ApiImplicitParam(name = "dateOfBirth", value = "Ngày tháng năm sinh của người dùng", allowableValues = "YYYY-MM-dd", required = true, dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "phoneNumber", value = "SĐT của người dùng", required = true, dataType = "string", paramType = "form")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Đăng kí thành công"),
+            @ApiResponse(code = 404, message = "Chỉ có điều phối viên mới có thể đăng kí cho bệnh nhân"),
+            @ApiResponse(code = 409, message = "Email hoặc SĐT này đã được sử dụng")
+    })
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Patient> processSignUp(@ApiIgnore @RequestAttribute(name = "User") User user,
+                                                 @RequestParam(name = "email") String email,
+                                                 @RequestParam(name = "password") String password,
+                                                 @RequestParam(name = "name") String name,
+                                                 @RequestParam(name = "gender") int gender,
+                                                 @RequestParam(name = "dob") String dateOfBirth,
+                                                 @RequestParam(name = "phone") String phoneNumber) {
+        if (user.getRole() != Role.COORDINATOR)
+            throw new ForbiddenException(user.getId());
         if (userRepository.findByEmail(email).isPresent() || userRepository.findByPhoneNumber(phoneNumber).isPresent())
             throw new DuplicateValueException();
         Patient patient = new Patient(name, email, gender, tryParse(dateOfBirth), password, phoneNumber);
         patientRepository.save(patient);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    /**
-     * @apiNote hàm xử lý đăng ký tài khoản của bác sĩ
-     * @uri /auth/admin/sigh_up
-     * @httpMethod POST
-     * @param role phân loại của bác sĩ. Đa khoa (0), Chuyên khoa (1), Dinh dưỡng(2), Điều phối (3)
-     * @param email email của người dùng. VD: "mail@example.com"
-     * @param password mật khẩu cá nhân của người dùng. VD: "abcxyz"
-     * @param name họ và tên đầy đủ của bệnh nhân. VD: "Trần Văn A"
-     * @param gender giới tính của bệnh nhân. Nam(1), Nữ(2), Khác(3)
-     * @param dateOfBirth ngày, tháng, năm sinh của bệnh nhân, dưới dạng "dd/MM/yyyy"
-     * @param phoneNumber số điện thoại của bệnh nhân. VD: "01234567"
-     * @return HTTPStatus 200 OK
-     * @throws DuplicateValueException HTTPStatus 409 CONFLICT
-     * @throws UnauthorizedActionException HTTPStatus 401 UNAUTHORIZED
-     */
     @PostMapping(value = "/admin/sign_up")
-    public ResponseEntity<? extends User> processDoctorSignUp(@NotNull @RequestParam(name = "role") int role, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "name") String name, @RequestParam(name = "gender") int gender, @RequestParam(name = "dob") String dateOfBirth, @RequestParam(name = "phone") String phoneNumber) {
+    @ApiOperation(value = "Đăng kí tài khoản cho bác sĩ", notes = "Trả về 201 CREATED hoặc 409 CONFLICT")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "role", value = "Kiểu bác sĩ (đa khoa, chuyên khoa, dinh dưỡng, điều phối)", required = true, allowableValues = "0, 1, 2, 3", dataType = "int", paramType = "body"),
+            @ApiImplicitParam(name = "email", value = "Email của người dùng", required = true, dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "name", value = "Họ tên người dùng", required = true, dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "gender", value = "Giới tính người dùng (nam, nữ, khác)", allowableValues = "0, 1, 2", required = true, dataType = "int", paramType = "form"),
+            @ApiImplicitParam(name = "dateOfBirth", value = "Ngày tháng năm sinh của người dùng", allowableValues = "YYYY-MM-dd", required = true, dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "phoneNumber", value = "SĐT của người dùng", required = true, dataType = "string", paramType = "form")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Đăng kí thành công"),
+            @ApiResponse(code = 404, message = "Chỉ được đăng ký cho bác sĩ"),
+            @ApiResponse(code = 409, message = "Email hoặc SĐT này đã được sử dụng")
+    })
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<? extends User> processDoctorSignUp(@NotNull @RequestParam(name = "role") int role,
+                                                              @RequestParam(name = "email") String email,
+                                                              @RequestParam(name = "password") String password,
+                                                              @RequestParam(name = "name") String name,
+                                                              @RequestParam(name = "gender") int gender,
+                                                              @RequestParam(name = "dob") String dateOfBirth,
+                                                              @RequestParam(name = "phone") String phoneNumber) {
         if (role > RoleValue.COORDINATOR)
-            throw new UnauthorizedActionException();
+            throw new ForbiddenException();
         if (userRepository.findByEmail(email).isPresent() || userRepository.findByPhoneNumber(phoneNumber).isPresent())
             throw new DuplicateValueException();
         User doc;
@@ -166,6 +193,6 @@ public class AuthController extends BaseController {
                 break;
         }
         save(doc);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

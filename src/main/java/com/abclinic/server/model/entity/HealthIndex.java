@@ -25,6 +25,9 @@ public class HealthIndex {
     @JsonView(Views.Public.class)
     private String description;
 
+    public HealthIndex() {
+    }
+
     public HealthIndex(String name, String description) {
         this.name = name;
         this.description = description;

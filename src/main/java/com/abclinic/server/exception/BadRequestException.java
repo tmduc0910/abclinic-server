@@ -9,11 +9,11 @@ import org.springframework.http.HttpStatus;
  * @created 11/29/2019 9:19 AM
  */
 public class BadRequestException extends BaseRuntimeException {
-    public BadRequestException(int userId) {
+    public BadRequestException(long userId) {
         super("Bad request", userId, HttpStatus.BAD_REQUEST);
     }
 
-    public BadRequestException(int userId, String message) {
+    public BadRequestException(long userId, String message) {
         super("Bad request: " + message, userId, HttpStatus.BAD_REQUEST);
     }
 }

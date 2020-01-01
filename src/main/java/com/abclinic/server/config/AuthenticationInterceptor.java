@@ -37,17 +37,17 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
         response.addHeader("Cache-Control", "private");
 
         try {
-            if (!requestUri.startsWith("/auth")) {
-                int id = Integer.parseInt(request.getHeader("Authentication"));
-                Optional<User> op = userRepository.findById(id);
+            if (!requestUri.startsWith("/api/auth")) {
+                String uid = request.getHeader("Authorization");
+                Optional<User> op = userRepository.findByUid(uid);
                 if (!op.isPresent())
-                    throw new BadRequestException(id, "Authentication failed");
+                    throw new UnauthorizedActionException(-1, "User ID doesn't exist");
                 User user = op.get();
                 if (user.getUid() == null)
-                    throw new UnauthorizedActionException(id);
+                    throw new UnauthorizedActionException(user.getId());
                 else if (requestUri.contains("/admin") && user.getRole() == Role.PATIENT)
-                    throw new UnauthorizedActionException(id);
-                request.setAttribute("User-Role", user.getRole());
+                    throw new UnauthorizedActionException(user.getId(), "User has not logged in");
+                request.setAttribute("User", user);
             } else {
                 String req = request.getParameterMap().entrySet().iterator().next().getValue()[0];
                 Optional<User> user = userRepository.findByEmailOrPhoneNumber(req, req);

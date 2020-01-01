@@ -47,6 +47,10 @@ public class HealthIndexSchedule<T extends Record> {
     @JsonView(Views.Confidential.class)
     private LocalDateTime updatedAt;
 
+    public HealthIndexSchedule() {
+
+    }
+
     public HealthIndexSchedule(T record, Doctor doctor, HealthIndex index) {
         this.record = record;
         this.doctor = doctor;

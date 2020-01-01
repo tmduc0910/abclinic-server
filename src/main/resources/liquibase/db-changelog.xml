@@ -4,5 +4,6 @@
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <include file="liquibase/init_db.xml"/>
     <include file="liquibase/unique_changeset.xml"/>
+    <include file="liquibase/create_index_changeset.xml"/>
 
 </databaseChangeLog>

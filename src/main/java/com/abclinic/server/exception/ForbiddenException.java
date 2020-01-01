@@ -8,7 +8,7 @@ public class ForbiddenException extends BaseRuntimeException {
         super("Forbidden action", HttpStatus.FORBIDDEN);
     }
 
-    public ForbiddenException(int userId) {
+    public ForbiddenException(long userId) {
         super("Forbidden action", userId, HttpStatus.FORBIDDEN);
     }
 }

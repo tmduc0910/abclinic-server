@@ -4,8 +4,8 @@ import com.abclinic.server.base.BaseRuntimeException;
 import org.springframework.http.HttpStatus;
 
 public class NotFoundException extends BaseRuntimeException {
-    public NotFoundException() {
-        super("Resource not found", HttpStatus.NOT_FOUND);
+    public NotFoundException(long userId, String message) {
+        super("Resource not found: " + message, HttpStatus.NOT_FOUND);
     }
 
     public NotFoundException(long userId) {
