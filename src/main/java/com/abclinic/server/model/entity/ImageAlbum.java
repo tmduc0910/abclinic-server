@@ -21,7 +21,7 @@ public class ImageAlbum {
     @JsonView(Views.Confidential.class)
     private String uid;
 
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = Image.class, mappedBy = "imageAlbum")
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = Image.class, mappedBy = "imageAlbum")
     @JsonView(Views.Public.class)
     private List<Image> images;
 
@@ -32,6 +32,9 @@ public class ImageAlbum {
 
     @JsonView(Views.Public.class)
     private String content;
+
+    @JsonView(Views.Public.class)
+    private int type;
 
     @JsonView(Views.Confidential.class)
     private int status;
@@ -47,10 +50,11 @@ public class ImageAlbum {
     public ImageAlbum() {
     }
 
-    public ImageAlbum(String uid, Patient patient, String content) {
+    public ImageAlbum(String uid, Patient patient, String content, int type) {
         this.uid = uid;
         this.patient = patient;
         this.content = content;
+        this.type = type;
     }
 
     public long getId() {
@@ -91,6 +95,14 @@ public class ImageAlbum {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public int getStatus() {

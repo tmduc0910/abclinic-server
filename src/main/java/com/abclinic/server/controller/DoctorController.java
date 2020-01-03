@@ -3,17 +3,13 @@ package com.abclinic.server.controller;
 import com.abclinic.server.base.BaseController;
 import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.Role;
-import com.abclinic.server.constant.RoleValue;
 import com.abclinic.server.constant.Status;
-import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
-import com.abclinic.server.model.entity.Specialty;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.*;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,9 +17,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,6 +29,7 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/admin")
+@Api(value = "Bác sĩ", description = "Các API dùng chung cho mọi bác sĩ và điều phối viên", tags = "Bác sĩ")
 public class DoctorController extends BaseController {
 
     public DoctorController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository) {
@@ -82,9 +79,9 @@ public class DoctorController extends BaseController {
     @GetMapping("/doctors")
     @ApiOperation(value = "Lọc và lấy danh sách bác sĩ",  notes = "Trả về danh sách các bác sĩ còn đang hoạt động hoặc nếu không tồn tại thì trả về 404 NOT FOUND")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "type", value = "Loại bác sĩ, rỗng là lấy tất (đa khoa, chuyên khoa, dinh dưỡng, điều phối)", allowEmptyValue = true, required = false, allowableValues = "0, 1, 2, 3", dataType = "int", paramType = "query"),
-            @ApiImplicitParam(name = "page", value = "Số thứ tự trang", required = true, paramType = "query", allowableValues = "range[1, infinity]"),
-            @ApiImplicitParam(name = "size", value = "Kích thước trang", required = true, paramType = "query")
+            @ApiImplicitParam(name = "type", value = "Loại bác sĩ, rỗng là lấy tất (đa khoa, chuyên khoa, dinh dưỡng, điều phối)", allowEmptyValue = true, required = false, allowableValues = "0, 1, 2, 3", dataType = "int", paramType = "query", example = "1"),
+            @ApiImplicitParam(name = "page", value = "Số thứ tự trang", required = true, paramType = "query", dataType = "int", allowableValues = "range[1, infinity]", example = "1"),
+            @ApiImplicitParam(name = "size", value = "Kích thước trang", required = true, paramType = "query", dataType = "int", example = "10")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Danh sách bác sĩ theo yêu cầu"),
@@ -113,7 +110,7 @@ public class DoctorController extends BaseController {
     @GetMapping("/doctors/{id}")
     @ApiOperation(value = "Lấy thông tin chi tiết bác sĩ", notes = "Trả về thông tin chi tiết của một bác sĩ hoặc 404 NOT FOUND")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "ID của bác sĩ", required = true, allowEmptyValue = false, dataType = "long", paramType = "path")
+            @ApiImplicitParam(name = "id", value = "ID của bác sĩ", required = true, allowEmptyValue = false, dataType = "long", paramType = "path", example = "13")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Thông tin chi tiết bác sĩ"),
@@ -126,5 +123,31 @@ public class DoctorController extends BaseController {
         if (result.isPresent())
             return new ResponseEntity(result.get(), HttpStatus.OK);
         else throw new NotFoundException(user.getId(), "ID mismatch");
+    }
+
+    @GetMapping("/info")
+    @ApiOperation(value = "Lấy thông tin cá nhân", notes = "Trả về thông tin cá nhân")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Thông tin cá nhân")
+    })
+    @JsonView(Views.Confidential.class)
+    public ResponseEntity getUserDetail(@ApiIgnore @RequestAttribute("User") User user) {
+        return new ResponseEntity(user, HttpStatus.OK);
+    }
+
+    @PutMapping("/info")
+    @ApiOperation(value = "Sửa thông tin cá nhân", notes = "Trả về thông tin cá nhân đã sửa hoặc 400 BAD REQUEST")
+    @JsonView(Views.Confidential.class)
+    public ResponseEntity updateUserDetail(@ApiIgnore @RequestAttribute("User") User user,
+                                           @RequestParam("name") String name,
+                                           @RequestParam("email") String email,
+                                           @RequestParam("password") String password,
+                                           @RequestParam("phone") String phone) {
+        user.setName(name);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setPhoneNumber(phone);
+        save(user);
+        return new ResponseEntity(user, HttpStatus.OK);
     }
 }

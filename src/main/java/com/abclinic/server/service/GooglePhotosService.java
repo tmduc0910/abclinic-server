@@ -4,10 +4,7 @@ import com.google.api.gax.rpc.ApiException;
 import com.google.common.collect.ImmutableList;
 import com.google.photos.library.v1.PhotosLibraryClient;
 import com.google.photos.library.v1.internal.InternalPhotosLibraryClient;
-import com.google.photos.library.v1.proto.BatchCreateMediaItemsResponse;
-import com.google.photos.library.v1.proto.Filters;
-import com.google.photos.library.v1.proto.NewMediaItem;
-import com.google.photos.library.v1.proto.NewMediaItemResult;
+import com.google.photos.library.v1.proto.*;
 import com.google.photos.library.v1.upload.UploadMediaItemRequest;
 import com.google.photos.library.v1.upload.UploadMediaItemResponse;
 import com.google.photos.library.v1.util.NewMediaItemFactory;
@@ -23,6 +20,10 @@ import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class GooglePhotosService {
     //TODO: Adjust the path according to yours
@@ -42,7 +43,34 @@ public class GooglePhotosService {
     };
 
     public static Album makeAlbum() {
-        return client.createAlbum("album-" + LocalDateTime.now().toString());
+        return makeAlbum("album-" + LocalDateTime.now().toString());
+    }
+
+    public static Album makeAlbum(String albumName) {
+        return client.createAlbum(albumName);
+    }
+
+    public static Album getAlbumById(String id) {
+        return client.getAlbum(id);
+    }
+
+    public static Optional<Album> getAlbumByName(String name) {
+        InternalPhotosLibraryClient.ListAlbumsPagedResponse response = client.listAlbums();
+        return StreamSupport.stream(response.iterateAll().spliterator(), false)
+                .filter(a -> a.getTitle().equals(name))
+                .findFirst();
+    }
+
+    public static List<String> getAlbumImages(String id) {
+        InternalPhotosLibraryClient.SearchMediaItemsPagedResponse response = client.searchMediaItems(id);
+        return StreamSupport.stream(response.iterateAll().spliterator(), false)
+                .map(MediaItem::getBaseUrl)
+                .collect(Collectors.toList());
+    }
+
+    public static String getImage(String id) {
+        MediaItem item = client.getMediaItem(id);
+        return item.getBaseUrl();
     }
 
     public static String getToken(String mediaFileName, String pathToFile) {
@@ -87,7 +115,7 @@ public class GooglePhotosService {
                 if (status.getCode() == Code.OK_VALUE) {
                     // The item is successfully created in the user's library
                     MediaItem createdItem = itemsResponse.getMediaItem();
-                    return createdItem.getProductUrl();
+                    return createdItem.getId();
                 } else {
                     // The item could not be created. Check the status and try again
                 }

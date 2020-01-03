@@ -1,5 +1,6 @@
 package com.abclinic.server.base;
 
+import com.abclinic.server.constant.RoleValue;
 import com.abclinic.server.model.dto.ErrorDto;
 import com.abclinic.server.model.entity.*;
 import com.abclinic.server.model.entity.user.*;
@@ -76,6 +77,8 @@ public abstract class BaseController {
         else if (o instanceof Reply)
             replyRepository.save((Reply) o);
     }
+
+
 
     @ExceptionHandler(value = BaseRuntimeException.class)
     public ResponseEntity<ErrorDto> handleException(BaseRuntimeException e) {

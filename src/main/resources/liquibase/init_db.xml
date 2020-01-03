@@ -144,12 +144,12 @@
             <column name="id" type="int(11)" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
+            <column name="uid" type="varchar(255)"/>
             <column name="album_id" type="int(11)">
                 <constraints foreignKeyName="fk_image_album" references="album(id)"/>
             </column>
             <column name="file_name" type="varchar(255)"/>
             <column name="file_type" type="varchar(5)"/>
-            <column name="link" type="varchar(255)"/>
             <column name="status" type="int(11)" defaultValue="0"/>
         </createTable>
 
