@@ -42,35 +42,31 @@ public class GooglePhotosService {
         }
     };
 
+    public static Optional<Album> getAlbumByName(String name) {
+        InternalPhotosLibraryClient.ListAlbumsPagedResponse response = client.listAlbums();
+        return StreamSupport.stream(response.iterateAll().spliterator(), false)
+                .filter(r -> r.getTitle().equals("Avatar"))
+                .findFirst();
+    }
+
     public static Album makeAlbum() {
         return makeAlbum("album-" + LocalDateTime.now().toString());
     }
 
-    public static Album makeAlbum(String albumName) {
-        return client.createAlbum(albumName);
+    public static Album makeAlbum(String title) {
+        return client.createAlbum(title);
     }
 
-    public static Album getAlbumById(String id) {
-        return client.getAlbum(id);
-    }
-
-    public static Optional<Album> getAlbumByName(String name) {
-        InternalPhotosLibraryClient.ListAlbumsPagedResponse response = client.listAlbums();
-        return StreamSupport.stream(response.iterateAll().spliterator(), false)
-                .filter(a -> a.getTitle().equals(name))
-                .findFirst();
-    }
-
-    public static List<String> getAlbumImages(String id) {
-        InternalPhotosLibraryClient.SearchMediaItemsPagedResponse response = client.searchMediaItems(id);
-        return StreamSupport.stream(response.iterateAll().spliterator(), false)
-                .map(MediaItem::getBaseUrl)
-                .collect(Collectors.toList());
-    }
-
-    public static String getImage(String id) {
-        MediaItem item = client.getMediaItem(id);
+    public static String getImage(String imageId) {
+        MediaItem item = client.getMediaItem(imageId);
         return item.getBaseUrl();
+    }
+
+    public static List<String> getAlbumImages(String albumId) {
+        InternalPhotosLibraryClient.SearchMediaItemsPagedResponse response = client.searchMediaItems(albumId);
+        return StreamSupport.stream(response.iterateAll().spliterator(), false)
+                .map(r -> getImage(r.getId()))
+                .collect(Collectors.toList());
     }
 
     public static String getToken(String mediaFileName, String pathToFile) {

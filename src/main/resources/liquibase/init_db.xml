@@ -91,7 +91,7 @@
                 <constraints foreignKeyName="fk_record_patient" references="patient(id)"/>
             </column>
             <column name="record_type" type="int(11)"/>
-            <column name="status" type="int(11)" defaultValue="0"/>
+            <column name="status" type="int(11)" defaultValue="3"/>
             <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
             <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
         </createTable>

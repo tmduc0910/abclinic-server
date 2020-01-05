@@ -27,7 +27,7 @@ public class MedicalRecord extends Record {
     @JsonView(Views.Private.class)
     private Specialist specialist;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "disease_id")
     @JsonView(Views.Public.class)
     private Disease disease;

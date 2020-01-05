@@ -6,14 +6,12 @@ import com.abclinic.server.constant.Role;
 import com.abclinic.server.constant.RoleValue;
 import com.abclinic.server.exception.DuplicateValueException;
 import com.abclinic.server.exception.ForbiddenException;
-import com.abclinic.server.exception.UnauthorizedActionException;
 import com.abclinic.server.exception.WrongCredentialException;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.*;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +27,7 @@ import java.util.UUID;
  * @created 11/23/2019 3:38 PM
  */
 @RestController
+@Api(tags = "Xác thực")
 @RequestMapping("/auth")
 public class AuthController extends BaseController {
 

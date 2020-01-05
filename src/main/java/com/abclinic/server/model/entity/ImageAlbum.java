@@ -39,6 +39,9 @@ public class ImageAlbum {
     @JsonView(Views.Confidential.class)
     private int status;
 
+    @JsonView(Views.Private.class)
+    private int type;
+
     @CreationTimestamp
     @JsonView(Views.Public.class)
     private LocalDateTime createdAt;
@@ -111,6 +114,14 @@ public class ImageAlbum {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public LocalDateTime getCreatedAt() {

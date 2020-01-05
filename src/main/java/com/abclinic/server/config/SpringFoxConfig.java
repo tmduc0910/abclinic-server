@@ -7,6 +7,7 @@ import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.schema.ModelRef;
+import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -33,6 +34,16 @@ public class SpringFoxConfig {
                         .parameterType("header")
                         .required(false)
                         .build())
+                )
+                .tags(
+                        new Tag("Xác thực", "Quản lý API xác thực, bao gồm đăng kí, đăng nhập và đăng xuất cho người dùng"),
+                        new Tag("Nhân viên phòng khám", "Quản lý API dùng chung cho các bác sĩ và điều phồi viên"),
+                        new Tag("Điều phối viên", "Quản lý API dành riêng cho điều phối viên"),
+                        new Tag("Đa khoa", "Quản lý API dành riêng cho bác sĩ đa khoa"),
+                        new Tag("Chuyên khoa", "Quản lý API dành riêng cho bác sĩ chuyên khoa"),
+                        new Tag("Dinh dưỡng", "Quản lý API dành riêng cho bác sĩ dinh dưỡng"),
+                        new Tag("Bệnh nhân", "Quản lý API dành riêng cho bệnh nhân"),
+                        new Tag("Album và ảnh", "Quản lý API dùng cho việc upload và lấy dữ liệu ảnh")
                 )
                 .select()
                 .apis(RequestHandlerSelectors.any())

@@ -28,6 +28,7 @@ import java.util.Optional;
  * @created 12/3/2019 2:59 PM
  */
 @RestController
+@Api(tags = "Nhân viên phòng khám")
 @RequestMapping("/admin")
 @Api(value = "Bác sĩ", description = "Các API dùng chung cho mọi bác sĩ và điều phối viên", tags = "Bác sĩ")
 public class DoctorController extends BaseController {

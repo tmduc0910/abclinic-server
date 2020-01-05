@@ -41,6 +41,7 @@ import java.util.Optional;
  * @created 11/23/2019 3:38 PM
  */
 @RestController
+@Api(tags = "Album và ảnh")
 @RequestMapping(value = "/images")
 public class ImageController extends BaseController {
 
@@ -110,9 +111,9 @@ public class ImageController extends BaseController {
         album = op.orElseGet(() -> GooglePhotosService.makeAlbum("Avatar"));
         try {
             Image avatar = upload(file, album, null);
-            user.setAvatar(avatar.getUid());
+            user.setAvatar(avatar.getPath());
             save(user);
-            return new ResponseEntity<>(GooglePhotosService.getImage(avatar.getUid()), HttpStatus.CREATED);
+            return new ResponseEntity<>(GooglePhotosService.getImage(avatar.getPath()), HttpStatus.CREATED);
         } catch (Exception e) {
             throw new BadRequestException(user.getId());
         }
