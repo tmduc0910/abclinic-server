@@ -6,6 +6,7 @@ import com.abclinic.server.model.entity.*;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.*;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,12 +28,15 @@ public abstract class BaseController {
     protected AlbumRepository albumRepository;
     protected ImageRepository imageRepository;
     protected MedicalRecordRepository medicalRecordRepository;
+    protected DietitianRecordRepository dietitianRecordRepository;
     protected QuestionRepository questionRepository;
     protected ReplyRepository replyRepository;
     protected SpecialtyRepository specialtyRepository;
+    protected DiseaseRepository diseaseRepository;
     protected Logger logger;
 
-    public BaseController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository) {
+    @Autowired
+    public BaseController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository) {
         this.userRepository = userRepository;
         this.practitionerRepository = practitionerRepository;
         this.patientRepository = patientRepository;
@@ -42,9 +46,11 @@ public abstract class BaseController {
         this.albumRepository = albumRepository;
         this.imageRepository = imageRepository;
         this.medicalRecordRepository = medicalRecordRepository;
+        this.dietitianRecordRepository = dietitianRecordRepository;
         this.questionRepository = questionRepository;
         this.replyRepository = replyRepository;
         this.specialtyRepository = specialtyRepository;
+        this.diseaseRepository = diseaseRepository;
     }
 
     @PostConstruct

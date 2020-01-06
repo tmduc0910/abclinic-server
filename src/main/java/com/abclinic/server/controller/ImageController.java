@@ -48,8 +48,8 @@ public class ImageController extends BaseController {
     @Value("${file.upload-dir}")
     private String uploadDirectory;
 
-    public ImageController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository) {
-        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, questionRepository, replyRepository, specialtyRepository);
+    public ImageController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository) {
+        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, dietitianRecordRepository, questionRepository, replyRepository, specialtyRepository, diseaseRepository);
     }
 
     @Override
@@ -74,11 +74,11 @@ public class ImageController extends BaseController {
                                                     @RequestParam("files") MultipartFile[] files,
                                                     @RequestParam("type") int type,
                                                     @RequestParam("content") String content) {
-        Optional<Patient> patient = patientRepository.findById(user.getId());
+        Patient patient = patientRepository.findById(user.getId());
         if (files.length == 0)
-            throw new BadRequestException(patient.get().getId(), "must upload at least 1 image");
+            throw new BadRequestException(patient.getId(), "must upload at least 1 image");
         Album album = GooglePhotosService.makeAlbum();
-        ImageAlbum imageAlbum = new ImageAlbum(album.getId(), patient.get(), content, type);
+        ImageAlbum imageAlbum = new ImageAlbum(album.getId(), patient, content, type);
         save(imageAlbum);
 
         try {
@@ -89,7 +89,7 @@ public class ImageController extends BaseController {
             images.forEach(this::save);
             return new ResponseEntity<>(albumRepository.findById(imageAlbum.getId()).get(), HttpStatus.CREATED);
         } catch (Exception e) {
-            throw new BadRequestException(patient.get().getId());
+            throw new BadRequestException(patient.getId());
         }
     }
 

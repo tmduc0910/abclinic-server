@@ -17,12 +17,7 @@ import java.util.List;
 @Table(name = "medical_record")
 public class MedicalRecord extends Record {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "practitioner_id")
-    @JsonView(Views.Public.class)
-    private Practitioner practitioner;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "specialist_id")
     @JsonView(Views.Private.class)
     private Specialist specialist;
@@ -49,19 +44,9 @@ public class MedicalRecord extends Record {
 
     }
 
-    public MedicalRecord(Patient patient, Practitioner practitioner, Specialist specialist, Disease disease) {
-        super(patient, RecordType.MEDICAL.getValue());
-        this.practitioner = practitioner;
-        this.specialist = specialist;
+    public MedicalRecord(Patient patient, Practitioner practitioner, Disease disease) {
+        super(patient, practitioner, RecordType.MEDICAL.getValue());
         this.disease = disease;
-    }
-
-    public Practitioner getPractitioner() {
-        return practitioner;
-    }
-
-    public void setPractitioner(Practitioner practitioner) {
-        this.practitioner = practitioner;
     }
 
     public Specialist getSpecialist() {

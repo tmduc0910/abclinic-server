@@ -5,7 +5,10 @@ import com.abclinic.server.model.entity.MedicalRecord;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.Practitioner;
 import com.abclinic.server.model.entity.user.Specialist;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,4 +19,17 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, Lo
     Optional<List<MedicalRecord>> findByDisease(Disease disease);
     Optional<List<MedicalRecord>> findByPractitioner(Practitioner practitioner);
     Optional<List<MedicalRecord>> findBySpecialist(Specialist specialist);
+
+    @Query("select mr from MedicalRecord mr " +
+            "where (:patient is null or mr.patient.name like :patient) " +
+            "and (:disease is null or mr.disease = :disease) " +
+            "and (:status is null or mr.status = :status)")
+    Optional<List<MedicalRecord>> findByPatientAndDisease(@Param("patient") String patientName, @Param("disease") Disease disease, @Param("status") int status, Pageable pageable);
+
+    @Query("select mr from MedicalRecord mr " +
+            "where (:patient is null or mr.patient.name like :patient) " +
+            "and (:disease is null or mr.disease = :disease) " +
+            "and (:status is null or mr.status = :status) " +
+            "and mr.practitioner = :practitioner")
+    Optional<List<MedicalRecord>> findByPractitionerAndPatientAndDisease(@Param("practitioner") Practitioner practitioner, @Param("patient") String patientName, @Param("disease") Disease disease, @Param("status") int status, Pageable pageable);
 }

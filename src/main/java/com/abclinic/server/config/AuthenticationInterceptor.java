@@ -39,6 +39,8 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
         try {
             if (!requestUri.startsWith("/api/auth")) {
                 String uid = request.getHeader("Authorization");
+                if (uid == null)
+                    throw new UnauthorizedActionException(-1, "Thông tin xác thực rỗng");
                 Optional<User> op = userRepository.findByUid(uid);
                 if (!op.isPresent())
                     throw new UnauthorizedActionException(-1, "Thông tin xác thực không tồn tại");

@@ -4,6 +4,7 @@ import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.RecordType;
 import com.abclinic.server.model.entity.user.Dietitian;
 import com.abclinic.server.model.entity.user.Patient;
+import com.abclinic.server.model.entity.user.Practitioner;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -40,9 +41,8 @@ public class DietitianRecord extends Record {
 
     }
 
-    public DietitianRecord(Patient patient, Dietitian dietitian) {
-        super(patient, RecordType.DIET.getValue());
-        this.dietitian = dietitian;
+    public DietitianRecord(Patient patient, Practitioner practitioner) {
+        super(patient, practitioner, RecordType.DIET.getValue());
     }
 
     public Dietitian getDietitian() {

@@ -2,6 +2,7 @@ package com.abclinic.server.model.entity;
 
 import com.abclinic.server.base.Views;
 import com.abclinic.server.model.entity.user.Patient;
+import com.abclinic.server.model.entity.user.Practitioner;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -28,6 +29,11 @@ public class Record {
     @JsonView(Views.Public.class)
     private Patient patient;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "practitioner_id")
+    @JsonView(Views.Public.class)
+    private Practitioner practitioner;
+
     @JsonView(Views.Confidential.class)
     private int recordType;
 
@@ -46,8 +52,9 @@ public class Record {
 
     }
 
-    public Record(Patient patient, int recordType) {
+    public Record(Patient patient, Practitioner practitioner, int recordType) {
         this.patient = patient;
+        this.practitioner = practitioner;
         this.recordType = recordType;
     }
 
@@ -65,6 +72,14 @@ public class Record {
 
     public void setPatient(Patient patient) {
         this.patient = patient;
+    }
+
+    public Practitioner getPractitioner() {
+        return practitioner;
+    }
+
+    public void setPractitioner(Practitioner practitioner) {
+        this.practitioner = practitioner;
     }
 
     public int getRecordType() {

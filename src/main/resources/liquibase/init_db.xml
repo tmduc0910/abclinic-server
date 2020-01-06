@@ -90,6 +90,9 @@
             <column name="patient_id" type="int(11)">
                 <constraints foreignKeyName="fk_record_patient" references="patient(id)"/>
             </column>
+            <column name="practitioner_id" type="int(11)">
+                <constraints foreignKeyName="fk_record_practitioner" references="practitioner(id)"/>
+            </column>
             <column name="record_type" type="int(11)"/>
             <column name="status" type="int(11)" defaultValue="3"/>
             <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
@@ -99,9 +102,6 @@
         <createTable tableName="medical_record">
             <column name="id" type="int(11)">
                 <constraints primaryKey="true" foreignKeyName="fk_medical_record" references="record(id)"/>
-            </column>
-            <column name="practitioner_id" type="int(11)">
-                <constraints foreignKeyName="fk_record_practitioner" references="practitioner(id)"/>
             </column>
             <column name="specialist_id" type="int(11)">
                 <constraints foreignKeyName="fk_record_specialist" references="specialist(id)"/>
@@ -144,12 +144,12 @@
             <column name="id" type="int(11)" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="uid" type="varchar(255)"/>
             <column name="album_id" type="int(11)">
                 <constraints foreignKeyName="fk_image_album" references="album(id)"/>
             </column>
             <column name="file_name" type="varchar(255)"/>
             <column name="file_type" type="varchar(5)"/>
+            <column name="link" type="varchar(255)"/>
             <column name="status" type="int(11)" defaultValue="0"/>
         </createTable>
 
