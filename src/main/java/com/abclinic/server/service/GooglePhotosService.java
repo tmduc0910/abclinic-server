@@ -4,7 +4,10 @@ import com.google.api.gax.rpc.ApiException;
 import com.google.common.collect.ImmutableList;
 import com.google.photos.library.v1.PhotosLibraryClient;
 import com.google.photos.library.v1.internal.InternalPhotosLibraryClient;
-import com.google.photos.library.v1.proto.*;
+import com.google.photos.library.v1.proto.BatchCreateMediaItemsResponse;
+import com.google.photos.library.v1.proto.Filters;
+import com.google.photos.library.v1.proto.NewMediaItem;
+import com.google.photos.library.v1.proto.NewMediaItemResult;
 import com.google.photos.library.v1.upload.UploadMediaItemRequest;
 import com.google.photos.library.v1.upload.UploadMediaItemResponse;
 import com.google.photos.library.v1.util.NewMediaItemFactory;
@@ -22,7 +25,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class GooglePhotosService {
@@ -111,7 +113,7 @@ public class GooglePhotosService {
                 if (status.getCode() == Code.OK_VALUE) {
                     // The item is successfully created in the user's library
                     MediaItem createdItem = itemsResponse.getMediaItem();
-                    return createdItem.getId();
+                    return createdItem.getProductUrl();
                 } else {
                     // The item could not be created. Check the status and try again
                 }

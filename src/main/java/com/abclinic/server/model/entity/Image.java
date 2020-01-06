@@ -1,7 +1,7 @@
 package com.abclinic.server.model.entity;
 
 import com.abclinic.server.base.Views;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.abclinic.server.service.GooglePhotosService;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
@@ -11,31 +11,32 @@ import javax.persistence.*;
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Public.class)
     private long id;
 
+    @Column(name = "uid")
     @JsonView(Views.Public.class)
-    private String uid;
+    private String path;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id")
-    @JsonIgnore
+    @JsonView(Views.Private.class)
     private ImageAlbum imageAlbum;
 
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Public.class)
     private String fileName;
 
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Public.class)
     private String fileType;
 
     public Image() {
     }
 
-    public Image(String uid, ImageAlbum imageAlbum, String fileName, String fileType) {
-        this.uid = uid;
+    public Image(String path, ImageAlbum imageAlbum, String fileName, String fileType) {
         this.imageAlbum = imageAlbum;
         this.fileName = fileName;
         this.fileType = fileType;
+        this.path = path;
     }
 
     public long getId() {
@@ -44,14 +45,6 @@ public class Image {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
     }
 
     public ImageAlbum getImageAlbum() {
@@ -76,5 +69,13 @@ public class Image {
 
     public void setFileType(String fileType) {
         this.fileType = fileType;
+    }
+
+    public String getPath() {
+        return GooglePhotosService.getImage(path);
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

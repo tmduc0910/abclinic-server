@@ -3,7 +3,6 @@ package com.abclinic.server.model.entity.user;
 
 import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.Role;
-import com.abclinic.server.service.GooglePhotosService;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CreationTimestamp;
@@ -145,7 +144,7 @@ public class User {
     }
 
     public String getAvatar() {
-        return avatar != null ? GooglePhotosService.getImage(avatar) : null;
+        return avatar;
     }
 
     public void setAvatar(String avatar) {
