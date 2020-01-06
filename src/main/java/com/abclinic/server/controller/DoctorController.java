@@ -123,7 +123,7 @@ public class DoctorController extends BaseController {
         Optional result = userRepository.findById(id);
         if (result.isPresent())
             return new ResponseEntity(result.get(), HttpStatus.OK);
-        else throw new NotFoundException(user.getId(), "ID mismatch");
+        else throw new NotFoundException(user.getId(), "Bác sĩ không tồn tại");
     }
 
     @GetMapping("/info")

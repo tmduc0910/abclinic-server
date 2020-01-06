@@ -5,6 +5,6 @@ import org.springframework.http.HttpStatus;
 
 public class WrongCredentialException extends BaseRuntimeException {
     public WrongCredentialException() {
-        super("Wrong credential", HttpStatus.NOT_FOUND);
+        super("Wrong credential: Sai tài khoản hoặc mật khẩu", HttpStatus.NOT_FOUND);
     }
 }

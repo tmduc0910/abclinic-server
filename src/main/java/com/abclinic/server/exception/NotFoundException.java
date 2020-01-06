@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class NotFoundException extends BaseRuntimeException {
     public NotFoundException(long userId, String message) {
-        super("Resource not found: " + message, HttpStatus.NOT_FOUND);
+        super("Resource not found: " + message, userId, HttpStatus.NOT_FOUND);
     }
 
     public NotFoundException(long userId) {

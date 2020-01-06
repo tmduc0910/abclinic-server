@@ -41,19 +41,19 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
                 String uid = request.getHeader("Authorization");
                 Optional<User> op = userRepository.findByUid(uid);
                 if (!op.isPresent())
-                    throw new UnauthorizedActionException(-1, "User ID doesn't exist");
+                    throw new UnauthorizedActionException(-1, "Thông tin xác thực không tồn tại");
                 User user = op.get();
                 if (user.getUid() == null)
                     throw new UnauthorizedActionException(user.getId());
                 else if (requestUri.contains("/admin") && user.getRole() == Role.PATIENT)
-                    throw new UnauthorizedActionException(user.getId(), "User has not logged in");
+                    throw new UnauthorizedActionException(user.getId(), "Bạn chưa đăng nhập");
                 request.setAttribute("User", user);
             } else {
                 String req = request.getParameterMap().entrySet().iterator().next().getValue()[0];
                 Optional<User> user = userRepository.findByEmailOrPhoneNumber(req, req);
                 if (user.isPresent()) {
                     if (user.get().getUid() != null)
-                        throw new ForbiddenException(user.get().getId(), "This account is still logged in");
+                        throw new ForbiddenException(user.get().getId(), "Bạn chưa đăng xuất");
                 }
             }
         } catch (NumberFormatException | NullPointerException e) {

@@ -9,6 +9,6 @@ public class UnauthorizedActionException extends BaseRuntimeException {
     }
 
     public UnauthorizedActionException(long userId, String message) {
-        super("No authority to perform this action: " + message, HttpStatus.UNAUTHORIZED);
+        super("No authority to perform this action: " + message, userId, HttpStatus.UNAUTHORIZED);
     }
 }
