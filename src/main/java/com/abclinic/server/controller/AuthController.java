@@ -31,8 +31,8 @@ import java.util.UUID;
 @RequestMapping("/auth")
 public class AuthController extends BaseController {
 
-    public AuthController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository, HealthIndexRepository healthIndexRepository, HealthIndexScheduleRepository healthIndexScheduleRepository) {
-        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, dietitianRecordRepository, questionRepository, replyRepository, specialtyRepository, diseaseRepository, healthIndexRepository, healthIndexScheduleRepository);
+    public AuthController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, InquiryRepository inquiryRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository, HealthIndexRepository healthIndexRepository, HealthIndexScheduleRepository healthIndexScheduleRepository) {
+        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, dietitianRecordRepository, inquiryRepository, replyRepository, specialtyRepository, diseaseRepository, healthIndexRepository, healthIndexScheduleRepository);
     }
 
     @Override
@@ -192,15 +192,5 @@ public class AuthController extends BaseController {
         }
         save(doc);
         return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
-    @GetMapping("/wipe")
-    @ApiOperation(value = "Xóa sạch UID của tất cả tài khoản (chỉ dùng để test, không đưa vào ứng dụng)")
-    public ResponseEntity handleLogoutAll() {
-        userRepository.findAll().forEach(u -> {
-            u.setUid(null);
-            save(u);
-        });
-        return new ResponseEntity(HttpStatus.OK);
     }
 }

@@ -5,8 +5,8 @@ import com.abclinic.server.base.Views;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
-import com.abclinic.server.model.entity.ImageAlbum;
 import com.abclinic.server.model.entity.Image;
+import com.abclinic.server.model.entity.Inquiry;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.*;
@@ -15,9 +15,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.google.photos.types.proto.Album;
 import io.swagger.annotations.*;
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.imageio.ImageIO;
-import javax.swing.text.View;
 import javax.validation.constraints.NotNull;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -34,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author tmduc
@@ -48,8 +46,8 @@ public class ImageController extends BaseController {
     @Value("${file.upload-dir}")
     private String uploadDirectory;
 
-    public ImageController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository, HealthIndexRepository healthIndexRepository, HealthIndexScheduleRepository healthIndexScheduleRepository) {
-        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, dietitianRecordRepository, questionRepository, replyRepository, specialtyRepository, diseaseRepository, healthIndexRepository, healthIndexScheduleRepository);
+    public ImageController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, InquiryRepository inquiryRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository, HealthIndexRepository healthIndexRepository, HealthIndexScheduleRepository healthIndexScheduleRepository) {
+        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, dietitianRecordRepository, inquiryRepository, replyRepository, specialtyRepository, diseaseRepository, healthIndexRepository, healthIndexScheduleRepository);
     }
 
     @Override
@@ -59,35 +57,28 @@ public class ImageController extends BaseController {
 
     @PostMapping(value = "")
     @ApiOperation(value = "Upload một hoặc nhiều ảnh", notes = "Trả về album ảnh hoặc 400 BAD REQUEST")
-    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "files", value = "Các file ảnh được gửi lên", required = true, allowMultiple = true, dataType = "file[]"),
-            @ApiImplicitParam(name = "type", value = "Loại bữa ăn (sáng, trưa, tối, thêm)", allowableValues = "0, 1, 2, 3", required = true, dataType = "int", example = "0"),
-            @ApiImplicitParam(name = "content", value = "Mô tả bữa ăn", required = true, dataType = "string", example = "Thực đơn: A, B, C")
-    })
     @ApiResponses({
             @ApiResponse(code = 201, message = "Upload ảnh thành công"),
             @ApiResponse(code = 400, message = "File không hợp lệ")
     })
     @ResponseStatus(HttpStatus.CREATED)
     @JsonView(Views.Public.class)
-    public ResponseEntity<ImageAlbum> processUpload(@ApiIgnore @RequestAttribute("User") User user,
-                                                    @RequestParam("files") MultipartFile[] files,
-                                                    @RequestParam("type") int type,
-                                                    @RequestParam("content") String content) {
+    public ResponseEntity<List<Image>> processUpload(@ApiIgnore @RequestAttribute("User") User user,
+                                                    @RequestParam("files") MultipartFile[] files) {
         Patient patient = patientRepository.findById(user.getId());
         if (files.length == 0)
             throw new BadRequestException(patient.getId(), "must upload at least 1 image");
         Album album = GooglePhotosService.makeAlbum();
-        ImageAlbum imageAlbum = new ImageAlbum(album.getId(), patient, content, type);
-        save(imageAlbum);
+//        ImageAlbum imageAlbum = new ImageAlbum(album.getId(), patient, content, type);
+//        save(imageAlbum);
 
         try {
             List<Image> images = new ArrayList<>();
             for (MultipartFile file: files) {
-                images.add(upload(file, album, imageAlbum));
+                images.add(upload(file, album));
             }
-            images.forEach(this::save);
-            return new ResponseEntity<>(albumRepository.findById(imageAlbum.getId()).get(), HttpStatus.CREATED);
+            images = images.stream().map(i -> i = imageRepository.save(i)).collect(Collectors.toList());
+            return new ResponseEntity<>(images, HttpStatus.CREATED);
         } catch (Exception e) {
             throw new BadRequestException(patient.getId());
         }
@@ -110,7 +101,7 @@ public class ImageController extends BaseController {
         Optional<Album> op = GooglePhotosService.getAlbumByName("Avatar");
         album = op.orElseGet(() -> GooglePhotosService.makeAlbum("Avatar"));
         try {
-            Image avatar = upload(file, album, null);
+            Image avatar = upload(file, album);
             user.setAvatar(avatar.getPath());
             save(user);
             return new ResponseEntity<>(GooglePhotosService.getImage(avatar.getPath()), HttpStatus.CREATED);
@@ -119,13 +110,13 @@ public class ImageController extends BaseController {
         }
     }
 
-    private Image upload(MultipartFile file, Album album, ImageAlbum imageAlbum) throws Exception {
+    private Image upload(MultipartFile file, Album album) throws Exception {
         String fileName = Objects.requireNonNull(file.getOriginalFilename()).substring(0, file.getOriginalFilename().lastIndexOf('.'));
         String fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
         File f = toFile(fileName, fileType, file.getBytes());
         String token = GooglePhotosService.getToken(fileName, f.getPath());
-        String uid = GooglePhotosService.createItem(token, album.getId(), f.getName());
-        return new Image(uid, imageAlbum, fileName, fileType);
+        String imageId = GooglePhotosService.createItem(token, album.getId(), f.getName());
+        return new Image(imageId, fileName, fileType);
     }
 
     @GetMapping(value = "/albums")
@@ -136,9 +127,9 @@ public class ImageController extends BaseController {
     })
     @ResponseStatus(HttpStatus.OK)
     @JsonView(Views.Public.class)
-    public ResponseEntity<List<ImageAlbum>> processGetAllAlbums(@ApiIgnore @NotNull @RequestHeader("Authorization") String userUid) {
+    public ResponseEntity<List<Inquiry>> processGetAllAlbums(@ApiIgnore @NotNull @RequestHeader("Authorization") String userUid) {
         Patient patient = patientRepository.findByUid(userUid).get();
-        Optional<List<ImageAlbum>> opt = albumRepository.findByPatient(patient);
+        Optional<List<Inquiry>> opt = inquiryRepository.findByPatient(patient);
         if (opt.isPresent()) {
             return new ResponseEntity<>(opt.get(), HttpStatus.OK);
         } else throw new NotFoundException(patient.getId());
@@ -159,11 +150,11 @@ public class ImageController extends BaseController {
     public ResponseEntity<List<String>> processGetAlbum(@ApiIgnore @NotNull @RequestHeader("Authorization") String userUid,
                                                       @PathVariable("album-id") long albumId) {
         Patient patient = patientRepository.findByUid(userUid).get();
-        Optional<ImageAlbum> opt = albumRepository.findById(albumId);
+        Optional<Inquiry> opt = inquiryRepository.findById(albumId);
         if (opt.isPresent()) {
             if (opt.get().getPatient().equals(patient)) {
-                List<String> images = GooglePhotosService.getAlbumImages(opt.get().getUid());
-                return new ResponseEntity<>(images, HttpStatus.OK);
+//                List<String> images = GooglePhotosService.getAlbumImages(opt.get().getAlbum());
+                return new ResponseEntity<>(opt.get().getAlbum(), HttpStatus.OK);
             }
             else throw new ForbiddenException(patient.getId());
         } else throw new NotFoundException(patient.getId());

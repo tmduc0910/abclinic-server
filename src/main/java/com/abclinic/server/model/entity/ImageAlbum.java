@@ -1,3 +1,4 @@
+/*
 package com.abclinic.server.model.entity;
 
 import com.abclinic.server.base.Views;
@@ -129,3 +130,4 @@ public class ImageAlbum {
         this.updatedAt = updatedAt;
     }
 }
+*/

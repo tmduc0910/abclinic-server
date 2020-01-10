@@ -1,4 +1,4 @@
-package com.abclinic.server.controller;
+package com.abclinic.server.controller.deprecated;
 
 import com.abclinic.server.base.BaseController;
 import com.abclinic.server.base.Views;
@@ -14,7 +14,6 @@ import com.abclinic.server.model.entity.user.Practitioner;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.*;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.sun.org.apache.regexp.internal.RE;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -39,8 +38,8 @@ import java.util.Optional;
 @RequestMapping("/admin/c")
 public class CoordinatorController extends BaseController {
 
-    public CoordinatorController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository, HealthIndexRepository healthIndexRepository, HealthIndexScheduleRepository healthIndexScheduleRepository) {
-        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, dietitianRecordRepository, questionRepository, replyRepository, specialtyRepository, diseaseRepository, healthIndexRepository, healthIndexScheduleRepository);
+    public CoordinatorController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, InquiryRepository inquiryRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository, HealthIndexRepository healthIndexRepository, HealthIndexScheduleRepository healthIndexScheduleRepository) {
+        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, dietitianRecordRepository, inquiryRepository, replyRepository, specialtyRepository, diseaseRepository, healthIndexRepository, healthIndexScheduleRepository);
     }
 
     @Override

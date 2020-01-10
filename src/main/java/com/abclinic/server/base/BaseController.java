@@ -31,7 +31,7 @@ public abstract class BaseController {
     protected ImageRepository imageRepository;
     protected MedicalRecordRepository medicalRecordRepository;
     protected DietitianRecordRepository dietitianRecordRepository;
-    protected QuestionRepository questionRepository;
+    protected InquiryRepository inquiryRepository;
     protected ReplyRepository replyRepository;
     protected SpecialtyRepository specialtyRepository;
     protected DiseaseRepository diseaseRepository;
@@ -39,7 +39,7 @@ public abstract class BaseController {
     protected HealthIndexScheduleRepository healthIndexScheduleRepository;
     protected Logger logger;
 
-    public BaseController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository, HealthIndexRepository healthIndexRepository, HealthIndexScheduleRepository healthIndexScheduleRepository) {
+    public BaseController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, InquiryRepository inquiryRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository, HealthIndexRepository healthIndexRepository, HealthIndexScheduleRepository healthIndexScheduleRepository) {
         this.userRepository = userRepository;
         this.practitionerRepository = practitionerRepository;
         this.patientRepository = patientRepository;
@@ -50,7 +50,7 @@ public abstract class BaseController {
         this.imageRepository = imageRepository;
         this.medicalRecordRepository = medicalRecordRepository;
         this.dietitianRecordRepository = dietitianRecordRepository;
-        this.questionRepository = questionRepository;
+        this.inquiryRepository = inquiryRepository;
         this.replyRepository = replyRepository;
         this.specialtyRepository = specialtyRepository;
         this.diseaseRepository = diseaseRepository;
@@ -77,8 +77,8 @@ public abstract class BaseController {
             dietitianRepository.save((Dietitian) o);
         else if (o instanceof Specialist)
             specialistRepository.save((Specialist) o);
-        else if (o instanceof ImageAlbum)
-            albumRepository.save((ImageAlbum) o);
+//        else if (o instanceof ImageAlbum)
+//            albumRepository.save((ImageAlbum) o);
         else if (o instanceof Image)
             imageRepository.save((Image) o);
         else if (o instanceof Disease)
@@ -87,8 +87,8 @@ public abstract class BaseController {
             medicalRecordRepository.save((MedicalRecord) o);
         else if (o instanceof DietRecord)
             dietitianRecordRepository.save((DietRecord) o);
-        else if (o instanceof Question)
-            questionRepository.save((Question) o);
+        else if (o instanceof Inquiry)
+            inquiryRepository.save((Inquiry) o);
         else if (o instanceof Reply)
             replyRepository.save((Reply) o);
         else if (o instanceof HealthIndex)

@@ -113,7 +113,7 @@ public class GooglePhotosService {
                 if (status.getCode() == Code.OK_VALUE) {
                     // The item is successfully created in the user's library
                     MediaItem createdItem = itemsResponse.getMediaItem();
-                    return createdItem.getProductUrl();
+                    return createdItem.getId();
                 } else {
                     // The item could not be created. Check the status and try again
                 }

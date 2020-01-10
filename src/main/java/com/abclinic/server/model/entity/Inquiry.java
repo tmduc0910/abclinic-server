@@ -1,8 +1,8 @@
 package com.abclinic.server.model.entity;
 
 import com.abclinic.server.base.Views;
-import com.abclinic.server.constant.QuestionType;
 import com.abclinic.server.model.entity.user.Patient;
+import com.abclinic.server.service.GooglePhotosService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "question")
-public class Question {
+@Table(name = "inquiry")
+public class Inquiry {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Abridged.class)
@@ -24,20 +24,18 @@ public class Question {
     @JsonView(Views.Abridged.class)
     private Patient patient;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "album_id")
-    @JsonView(Views.Abridged.class)
-    private ImageAlbum album;
+    @JsonView(Views.Public.class)
+    private String albumId;
 
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = Reply.class, mappedBy = "question")
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = Reply.class, mappedBy = "inquiry")
     @JsonView(Views.Public.class)
     private List<Reply> replies;
 
-    @JsonView(Views.Private.class)
-    private int questionType;
-
     @JsonView(Views.Abridged.class)
     private String content;
+
+    @JsonView(Views.Private.class)
+    private int type;
 
     @JsonView(Views.Confidential.class)
     private int status;
@@ -50,20 +48,14 @@ public class Question {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public Question() {
+    public Inquiry() {
     }
 
-    public Question(Patient patient, String content) {
+    public Inquiry(Patient patient, String albumId, String content, int type) {
         this.patient = patient;
-        this.questionType = QuestionType.INQUIRY.getValue();
+        this.albumId = albumId;
+        this.type = type;
         this.content = content;
-    }
-
-    public Question(Patient patient, ImageAlbum album, String content) {
-        this.patient = patient;
-        this.album = album;
-        this.content = content;
-        this.questionType = QuestionType.DIET.getValue();
     }
 
     public long getId() {
@@ -82,16 +74,16 @@ public class Question {
         this.patient = patient;
     }
 
-    public ImageAlbum getAlbum() {
-        return album;
+    public List<String> getAlbum() {
+        return GooglePhotosService.getAlbumImages(albumId);
     }
 
-    public int getQuestionType() {
-        return questionType;
+    public int getType() {
+        return type;
     }
 
-    public void setQuestionType(int questionType) {
-        this.questionType = questionType;
+    public void setType(int type) {
+        this.type = type;
     }
 
     public String getContent() {

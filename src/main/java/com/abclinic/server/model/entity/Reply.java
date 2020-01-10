@@ -18,9 +18,9 @@ public class Reply {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id")
+    @JoinColumn(name = "inquiry_id")
     @JsonView(Views.Private.class)
-    private Question question;
+    private Inquiry inquiry;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -44,8 +44,8 @@ public class Reply {
     public Reply() {
     }
 
-    public Reply(Question question, User user, String content) {
-        this.question = question;
+    public Reply(Inquiry inquiry, User user, String content) {
+        this.inquiry = inquiry;
         this.user = user;
         this.content = content;
     }
@@ -58,12 +58,12 @@ public class Reply {
         this.id = id;
     }
 
-    public Question getQuestion() {
-        return question;
+    public Inquiry getInquiry() {
+        return inquiry;
     }
 
-    public void setQuestion(Question question) {
-        this.question = question;
+    public void setInquiry(Inquiry inquiry) {
+        this.inquiry = inquiry;
     }
 
     public User getUser() {

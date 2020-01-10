@@ -18,10 +18,10 @@ public class Image {
     @JsonView(Views.Abridged.class)
     private String path;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "album_id")
-    @JsonView(Views.Private.class)
-    private ImageAlbum imageAlbum;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "album_id")
+//    @JsonView(Views.Private.class)
+//    private ImageAlbum imageAlbum;
 
     @JsonView(Views.Public.class)
     private String fileName;
@@ -32,8 +32,7 @@ public class Image {
     public Image() {
     }
 
-    public Image(String path, ImageAlbum imageAlbum, String fileName, String fileType) {
-        this.imageAlbum = imageAlbum;
+    public Image(String path, String fileName, String fileType) {
         this.fileName = fileName;
         this.fileType = fileType;
         this.path = path;
@@ -47,13 +46,13 @@ public class Image {
         this.id = id;
     }
 
-    public ImageAlbum getImageAlbum() {
-        return imageAlbum;
-    }
-
-    public void setImageAlbum(ImageAlbum imageAlbum) {
-        this.imageAlbum = imageAlbum;
-    }
+//    public ImageAlbum getImageAlbum() {
+//        return imageAlbum;
+//    }
+//
+//    public void setImageAlbum(ImageAlbum imageAlbum) {
+//        this.imageAlbum = imageAlbum;
+//    }
 
     public String getFileName() {
         return fileName;
