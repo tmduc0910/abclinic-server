@@ -130,8 +130,8 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="uid" type="varchar(255)"/>
-            <column name="patient_id" type="int(11)">
-                <constraints foreignKeyName="fk_album_patient" references="patient(id)"/>
+            <column name="record_id" type="int(11)">
+                <constraints foreignKeyName="fk_album_record" references="record(id)"/>
             </column>
             <column name="content" type="varchar(1000)"/>
             <column name="type" type="int(1)"/>

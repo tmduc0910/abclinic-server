@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PractitionerRepository extends JpaRepository<Practitioner, Long> {
-    Optional<Practitioner> findById(long id);
+    Practitioner findById(long id);
     Optional<Practitioner> findByEmailAndPassword(String email, String password);
 }

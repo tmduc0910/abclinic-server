@@ -15,19 +15,19 @@ import java.util.List;
 public class ImageAlbum {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private long id;
 
     @JsonView(Views.Confidential.class)
     private String uid;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Image.class, mappedBy = "imageAlbum")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private List<Image> images;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "patient_id")
-    @JsonView(Views.Private.class)
+    @JoinColumn(name = "record_id")
+    @JsonView(Views.Abridged.class)
     private Patient patient;
 
     @JsonView(Views.Public.class)
@@ -40,7 +40,7 @@ public class ImageAlbum {
     private int type;
 
     @CreationTimestamp
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp

@@ -6,11 +6,8 @@ import com.abclinic.server.model.entity.user.Dietitian;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.Practitioner;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -21,27 +18,27 @@ import java.util.List;
 
 @Entity
 @Table(name = "dietitian_record")
-public class DietitianRecord extends Record {
+public class DietRecord extends Record {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dietitian_id")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private Dietitian dietitian;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = HealthIndexSchedule.class, mappedBy = "record")
     @JsonView(Views.Public.class)
-    private List<HealthIndexSchedule<DietitianRecord>> schedules;
+    private List<HealthIndexSchedule<DietRecord>> schedules;
 
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private String note;
 
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private String prescription;
 
-    public DietitianRecord() {
+    public DietRecord() {
 
     }
 
-    public DietitianRecord(Patient patient, Practitioner practitioner) {
+    public DietRecord(Patient patient, Practitioner practitioner) {
         super(patient, practitioner, RecordType.DIET.getValue());
     }
 
@@ -53,11 +50,11 @@ public class DietitianRecord extends Record {
         this.dietitian = dietitian;
     }
 
-    public List<HealthIndexSchedule<DietitianRecord>> getSchedules() {
+    public List<HealthIndexSchedule<DietRecord>> getSchedules() {
         return schedules;
     }
 
-    public void setSchedules(List<HealthIndexSchedule<DietitianRecord>> schedules) {
+    public void setSchedules(List<HealthIndexSchedule<DietRecord>> schedules) {
         this.schedules = schedules;
     }
 

@@ -22,6 +22,7 @@ public class Practitioner extends Doctor {
             joinColumns = @JoinColumn(name = "practitioner_id"),
             inverseJoinColumns = @JoinColumn(name = "specialty_id")
     )
+    @JsonView(Views.Public.class)
     private List<Specialty> specialties;
 
     public Practitioner() {

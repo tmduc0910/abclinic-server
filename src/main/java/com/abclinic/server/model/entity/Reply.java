@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class Reply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,10 +24,10 @@ public class Reply {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private User user;
 
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private String content;
 
     @JsonView(Views.Confidential.class)

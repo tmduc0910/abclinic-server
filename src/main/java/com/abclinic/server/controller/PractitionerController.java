@@ -6,12 +6,11 @@ import com.abclinic.server.constant.RecordType;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
-import com.abclinic.server.model.entity.DietitianRecord;
+import com.abclinic.server.model.dto.RecordDto;
+import com.abclinic.server.model.entity.DietRecord;
 import com.abclinic.server.model.entity.Disease;
 import com.abclinic.server.model.entity.MedicalRecord;
-import com.abclinic.server.model.entity.user.Patient;
-import com.abclinic.server.model.entity.user.Practitioner;
-import com.abclinic.server.model.entity.user.User;
+import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.*;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
@@ -37,9 +36,8 @@ import java.util.Optional;
 @Api(tags = "Đa khoa")
 @RequestMapping("/admin/p")
 public class PractitionerController extends BaseController {
-
-    public PractitionerController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository) {
-        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, dietitianRecordRepository, questionRepository, replyRepository, specialtyRepository, diseaseRepository);
+    public PractitionerController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository, HealthIndexRepository healthIndexRepository, HealthIndexScheduleRepository healthIndexScheduleRepository) {
+        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, dietitianRecordRepository, questionRepository, replyRepository, specialtyRepository, diseaseRepository, healthIndexRepository, healthIndexScheduleRepository);
     }
 
     @Override
@@ -58,7 +56,7 @@ public class PractitionerController extends BaseController {
             @ApiResponse(code = 200, message = "Danh sách bệnh nhân theo yêu cầu"),
             @ApiResponse(code = 404, message = "Không tìm thấy bệnh nhân nào đúng yêu cầu")
     })
-    @JsonView(Views.Public.class)
+    @JsonView({Views.Abridged.class})
     public ResponseEntity<List<Patient>> handleGetPatientList(@ApiIgnore @RequestAttribute("User") User user,
                                                               @RequestParam("status") int status,
                                                               @RequestParam("page") int page,
@@ -84,7 +82,7 @@ public class PractitionerController extends BaseController {
             @ApiResponse(code = 200, message = "Danh sách sổ y bạ theo yêu cầu"),
             @ApiResponse(code = 404, message = "Không tìm thấy sổ y bạ nào theo yêu cầu")
     })
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     public ResponseEntity handleGetRecordList(@ApiIgnore @RequestAttribute("User") User user,
                                               @RequestParam("type") int type,
                                               @RequestParam("status") int status,
@@ -92,7 +90,7 @@ public class PractitionerController extends BaseController {
                                               @Nullable @RequestParam("disease-id") Integer diseaseId,
                                               @RequestParam("page") int page,
                                               @RequestParam("size") int size) {
-        Practitioner practitioner = practitionerRepository.findById(user.getId()).get();
+        Practitioner practitioner = practitionerRepository.findById(user.getId());
         Pageable pageable = PageRequest.of(page-1, size, Sort.by("createdAt").descending());
         Disease disease = diseaseId == null ? null : diseaseRepository.findById(diseaseId);
         Optional records = Optional.empty();
@@ -125,13 +123,48 @@ public class PractitionerController extends BaseController {
                 return new ResponseEntity(record, HttpStatus.OK);
             } else throw new ForbiddenException(user.getId(), "Không thể xem thông tin sổ của bác sĩ đa khoa khác đảm nhiệm");
         } else {
-            Optional<DietitianRecord> dietitianOptional= dietitianRecordRepository.findById(recordId);
+            Optional<DietRecord> dietitianOptional= dietitianRecordRepository.findById(recordId);
             if (dietitianOptional.isPresent()) {
-                DietitianRecord record = dietitianOptional.get();
+                DietRecord record = dietitianOptional.get();
                 if (record.getPractitioner().getId() == user.getId() || record.getPractitioner() == null) {
                     return new ResponseEntity(record, HttpStatus.OK);
                 } else throw new ForbiddenException(user.getId(), "Không thể xem thông tin sổ của bác sĩ đa khoa khác đảm nhiệm");
             } else throw new BadRequestException(user.getId(), "Sổ không tồn tại");
+        }
+    }
+
+    @PutMapping("/records")
+    @JsonView(Views.Public.class)
+    public ResponseEntity handleUpdateRecord(@ApiIgnore @RequestAttribute("User") User user,
+                                             @RequestParam("record-id") int recordId,
+                                             @RequestParam(value = "doctor-id", defaultValue = "0") int doctorId,
+                                             @RequestParam("diagnose") String diagnose,
+                                             @RequestParam("prescription") String prescription,
+                                             @RequestParam("note") String note) {
+        //TODO: Need to confirm about can practitioner make diagnose v.v.
+        RecordDto recordDto = recordFactory.getRecord(recordId);
+        if (recordDto.getType() == RecordType.MEDICAL.getValue()) {
+            MedicalRecord medicalRecord = (MedicalRecord) recordDto.getRecord();
+            //TODO: Handle null params
+            Optional<Specialist> op = specialistRepository.findById(doctorId);
+            if (op.isPresent() || medicalRecord.getSpecialist() != null) {
+                medicalRecord.setSpecialist(op.get());
+                medicalRecord.setDiagnose(diagnose);
+                medicalRecord.setPrescription(prescription);
+                medicalRecord.setNote(note);
+                save(medicalRecord);
+                return new ResponseEntity(medicalRecord, HttpStatus.OK);
+            } else throw new BadRequestException(user.getId(), "Bác sĩ không tồn tại");
+        } else {
+            DietRecord dietRecord = (DietRecord) recordDto.getRecord();
+            Optional<Dietitian> op = dietitianRepository.findById(doctorId);
+            if (op.isPresent() || dietRecord.getDietitian() != null) {
+                dietRecord.setDietitian(op.get());
+                dietRecord.setPrescription(prescription);
+                dietRecord.setNote(note);
+                save(dietRecord);
+                return new ResponseEntity(dietRecord, HttpStatus.OK);
+            } else throw new BadRequestException(user.getId(), "Bác sĩ không tồn tại");
         }
     }
 }

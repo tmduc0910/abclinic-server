@@ -28,13 +28,13 @@ public class DoctorInterceptor extends HandlerInterceptorAdapter {
     private boolean auth(User user, String requestUri) {
         switch (user.getRole()) {
             case COORDINATOR:
-                return requestUri.startsWith("/admin/c");
+                return requestUri.startsWith("/api/admin/c");
             case DIETITIAN:
-                return requestUri.startsWith("/admin/d");
+                return requestUri.startsWith("/api/admin/d");
             case SPECIALIST:
-                return requestUri.startsWith("/admin/s");
+                return requestUri.startsWith("/api/admin/s");
             case PRACTITIONER:
-                return requestUri.startsWith("/admin/p");
+                return requestUri.startsWith("/api/admin/p");
             default:
                 return true;
         }

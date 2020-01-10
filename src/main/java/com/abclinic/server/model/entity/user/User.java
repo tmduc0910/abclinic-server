@@ -19,7 +19,7 @@ public class User {
     @Column(name = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private long id;
 
     @JsonView(Views.Private.class)
@@ -28,7 +28,7 @@ public class User {
     @JsonView(Views.Confidential.class)
     private int role;
 
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private String name;
 
     @JsonView(Views.Public.class)

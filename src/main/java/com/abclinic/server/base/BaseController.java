@@ -3,6 +3,7 @@ package com.abclinic.server.base;
 import com.abclinic.server.model.dto.ErrorDto;
 import com.abclinic.server.model.entity.*;
 import com.abclinic.server.model.entity.user.*;
+import com.abclinic.server.model.factory.RecordFactory;
 import com.abclinic.server.repository.*;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 
 @RestController
 public abstract class BaseController {
+
+    @Autowired
+    protected RecordFactory recordFactory;
 
     protected UserRepository userRepository;
     protected PractitionerRepository practitionerRepository;
@@ -32,10 +35,11 @@ public abstract class BaseController {
     protected ReplyRepository replyRepository;
     protected SpecialtyRepository specialtyRepository;
     protected DiseaseRepository diseaseRepository;
+    protected HealthIndexRepository healthIndexRepository;
+    protected HealthIndexScheduleRepository healthIndexScheduleRepository;
     protected Logger logger;
 
-    @Autowired
-    public BaseController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository) {
+    public BaseController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, QuestionRepository questionRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository, HealthIndexRepository healthIndexRepository, HealthIndexScheduleRepository healthIndexScheduleRepository) {
         this.userRepository = userRepository;
         this.practitionerRepository = practitionerRepository;
         this.patientRepository = patientRepository;
@@ -50,6 +54,8 @@ public abstract class BaseController {
         this.replyRepository = replyRepository;
         this.specialtyRepository = specialtyRepository;
         this.diseaseRepository = diseaseRepository;
+        this.healthIndexRepository = healthIndexRepository;
+        this.healthIndexScheduleRepository = healthIndexScheduleRepository;
     }
 
     @PostConstruct
@@ -75,12 +81,20 @@ public abstract class BaseController {
             albumRepository.save((ImageAlbum) o);
         else if (o instanceof Image)
             imageRepository.save((Image) o);
+        else if (o instanceof Disease)
+            diseaseRepository.save((Disease) o);
         else if (o instanceof MedicalRecord)
             medicalRecordRepository.save((MedicalRecord) o);
+        else if (o instanceof DietRecord)
+            dietitianRecordRepository.save((DietRecord) o);
         else if (o instanceof Question)
             questionRepository.save((Question) o);
         else if (o instanceof Reply)
             replyRepository.save((Reply) o);
+        else if (o instanceof HealthIndex)
+            healthIndexRepository.save((HealthIndex) o);
+        else if (o instanceof HealthIndexSchedule)
+            healthIndexScheduleRepository.save((HealthIndexSchedule) o);
     }
 
     @ExceptionHandler(value = BaseRuntimeException.class)

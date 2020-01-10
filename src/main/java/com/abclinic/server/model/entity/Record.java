@@ -21,17 +21,17 @@ import java.time.LocalDateTime;
 public class Record {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "patient_id")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private Patient patient;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "practitioner_id")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private Practitioner practitioner;
 
     @JsonView(Views.Confidential.class)
@@ -41,7 +41,7 @@ public class Record {
     private int status;
 
     @CreationTimestamp
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp

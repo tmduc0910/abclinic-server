@@ -10,11 +10,11 @@ import javax.persistence.*;
 public class Specialty {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private long id;
 
     @Column(name = "specialty_detail")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private String detail;
 
     public long getId() {

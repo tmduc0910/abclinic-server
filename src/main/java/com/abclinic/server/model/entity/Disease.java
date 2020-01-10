@@ -10,10 +10,10 @@ import javax.persistence.*;
 public class Disease {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private long id;
 
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private String name;
 
     @JsonView(Views.Public.class)

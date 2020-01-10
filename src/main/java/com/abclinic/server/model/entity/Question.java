@@ -16,17 +16,17 @@ import java.util.List;
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "patient_id")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private Patient patient;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private ImageAlbum album;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Reply.class, mappedBy = "question")
@@ -36,7 +36,7 @@ public class Question {
     @JsonView(Views.Private.class)
     private int questionType;
 
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private String content;
 
     @JsonView(Views.Confidential.class)

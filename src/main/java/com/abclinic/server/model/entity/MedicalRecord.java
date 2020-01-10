@@ -19,25 +19,25 @@ public class MedicalRecord extends Record {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "specialist_id")
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Public.class)
     private Specialist specialist;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "disease_id")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private Disease disease;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = HealthIndexSchedule.class, mappedBy = "record")
     @JsonView(Views.Public.class)
     private List<HealthIndexSchedule<MedicalRecord>> schedules;
 
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private String diagnose;
 
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private String prescription;
 
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private String note;
 
     public MedicalRecord() {

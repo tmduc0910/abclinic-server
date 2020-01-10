@@ -21,22 +21,22 @@ import java.time.LocalDateTime;
 public class HealthIndexSchedule<T extends Record> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Record.class)
     @JoinColumn(name = "record_id")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private T record;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
     @JoinColumn(name = "doctor_id")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private Doctor doctor;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "index_id")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private HealthIndex index;
 
     @CreationTimestamp

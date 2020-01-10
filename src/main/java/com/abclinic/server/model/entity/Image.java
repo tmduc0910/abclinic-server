@@ -11,11 +11,11 @@ import javax.persistence.*;
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private long id;
 
     @Column(name = "uid")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private String path;
 
     @ManyToOne(fetch = FetchType.LAZY)
