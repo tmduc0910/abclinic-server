@@ -12,9 +12,6 @@ import java.util.List;
 @Entity
 @Table(name = "Practitioner")
 public class Practitioner extends Doctor {
-    @OneToMany(targetEntity = Patient.class, mappedBy = "practitioner")
-    @JsonView(Views.Private.class)
-    private List<Patient> patients;
 
     @ManyToMany
     @JoinTable(
@@ -24,6 +21,11 @@ public class Practitioner extends Doctor {
     )
     @JsonView(Views.Public.class)
     private List<Specialty> specialties;
+
+    @OneToMany(targetEntity = Patient.class, mappedBy = "practitioner")
+    @JsonView(Views.Private.class)
+    private List<Patient> patients;
+
 
     public Practitioner() {
     }

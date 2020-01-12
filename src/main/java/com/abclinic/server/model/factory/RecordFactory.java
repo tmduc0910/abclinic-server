@@ -2,7 +2,7 @@ package com.abclinic.server.model.factory;
 
 import com.abclinic.server.constant.RecordType;
 import com.abclinic.server.model.dto.RecordDto;
-import com.abclinic.server.model.entity.Record;
+import com.abclinic.server.model.entity.record.Record;
 import com.abclinic.server.repository.DietitianRecordRepository;
 import com.abclinic.server.repository.MedicalRecordRepository;
 import com.abclinic.server.repository.RecordRepository;

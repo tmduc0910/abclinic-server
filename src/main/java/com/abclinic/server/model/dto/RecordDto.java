@@ -1,6 +1,6 @@
 package com.abclinic.server.model.dto;
 
-import com.abclinic.server.model.entity.Record;
+import com.abclinic.server.model.entity.record.Record;
 
 /**
  * @author tmduc

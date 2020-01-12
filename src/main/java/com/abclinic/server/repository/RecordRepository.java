@@ -1,6 +1,6 @@
 package com.abclinic.server.repository;
 
-import com.abclinic.server.model.entity.Record;
+import com.abclinic.server.model.entity.record.Record;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

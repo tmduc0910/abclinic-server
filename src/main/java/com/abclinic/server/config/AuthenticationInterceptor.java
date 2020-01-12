@@ -46,9 +46,9 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
                     throw new UnauthorizedActionException(-1, "Thông tin xác thực không tồn tại");
                 User user = op.get();
                 if (user.getUid() == null)
-                    throw new UnauthorizedActionException(user.getId());
-                else if (requestUri.contains("/admin") && user.getRole() == Role.PATIENT)
-                    throw new UnauthorizedActionException(user.getId(), "Bạn chưa đăng nhập");
+                    throw new UnauthorizedActionException(user.getId(), "Tài khoản chưa đăng nhập");
+//                else if (requestUri.contains("/admin") && user.getRole() == Role.PATIENT)
+//                    throw new UnauthorizedActionException(user.getId(), "Bạn chưa đăng nhập");
                 request.setAttribute("User", user);
             } else {
                 String req = request.getParameterMap().entrySet().iterator().next().getValue()[0];

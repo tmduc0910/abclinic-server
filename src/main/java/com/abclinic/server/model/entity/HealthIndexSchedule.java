@@ -1,6 +1,7 @@
 package com.abclinic.server.model.entity;
 
 import com.abclinic.server.base.Views;
+import com.abclinic.server.model.entity.record.Record;
 import com.abclinic.server.model.entity.user.Doctor;
 import com.abclinic.server.model.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonView;

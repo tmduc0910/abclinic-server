@@ -46,10 +46,6 @@ public class ImageController extends BaseController {
     @Value("${file.upload-dir}")
     private String uploadDirectory;
 
-    public ImageController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, InquiryRepository inquiryRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository, HealthIndexRepository healthIndexRepository, HealthIndexScheduleRepository healthIndexScheduleRepository) {
-        super(userRepository, practitionerRepository, patientRepository, coordinatorRepository, dietitianRepository, specialistRepository, albumRepository, imageRepository, medicalRecordRepository, dietitianRecordRepository, inquiryRepository, replyRepository, specialtyRepository, diseaseRepository, healthIndexRepository, healthIndexScheduleRepository);
-    }
-
     @Override
     public void init() {
         logger = LoggerFactory.getLogger(ImageController.class);

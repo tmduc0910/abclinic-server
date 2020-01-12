@@ -13,10 +13,10 @@ public class WebConfig implements WebMvcConfigurer {
         return new AuthenticationInterceptor();
     }
 
-    @Bean
-    public DoctorInterceptor doctorInterceptor() {
-        return new DoctorInterceptor();
-    }
+//    @Bean
+//    public DoctorInterceptor doctorInterceptor() {
+//        return new DoctorInterceptor();
+//    }
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
@@ -32,9 +32,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authenticationInterceptor())
                 .excludePathPatterns("/misc/**");
-        registry.addInterceptor(doctorInterceptor())
-                .addPathPatterns("/admin/**")
-                .excludePathPatterns("/misc/**");
+//        registry.addInterceptor(doctorInterceptor())
+//                .addPathPatterns("/admin/**")
+//                .excludePathPatterns("/misc/**");
     }
 
 }

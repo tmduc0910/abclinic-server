@@ -2,6 +2,8 @@ package com.abclinic.server.base;
 
 import com.abclinic.server.model.dto.ErrorDto;
 import com.abclinic.server.model.entity.*;
+import com.abclinic.server.model.entity.record.DietRecord;
+import com.abclinic.server.model.entity.record.MedicalRecord;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.model.factory.RecordFactory;
 import com.abclinic.server.repository.*;
@@ -21,42 +23,55 @@ public abstract class BaseController {
     @Autowired
     protected RecordFactory recordFactory;
 
+    @Autowired
     protected UserRepository userRepository;
-    protected PractitionerRepository practitionerRepository;
-    protected PatientRepository patientRepository;
-    protected CoordinatorRepository coordinatorRepository;
-    protected DietitianRepository dietitianRepository;
-    protected SpecialistRepository specialistRepository;
-    protected AlbumRepository albumRepository;
-    protected ImageRepository imageRepository;
-    protected MedicalRecordRepository medicalRecordRepository;
-    protected DietitianRecordRepository dietitianRecordRepository;
-    protected InquiryRepository inquiryRepository;
-    protected ReplyRepository replyRepository;
-    protected SpecialtyRepository specialtyRepository;
-    protected DiseaseRepository diseaseRepository;
-    protected HealthIndexRepository healthIndexRepository;
-    protected HealthIndexScheduleRepository healthIndexScheduleRepository;
-    protected Logger logger;
 
-    public BaseController(UserRepository userRepository, PractitionerRepository practitionerRepository, PatientRepository patientRepository, CoordinatorRepository coordinatorRepository, DietitianRepository dietitianRepository, SpecialistRepository specialistRepository, AlbumRepository albumRepository, ImageRepository imageRepository, MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, InquiryRepository inquiryRepository, ReplyRepository replyRepository, SpecialtyRepository specialtyRepository, DiseaseRepository diseaseRepository, HealthIndexRepository healthIndexRepository, HealthIndexScheduleRepository healthIndexScheduleRepository) {
-        this.userRepository = userRepository;
-        this.practitionerRepository = practitionerRepository;
-        this.patientRepository = patientRepository;
-        this.coordinatorRepository = coordinatorRepository;
-        this.dietitianRepository = dietitianRepository;
-        this.specialistRepository = specialistRepository;
-        this.albumRepository = albumRepository;
-        this.imageRepository = imageRepository;
-        this.medicalRecordRepository = medicalRecordRepository;
-        this.dietitianRecordRepository = dietitianRecordRepository;
-        this.inquiryRepository = inquiryRepository;
-        this.replyRepository = replyRepository;
-        this.specialtyRepository = specialtyRepository;
-        this.diseaseRepository = diseaseRepository;
-        this.healthIndexRepository = healthIndexRepository;
-        this.healthIndexScheduleRepository = healthIndexScheduleRepository;
-    }
+    @Autowired
+    protected PractitionerRepository practitionerRepository;
+
+    @Autowired
+    protected PatientRepository patientRepository;
+
+    @Autowired
+    protected CoordinatorRepository coordinatorRepository;
+
+    @Autowired
+    protected DietitianRepository dietitianRepository;
+
+    @Autowired
+    protected SpecialistRepository specialistRepository;
+
+    @Autowired
+    protected AlbumRepository albumRepository;
+
+    @Autowired
+    protected ImageRepository imageRepository;
+
+    @Autowired
+    protected MedicalRecordRepository medicalRecordRepository;
+
+    @Autowired
+    protected DietitianRecordRepository dietitianRecordRepository;
+
+    @Autowired
+    protected InquiryRepository inquiryRepository;
+
+    @Autowired
+    protected ReplyRepository replyRepository;
+
+    @Autowired
+    protected SpecialtyRepository specialtyRepository;
+
+    @Autowired
+    protected DiseaseRepository diseaseRepository;
+
+    @Autowired
+    protected HealthIndexRepository healthIndexRepository;
+
+    @Autowired
+    protected HealthIndexScheduleRepository healthIndexScheduleRepository;
+
+    protected Logger logger;
 
     @PostConstruct
     public abstract void init();

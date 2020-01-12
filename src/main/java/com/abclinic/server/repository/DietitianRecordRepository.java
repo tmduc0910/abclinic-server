@@ -1,6 +1,6 @@
 package com.abclinic.server.repository;
 
-import com.abclinic.server.model.entity.DietRecord;
+import com.abclinic.server.model.entity.record.DietRecord;
 import com.abclinic.server.model.entity.user.Practitioner;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

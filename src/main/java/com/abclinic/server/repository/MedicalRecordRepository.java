@@ -1,7 +1,7 @@
 package com.abclinic.server.repository;
 
 import com.abclinic.server.model.entity.Disease;
-import com.abclinic.server.model.entity.MedicalRecord;
+import com.abclinic.server.model.entity.record.MedicalRecord;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.Practitioner;
 import com.abclinic.server.model.entity.user.Specialist;

@@ -1,4 +1,4 @@
-package com.abclinic.server.model.entity;
+package com.abclinic.server.model.entity.record;
 
 import com.abclinic.server.base.Views;
 import com.abclinic.server.model.entity.user.Patient;

@@ -1,7 +1,6 @@
 package com.abclinic.server.repository;
 
 import com.abclinic.server.model.entity.HealthIndexSchedule;
-import com.abclinic.server.model.entity.Record;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
