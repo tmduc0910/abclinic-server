@@ -1,14 +1,12 @@
 package com.abclinic.server.controller;
 
-import com.abclinic.server.annotation.authorized.Authorized;
+import com.abclinic.server.annotation.authorized.Restricted;
 import com.abclinic.server.base.BaseController;
 import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.Role;
 import com.abclinic.server.constant.Status;
 import com.abclinic.server.exception.NotFoundException;
-import com.abclinic.server.model.entity.user.Patient;
-import com.abclinic.server.model.entity.user.Practitioner;
-import com.abclinic.server.model.entity.user.User;
+import com.abclinic.server.model.entity.user.*;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
@@ -36,7 +34,7 @@ public class DoctorResourceController extends BaseController {
     }
 
     @GetMapping("/doctors")
-    @Authorized(excluded = Patient.class)
+    @Restricted(excluded = Patient.class)
     @ApiOperation(
             value = "Lọc và lấy danh sách bác sĩ",
             notes = "Trả về danh sách các bác sĩ còn đang hoạt động hoặc nếu không tồn tại thì trả về 404 NOT FOUND",
@@ -67,6 +65,31 @@ public class DoctorResourceController extends BaseController {
         if (result.isPresent())
             return new ResponseEntity(result.get(), HttpStatus.OK);
         else throw new NotFoundException(user.getId());
+    }
+
+    @DeleteMapping("/doctors/")
+    @Restricted(included = Coordinator.class)
+    @ApiOperation(
+            value = "Xóa một bác sĩ",
+            notes = "Trả về 200 OK hoặc 404 NOT FOUND",
+            tags = {"Điều phối viên"}
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "ID của bác sĩ cần xóa", dataType = "int", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Xóa bác sĩ thành công"),
+            @ApiResponse(code = 404, message = "ID của bác sĩ không tồn tại")
+    })
+    public ResponseEntity deleteDoctor(@ApiIgnore @RequestAttribute("User") User user,
+                                       @RequestParam("id") long id) {
+        Optional<User> op = userRepository.findById(id);
+        if (op.isPresent()) {
+            User doctor = op.get();
+            doctor.setStatus(Status.DEACTIVATED);
+            save(doctor);
+            return new ResponseEntity(HttpStatus.OK);
+        } else throw new NotFoundException(user.getId());
     }
 
     @GetMapping("/doctors/{id}")

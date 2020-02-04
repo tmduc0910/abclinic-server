@@ -1,6 +1,5 @@
 package com.abclinic.server.controller;
 
-import com.abclinic.server.annotation.authorized.Authorized;
 import com.abclinic.server.base.BaseController;
 import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.Role;
@@ -9,7 +8,6 @@ import com.abclinic.server.exception.DuplicateValueException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.WrongCredentialException;
 import com.abclinic.server.model.entity.user.*;
-import com.abclinic.server.repository.*;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
@@ -20,7 +18,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
 import java.util.UUID;
 
 /**

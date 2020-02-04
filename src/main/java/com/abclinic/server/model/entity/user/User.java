@@ -174,4 +174,17 @@ public class User {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof User) {
+            return this.getId() == ((User) obj).getId();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) this.getId();
+    }
 }

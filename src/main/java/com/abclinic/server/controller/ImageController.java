@@ -5,6 +5,7 @@ import com.abclinic.server.base.Views;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
+import com.abclinic.server.model.dto.AlbumDto;
 import com.abclinic.server.model.entity.Image;
 import com.abclinic.server.model.entity.Inquiry;
 import com.abclinic.server.model.entity.user.Patient;
@@ -58,9 +59,8 @@ public class ImageController extends BaseController {
             @ApiResponse(code = 400, message = "File không hợp lệ")
     })
     @ResponseStatus(HttpStatus.CREATED)
-    @JsonView(Views.Public.class)
-    public ResponseEntity<List<Image>> processUpload(@ApiIgnore @RequestAttribute("User") User user,
-                                                    @RequestParam("files") MultipartFile[] files) {
+    public ResponseEntity<AlbumDto> processUpload(@ApiIgnore @RequestAttribute("User") User user,
+                                                  @RequestParam("files") MultipartFile[] files) {
         Patient patient = patientRepository.findById(user.getId());
         if (files.length == 0)
             throw new BadRequestException(patient.getId(), "must upload at least 1 image");
@@ -73,8 +73,11 @@ public class ImageController extends BaseController {
             for (MultipartFile file: files) {
                 images.add(upload(file, album));
             }
-            images = images.stream().map(i -> i = imageRepository.save(i)).collect(Collectors.toList());
-            return new ResponseEntity<>(images, HttpStatus.CREATED);
+            AlbumDto albumDto = new AlbumDto(album.getId(), images.stream()
+                    .map(i -> i = imageRepository.save(i))
+                    .map(Image::getPath)
+                    .collect(Collectors.toList()));
+            return new ResponseEntity<>(albumDto, HttpStatus.CREATED);
         } catch (Exception e) {
             throw new BadRequestException(patient.getId());
         }

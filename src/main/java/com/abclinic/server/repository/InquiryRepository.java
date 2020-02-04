@@ -2,7 +2,8 @@ package com.abclinic.server.repository;
 
 import com.abclinic.server.model.entity.Inquiry;
 import com.abclinic.server.model.entity.user.Patient;
-import io.swagger.models.auth.In;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

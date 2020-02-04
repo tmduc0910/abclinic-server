@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Authorized {
+public @interface Restricted {
     Class<? extends User>[] included() default {};
     Class<? extends User>[] excluded() default {};
 }

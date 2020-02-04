@@ -19,4 +19,5 @@ public class PatientResourceController extends BaseController {
         this.logger = LoggerFactory.getLogger(PatientResourceController.class);
     }
 
+
 }

@@ -31,7 +31,7 @@ public class AuthAspect {
 //    }
 
     @Around("execution(* *.*(..)) && @annotation(annotation)")
-    public Object execute(ProceedingJoinPoint joinPoint, Authorized annotation) throws Throwable {
+    public Object execute(ProceedingJoinPoint joinPoint, Restricted annotation) throws Throwable {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         User user = (User) request.getAttribute("User");
         if (Arrays.asList(annotation.included()).contains(user.getClass()) || !Arrays.asList(annotation.excluded()).contains(user.getClass()))
