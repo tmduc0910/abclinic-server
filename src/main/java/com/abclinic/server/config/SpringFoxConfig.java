@@ -44,7 +44,8 @@ public class SpringFoxConfig {
                         new Tag("Dinh dưỡng", "Quản lý API dành riêng cho bác sĩ dinh dưỡng"),
                         new Tag("Bệnh nhân", "Quản lý API dành riêng cho bệnh nhân"),
                         new Tag("Album và ảnh", "Quản lý API dùng cho việc upload và lấy dữ liệu ảnh"),
-                        new Tag("Khác", "Các API khác dùng để test, không đưa vào hệ thống")
+                        new Tag("Khác", "Các API khác dùng để test, không đưa vào hệ thống"),
+                        new Tag("Thông tin cá nhân", "Quản lý API về thông tin tài khoản cá nhân")
                 )
                 .select()
                 .apis(RequestHandlerSelectors.any())

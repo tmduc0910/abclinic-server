@@ -7,7 +7,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "Practitioner")
@@ -20,7 +23,7 @@ public class Practitioner extends Doctor {
             inverseJoinColumns = @JoinColumn(name = "specialty_id")
     )
     @JsonView(Views.Public.class)
-    private List<Specialty> specialties;
+    private Set<Specialty> specialties;
 
     @OneToMany(targetEntity = Patient.class, mappedBy = "practitioner")
     @JsonView(Views.Private.class)
@@ -34,8 +37,8 @@ public class Practitioner extends Doctor {
         super(RoleValue.PRACTITIONER, name, email, gender, dateOfBirth, password, phoneNumber);
     }
 
-    public Practitioner(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String description, int experience) {
-        super(RoleValue.PRACTITIONER, name, email, gender, dateOfBirth, password, phoneNumber, description, experience);
+    public Practitioner(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String description) {
+        super(RoleValue.PRACTITIONER, name, email, gender, dateOfBirth, password, phoneNumber, description);
     }
 
     public List<Patient> getPatients() {
@@ -50,11 +53,15 @@ public class Practitioner extends Doctor {
         this.patients.add(patient);
     }
 
-    public List<Specialty> getSpecialties() {
+    public Set<Specialty> getSpecialties() {
         return specialties;
     }
 
-    public void setSpecialties(List<Specialty> specialties) {
+    public void setSpecialties(Set<Specialty> specialties) {
         this.specialties = specialties;
+    }
+
+    public void addSpecialties(Specialty... specialties) {
+        this.specialties.addAll(Arrays.asList(specialties));
     }
 }

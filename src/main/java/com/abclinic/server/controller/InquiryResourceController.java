@@ -7,7 +7,9 @@ import com.abclinic.server.constant.RecordType;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.Inquiry;
+import com.abclinic.server.model.entity.user.Dietitian;
 import com.abclinic.server.model.entity.user.Patient;
+import com.abclinic.server.model.entity.user.Specialist;
 import com.abclinic.server.model.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -71,7 +74,7 @@ public class InquiryResourceController extends BaseController {
             tags = "Nhân viên phòng khám"
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "assigned", value = "Tìm bệnh nhân đã được đa khoa gán cho cấp dưới", paramType = "query", type = "boolean", allowableValues = "true, false"),
+//            @ApiImplicitParam(name = "assigned", value = "Tìm bệnh nhân đã được đa khoa gán cho cấp dưới", paramType = "query", type = "boolean", allowableValues = "true, false"),
             @ApiImplicitParam(name = "page", value = "Số thứ tự trang", required = true, paramType = "query", allowableValues = "range[1, infinity]", example = "1"),
             @ApiImplicitParam(name = "size", value = "Kích thước trang", required = true, paramType = "query", example = "4")
     })
@@ -81,42 +84,29 @@ public class InquiryResourceController extends BaseController {
     })
     @JsonView(Views.Private.class)
     public ResponseEntity<List<Inquiry>> getInquiryList(@ApiIgnore @RequestAttribute("User") User user,
-                                                        @RequestParam(value = "assigned", defaultValue = "false") boolean assigned,
+//                                                        @RequestParam(value = "assigned", defaultValue = "false") boolean assigned,
                                                         @RequestParam("page") int page,
                                                         @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt"));
-        List<Inquiry> inquiries = inquiryRepository.findAll(pageable).getContent();
+        Optional<List<Inquiry>> inquiries = Optional.empty();
         switch (user.getRole()) {
             case COORDINATOR:
-                inquiries = inquiries.stream()
-                        .filter(i -> i.getPatient().getPractitioner() == null)
-                        .collect(Collectors.toList());
+                inquiries = inquiryRepository.findByPatientPractitioner(null, pageable);
                 break;
             case PRACTITIONER:
-                inquiries = inquiries.stream()
-                        .filter(i -> i.getPatient().getPractitioner().equals(user))
-                        .filter(i -> {
-                            if (i.getType() == RecordType.MEDICAL.getValue()) {
-                                return (assigned && i.getPatient().getSpecialists().size() > 0) || (!assigned && i.getPatient().getSpecialists().size() == 0);
-                            } else if (i.getType() == RecordType.DIET.getValue()) {
-                                return (assigned && i.getPatient().getDietitians().size() > 0) || (!assigned && i.getPatient().getDietitians().size() == 0);
-                            } else return false;
-                        })
-                        .collect(Collectors.toList());
+                inquiries = inquiryRepository.findByPatientPractitioner(practitionerRepository.findById(user.getId()), pageable);
                 break;
             case SPECIALIST:
-                inquiries = inquiries.stream()
-                        .filter(i -> i.getPatient().getSpecialists().contains(user))
-                        .collect(Collectors.toList());
+                Specialist specialist = specialistRepository.findById(user.getId());
+                inquiries = inquiryRepository.findByPatientIn(specialist.getPatients(), pageable);
                 break;
             case DIETITIAN:
-                inquiries = inquiries.stream()
-                        .filter(i -> i.getPatient().getDietitians().contains(user))
-                        .collect(Collectors.toList());
+                Dietitian dietitian = dietitianRepository.findById(user.getId());
+                inquiries = inquiryRepository.findByPatientIn(dietitian.getPatients(), pageable);
                 break;
         }
-        if (inquiries.size() > 0)
-            return new ResponseEntity<>(inquiries, HttpStatus.OK);
+        if (inquiries.isPresent())
+            return new ResponseEntity<>(inquiries.get(), HttpStatus.OK);
         else throw new NotFoundException(user.getId());
     }
 }

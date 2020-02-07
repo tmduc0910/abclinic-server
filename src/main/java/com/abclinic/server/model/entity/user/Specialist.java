@@ -34,12 +34,12 @@ public class Specialist extends Doctor {
         super(RoleValue.SPECIALIST, name, email, gender, dateOfBirth, password, phoneNumber);
     }
 
-    public Specialist(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String description, int experience) {
-        super(RoleValue.SPECIALIST, name, email, gender, dateOfBirth, password, phoneNumber, description, experience);
+    public Specialist(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String description) {
+        super(RoleValue.SPECIALIST, name, email, gender, dateOfBirth, password, phoneNumber, description);
     }
 
-    public Specialist(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String description, int experience, Specialty specialty) {
-        super(RoleValue.SPECIALIST, name, email, gender, dateOfBirth, password, phoneNumber, description, experience);
+    public Specialist(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String description, Specialty specialty) {
+        super(RoleValue.SPECIALIST, name, email, gender, dateOfBirth, password, phoneNumber, description);
         this.specialty = specialty;
     }
 

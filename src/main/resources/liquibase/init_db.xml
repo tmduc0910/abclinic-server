@@ -26,7 +26,8 @@
             <column name="id" type="int(11)" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="specialty_detail" type="nvarchar(50)"/>
+            <column name="name" type="nvarchar(50)"/>
+            <column name="detail" type="nvarchar(225)"/>
         </createTable>
 
         <createTable tableName="practitioner">
@@ -34,7 +35,6 @@
                 <constraints primaryKey="true" foreignKeyName="fk_practitioner_user" references="user(id)"/>
             </column>
             <column name="description" type="nvarchar(500)"/>
-            <column name="experience" type="int(11)"/>
         </createTable>
 
         <createTable tableName="dietitian">
@@ -45,7 +45,6 @@
             <column name="specialty_id" type="int(11)">
                 <constraints foreignKeyName="fk_dietitian_specialty" references="specialty(id)"/>
             </column>
-            <column name="experience" type="int(11)"/>
         </createTable>
 
         <createTable tableName="specialist">
@@ -56,7 +55,6 @@
             <column name="specialty_id" type="int(11)">
                 <constraints foreignKeyName="fk_specialist_specialty" references="specialty(id)"/>
             </column>
-            <column name="experience" type="int(11)"/>
         </createTable>
 
         <createTable tableName="coordinator">

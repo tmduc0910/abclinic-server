@@ -21,25 +21,25 @@ public class Patient extends User {
     @JsonView(Views.Private.class)
     private Practitioner practitioner;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @WhereJoinTable(clause = "type = 0")
-    @JoinTable(
-            name = "doctor_patient",
-            joinColumns = @JoinColumn(name = "patient_id"),
-            inverseJoinColumns = @JoinColumn(name = "doctor_id")
-    )
-    @JsonView(Views.Private.class)
-    private List<Specialist> specialists;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @WhereJoinTable(clause = "type = 1")
-    @JoinTable(
-            name = "doctor_patient",
-            joinColumns = @JoinColumn(name = "patient_id"),
-            inverseJoinColumns = @JoinColumn(name = "doctor_id")
-    )
-    @JsonView(Views.Private.class)
-    private List<Dietitian> dietitians;
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @WhereJoinTable(clause = "type = 0")
+//    @JoinTable(
+//            name = "doctor_patient",
+//            joinColumns = @JoinColumn(name = "patient_id"),
+//            inverseJoinColumns = @JoinColumn(name = "doctor_id")
+//    )
+//    @JsonView(Views.Private.class)
+//    private List<Specialist> specialists;
+//
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @WhereJoinTable(clause = "type = 1")
+//    @JoinTable(
+//            name = "doctor_patient",
+//            joinColumns = @JoinColumn(name = "patient_id"),
+//            inverseJoinColumns = @JoinColumn(name = "doctor_id")
+//    )
+//    @JsonView(Views.Private.class)
+//    private List<Dietitian> dietitians;
 
     public Patient() {
     }
@@ -68,20 +68,20 @@ public class Patient extends User {
     public void setPractitioner(Practitioner practitioner) {
         this.practitioner = practitioner;
     }
-
-    public List<Specialist> getSpecialists() {
-        return specialists;
-    }
-
-    public void setSpecialists(List<Specialist> specialists) {
-        this.specialists = specialists;
-    }
-
-    public List<Dietitian> getDietitians() {
-        return dietitians;
-    }
-
-    public void setDietitians(List<Dietitian> dietitians) {
-        this.dietitians = dietitians;
-    }
+//
+//    public List<Specialist> getSpecialists() {
+//        return specialists;
+//    }
+//
+//    public void setSpecialists(List<Specialist> specialists) {
+//        this.specialists = specialists;
+//    }
+//
+//    public List<Dietitian> getDietitians() {
+//        return dietitians;
+//    }
+//
+//    public void setDietitians(List<Dietitian> dietitians) {
+//        this.dietitians = dietitians;
+//    }
 }

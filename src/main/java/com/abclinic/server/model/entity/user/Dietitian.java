@@ -33,8 +33,8 @@ public class Dietitian extends Doctor {
         super(RoleValue.DIETITIAN, name, email, gender, dateOfBirth, password, phoneNumber);
     }
 
-    public Dietitian(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String description, int experience) {
-        super(RoleValue.DIETITIAN, name, email, gender, dateOfBirth, password, phoneNumber, description, experience);
+    public Dietitian(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String description) {
+        super(RoleValue.DIETITIAN, name, email, gender, dateOfBirth, password, phoneNumber, description);
     }
 
     public Specialty getSpecialty() {

@@ -11,9 +11,6 @@ public abstract class Doctor extends User {
     @JsonView(Views.Public.class)
     private String description;
 
-    @JsonView(Views.Public.class)
-    private int experience;
-
     public Doctor() {
     }
 
@@ -21,10 +18,9 @@ public abstract class Doctor extends User {
         super(role, name, email, gender, dateOfBirth, password, phoneNumber);
     }
 
-    public Doctor(int role, String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String description, int experience) {
+    public Doctor(int role, String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber, String description) {
         super(role, name, email, gender, dateOfBirth, password, phoneNumber);
         this.description = description;
-        this.experience = experience;
     }
 
     public String getDescription() {
@@ -33,13 +29,5 @@ public abstract class Doctor extends User {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public int getExperience() {
-        return experience;
-    }
-
-    public void setExperience(int experience) {
-        this.experience = experience;
     }
 }
