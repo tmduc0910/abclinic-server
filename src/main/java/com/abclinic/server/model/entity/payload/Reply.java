@@ -1,4 +1,4 @@
-package com.abclinic.server.model.entity;
+package com.abclinic.server.model.entity.payload;
 
 import com.abclinic.server.base.Views;
 import com.abclinic.server.model.entity.user.User;
@@ -11,11 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reply")
-public class Reply {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Abridged.class)
-    private long id;
+public class Reply extends Payload {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inquiry_id")
@@ -48,14 +44,6 @@ public class Reply {
         this.inquiry = inquiry;
         this.user = user;
         this.content = content;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public Inquiry getInquiry() {

@@ -1,6 +1,6 @@
 package com.abclinic.server.repository;
 
-import com.abclinic.server.model.entity.HealthIndex;
+import com.abclinic.server.model.entity.payload.HealthIndex;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

@@ -235,9 +235,10 @@
             <column name="receiver_id" type="int(11)">
                 <constraints foreignKeyName="fk_noti_receiver" references="user(id)"/>
             </column>
+            <column name="payload_id" type="int(11)"/>
             <column name="message" type="nvarchar(255)"/>
             <column name="type" type="int(2)"/>
-            <column name="status" type="int(2)" defaultValue="0"/>
+            <column name="isRead" type="bit" defaultValue="1"/>
             <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
         </createTable>
     </changeSet>

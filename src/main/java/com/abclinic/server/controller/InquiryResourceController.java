@@ -6,7 +6,7 @@ import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.RecordType;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.NotFoundException;
-import com.abclinic.server.model.entity.Inquiry;
+import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.Dietitian;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.Specialist;
@@ -24,7 +24,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author tmduc
@@ -61,17 +60,20 @@ public class InquiryResourceController extends BaseController {
                                         @RequestParam("content") String content) {
         Patient patient = patientRepository.findById(user.getId());
         if (type < RecordType.values().length) {
-            save(new Inquiry(patient, albumId, content, type));
+            Inquiry inquiry = new Inquiry(patient, albumId, content, type);
+            save(inquiry);
+
+            //Send notification
+
             return new ResponseEntity(HttpStatus.CREATED);
         } else throw new BadRequestException(user.getId(), "Loại yêu cầu không hợp lệ");
     }
 
     @GetMapping("/inquiries")
-    @Restricted(excluded = Patient.class)
     @ApiOperation(
             value = "Lấy danh sách yêu cầu tư vấn",
             notes = "Trả về danh sách tư vấn hoặc 404 NOT FOUND",
-            tags = "Nhân viên phòng khám"
+            tags = {"Nhân viên phòng khám", "Bệnh nhân"}
     )
     @ApiImplicitParams({
 //            @ApiImplicitParam(name = "assigned", value = "Tìm bệnh nhân đã được đa khoa gán cho cấp dưới", paramType = "query", type = "boolean", allowableValues = "true, false"),
@@ -103,6 +105,10 @@ public class InquiryResourceController extends BaseController {
             case DIETITIAN:
                 Dietitian dietitian = dietitianRepository.findById(user.getId());
                 inquiries = inquiryRepository.findByPatientIn(dietitian.getPatients(), pageable);
+                break;
+            case PATIENT:
+                Patient patient = patientRepository.findById(user.getId());
+                inquiries = inquiryRepository.findByPatient(patient);
                 break;
         }
         if (inquiries.isPresent())

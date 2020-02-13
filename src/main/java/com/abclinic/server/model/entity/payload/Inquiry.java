@@ -1,4 +1,4 @@
-package com.abclinic.server.model.entity;
+package com.abclinic.server.model.entity.payload;
 
 import com.abclinic.server.base.Views;
 import com.abclinic.server.model.entity.user.Patient;
@@ -13,11 +13,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "inquiry")
-public class Inquiry {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Abridged.class)
-    private long id;
+public class Inquiry extends Payload {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "patient_id")
@@ -56,14 +52,6 @@ public class Inquiry {
         this.albumId = albumId;
         this.type = type;
         this.content = content;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public Patient getPatient() {

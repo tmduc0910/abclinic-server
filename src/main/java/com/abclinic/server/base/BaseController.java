@@ -2,10 +2,14 @@ package com.abclinic.server.base;
 
 import com.abclinic.server.model.dto.ErrorDto;
 import com.abclinic.server.model.entity.*;
-import com.abclinic.server.model.entity.record.DietRecord;
-import com.abclinic.server.model.entity.record.MedicalRecord;
+import com.abclinic.server.model.entity.notification.Notification;
+import com.abclinic.server.model.entity.payload.HealthIndex;
+import com.abclinic.server.model.entity.payload.HealthIndexSchedule;
+import com.abclinic.server.model.entity.payload.Inquiry;
+import com.abclinic.server.model.entity.payload.Reply;
+import com.abclinic.server.model.entity.payload.record.DietRecord;
+import com.abclinic.server.model.entity.payload.record.MedicalRecord;
 import com.abclinic.server.model.entity.user.*;
-import com.abclinic.server.model.factory.RecordFactory;
 import com.abclinic.server.repository.*;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +23,6 @@ import java.time.format.DateTimeFormatter;
 
 @RestController
 public abstract class BaseController {
-
-    @Autowired
-    protected RecordFactory recordFactory;
 
     @Autowired
     protected UserRepository userRepository;
@@ -71,6 +72,9 @@ public abstract class BaseController {
     @Autowired
     protected HealthIndexScheduleRepository healthIndexScheduleRepository;
 
+    @Autowired
+    protected NotificationRepository notificationRepository;
+
     protected Logger logger;
 
     @PostConstruct
@@ -110,6 +114,8 @@ public abstract class BaseController {
             healthIndexRepository.save((HealthIndex) o);
         else if (o instanceof HealthIndexSchedule)
             healthIndexScheduleRepository.save((HealthIndexSchedule) o);
+        else if (o instanceof NotificationRepository)
+            notificationRepository.save((Notification) o);
     }
 
     @ExceptionHandler(value = BaseRuntimeException.class)

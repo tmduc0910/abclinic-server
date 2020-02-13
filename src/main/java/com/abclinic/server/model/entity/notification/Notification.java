@@ -1,4 +1,4 @@
-package com.abclinic.server.model.entity;
+package com.abclinic.server.model.entity.notification;
 
 import com.abclinic.server.base.Views;
 import com.abclinic.server.model.entity.user.User;
@@ -28,20 +28,23 @@ public class Notification {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "receiver_id")
-    @JsonView(Views.Abridged.class)
+    @JsonView(Views.Private.class)
     private User receiver;
 
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Private.class)
+    private long payloadId;
+
+    @JsonView(Views.Abridged.class)
     private String message;
 
     @JsonView(Views.Private.class)
     private int type;
 
     @JsonView(Views.Abridged.class)
-    private int status;
+    private boolean isRead;
 
     @CreationTimestamp
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private LocalDateTime createdAt;
 
     public Notification() {
@@ -78,6 +81,14 @@ public class Notification {
         this.receiver = receiver;
     }
 
+    public long getPayloadId() {
+        return payloadId;
+    }
+
+    public void setPayloadId(long payloadId) {
+        this.payloadId = payloadId;
+    }
+
     public String getMessage() {
         return message;
     }
@@ -94,12 +105,12 @@ public class Notification {
         this.type = type;
     }
 
-    public int getStatus() {
-        return status;
+    public boolean isRead() {
+        return isRead;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setIsRead(boolean isRead) {
+        this.isRead = isRead;
     }
 
     public LocalDateTime getCreatedAt() {

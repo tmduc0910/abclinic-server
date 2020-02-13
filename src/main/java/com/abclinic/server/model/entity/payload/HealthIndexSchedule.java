@@ -1,7 +1,8 @@
-package com.abclinic.server.model.entity;
+package com.abclinic.server.model.entity.payload;
 
 import com.abclinic.server.base.Views;
-import com.abclinic.server.model.entity.record.Record;
+import com.abclinic.server.model.entity.payload.HealthIndex;
+import com.abclinic.server.model.entity.payload.record.Record;
 import com.abclinic.server.model.entity.user.Doctor;
 import com.abclinic.server.model.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -19,11 +20,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "patient_health_index")
-public class HealthIndexSchedule<T extends Record> {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Abridged.class)
-    private long id;
+public class HealthIndexSchedule<T extends Record> extends Payload {
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Record.class)
     @JoinColumn(name = "record_id")
@@ -56,14 +53,6 @@ public class HealthIndexSchedule<T extends Record> {
         this.record = record;
         this.doctor = doctor;
         this.index = index;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public T getRecord() {

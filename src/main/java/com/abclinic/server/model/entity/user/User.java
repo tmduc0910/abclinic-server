@@ -49,7 +49,7 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private String avatar;
 
     @JsonView(Views.Confidential.class)

@@ -7,9 +7,9 @@
 //import com.abclinic.server.exception.ForbiddenException;
 //import com.abclinic.server.exception.NotFoundException;
 //import com.abclinic.server.model.dto.RecordDto;
-//import com.abclinic.server.model.entity.record.DietRecord;
+//import com.abclinic.server.model.entity.payload.record.DietRecord;
 //import com.abclinic.server.model.entity.Disease;
-//import com.abclinic.server.model.entity.record.MedicalRecord;
+//import com.abclinic.server.model.entity.payload.record.MedicalRecord;
 //import com.abclinic.server.model.entity.user.*;
 //import com.fasterxml.jackson.annotation.JsonView;
 //import io.swagger.annotations.*;

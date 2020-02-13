@@ -1,6 +1,7 @@
-package com.abclinic.server.model.entity.record;
+package com.abclinic.server.model.entity.payload.record;
 
 import com.abclinic.server.base.Views;
+import com.abclinic.server.model.entity.payload.Payload;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.Practitioner;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -18,12 +19,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "record")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Record {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Abridged.class)
-    private long id;
-
+public class Record extends Payload {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "patient_id")
     @JsonView(Views.Abridged.class)
@@ -56,14 +52,6 @@ public class Record {
         this.patient = patient;
         this.practitioner = practitioner;
         this.recordType = recordType;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public Patient getPatient() {

@@ -1,9 +1,9 @@
-package com.abclinic.server.model.entity.record;
+package com.abclinic.server.model.entity.payload.record;
 
 import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.RecordType;
 import com.abclinic.server.model.entity.Disease;
-import com.abclinic.server.model.entity.HealthIndexSchedule;
+import com.abclinic.server.model.entity.payload.HealthIndexSchedule;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.Practitioner;
 import com.abclinic.server.model.entity.user.Specialist;

@@ -2,6 +2,7 @@ package com.abclinic.server.config;
 
 import com.abclinic.server.constant.Role;
 import com.abclinic.server.constant.RoleValue;
+import com.abclinic.server.constant.Status;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.UnauthorizedActionException;
@@ -47,6 +48,8 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
                 User user = op.get();
                 if (user.getUid() == null)
                     throw new UnauthorizedActionException(user.getId(), "Tài khoản chưa đăng nhập");
+                if (user.getStatus() != Status.ACTIVATED)
+                    throw new ForbiddenException(user.getId(), "Tài khoản đã bị xóa hoặc vô hiệu hóa");
 //                else if (requestUri.contains("/admin") && user.getRole() == Role.PATIENT)
 //                    throw new UnauthorizedActionException(user.getId(), "Bạn chưa đăng nhập");
                 request.setAttribute("User", user);

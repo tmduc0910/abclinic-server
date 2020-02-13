@@ -6,9 +6,9 @@
 //import com.abclinic.server.exception.BadRequestException;
 //import com.abclinic.server.exception.NotFoundException;
 //import com.abclinic.server.model.dto.RecordDto;
-//import com.abclinic.server.model.entity.record.DietRecord;
+//import com.abclinic.server.model.entity.payload.record.DietRecord;
 //import com.abclinic.server.model.entity.Disease;
-//import com.abclinic.server.model.entity.record.MedicalRecord;
+//import com.abclinic.server.model.entity.payload.record.MedicalRecord;
 //import com.abclinic.server.model.entity.user.Patient;
 //import com.abclinic.server.model.entity.user.Practitioner;
 //import com.abclinic.server.model.entity.user.User;

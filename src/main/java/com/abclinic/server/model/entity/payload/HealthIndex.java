@@ -1,4 +1,4 @@
-package com.abclinic.server.model.entity;
+package com.abclinic.server.model.entity.payload;
 
 import com.abclinic.server.base.Views;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -13,11 +13,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "health_index")
-public class HealthIndex {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Abridged.class)
-    private long id;
+public class HealthIndex extends Payload {
 
     @JsonView(Views.Abridged.class)
     private String name;
@@ -31,14 +27,6 @@ public class HealthIndex {
     public HealthIndex(String name, String description) {
         this.name = name;
         this.description = description;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getName() {
