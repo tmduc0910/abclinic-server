@@ -3,6 +3,7 @@ package com.abclinic.server.model.entity.payload.record;
 import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.RecordType;
 import com.abclinic.server.model.entity.payload.HealthIndexSchedule;
+import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.Dietitian;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.Practitioner;
@@ -39,8 +40,8 @@ public class DietRecord extends Record {
 
     }
 
-    public DietRecord(Patient patient, Practitioner practitioner) {
-        super(patient, practitioner, RecordType.DIET.getValue());
+    public DietRecord(Inquiry inquiry, Practitioner practitioner) {
+        super(inquiry, practitioner, RecordType.DIET.getValue());
     }
 
     public Dietitian getDietitian() {

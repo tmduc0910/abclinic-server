@@ -89,6 +89,14 @@ public class PatientResourceController extends BaseController {
 
     @GetMapping("/patients/{id}")
     @Restricted(excluded = Patient.class)
+    @ApiOperation(
+            value = "Lấy thông tin chi tiết bệnh nhân",
+            notes = "Trả về thông tin chi tiết bệnh nhân",
+            tags = "Nhân viên phòng khám"
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "Mã ID của bệnh nhân", required = true, paramType = "path", dataType = "int", example = "1")
+    })
     @JsonView(Views.Private.class)
     public ResponseEntity<Patient> getPatient(@PathVariable("id") long id) {
         return new ResponseEntity<>(patientRepository.findById(id), HttpStatus.OK);
@@ -96,6 +104,20 @@ public class PatientResourceController extends BaseController {
 
     @PostMapping("/patients/{id}/doctor")
     @Restricted(included = {Coordinator.class, Practitioner.class})
+    @ApiOperation(
+            value = "Tạo yêu cầu gán bệnh nhân cho bác sĩ quản lý",
+            notes = "Trả về 200 OK hoặc 400 BAD REQUEST",
+            tags = {"Điều phối viên", "Đa khoa"}
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "Mã ID của bệnh nhân", required = true, paramType = "path", dataType = "int", example = "1"),
+            @ApiImplicitParam(name = "doctor-id", value = "Mã ID của bác sĩ muốn gán", required = true, dataType = "int", example = "2"),
+            @ApiImplicitParam(name = "inquiry-id", value = "Mã ID của yêu cầu tư vấn muốn duyệt", required = true, dataType = "int", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Yêu cầu thành công"),
+            @ApiResponse(code = 400, message = "ID bác sĩ không tồn tại")
+    })
     public ResponseEntity addPatientDoctor(@ApiIgnore @RequestAttribute("User") User user,
                                            @PathVariable("id") long id,
                                            @RequestParam("doctor-id") long doctorId,
@@ -122,9 +144,22 @@ public class PatientResourceController extends BaseController {
 
     @PutMapping("/patients/{id}/doctor")
     @Restricted(included = {Practitioner.class, Specialist.class, Dietitian.class})
+    @ApiOperation(
+            value = "Tạo yêu cầu gán bệnh nhân cho bác sĩ quản lý",
+            notes = "Trả về 200 OK",
+            tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "Mã ID của bệnh nhân", required = true, paramType = "path", dataType = "int", example = "1"),
+            @ApiImplicitParam(name = "notification-id", value = "Mã ID của thông báo gán bệnh nhân", required = true, dataType = "int", example = "1"),
+            @ApiImplicitParam(name = "is-accepted", value = "Chấp nhận yêu cầu hay không", required = true, dataType = "boolean", allowableValues = "true, false")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Trả lời thành công"),
+    })
     public ResponseEntity editPatientDoctor(@ApiIgnore @RequestAttribute("User") User user,
                                             @RequestParam("notification-id") long notificationId,
-                                            @RequestParam("is_accepted") boolean isAccepted,
+                                            @RequestParam("is-accepted") boolean isAccepted,
                                             @PathVariable("id") long id) {
         Patient patient = patientRepository.findById(id);
         Notification notification = notificationRepository.findById(notificationId);

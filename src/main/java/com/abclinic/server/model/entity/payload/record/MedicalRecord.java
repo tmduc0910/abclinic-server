@@ -4,6 +4,7 @@ import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.RecordType;
 import com.abclinic.server.model.entity.Disease;
 import com.abclinic.server.model.entity.payload.HealthIndexSchedule;
+import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.Practitioner;
 import com.abclinic.server.model.entity.user.Specialist;
@@ -43,8 +44,8 @@ public class MedicalRecord extends Record {
 
     }
 
-    public MedicalRecord(Patient patient, Practitioner practitioner, Disease disease) {
-        super(patient, practitioner, RecordType.MEDICAL.getValue());
+    public MedicalRecord(Inquiry inquiry, Practitioner practitioner, Disease disease) {
+        super(inquiry, practitioner, RecordType.MEDICAL.getValue());
         this.disease = disease;
     }
 

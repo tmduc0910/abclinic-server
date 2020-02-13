@@ -1,6 +1,7 @@
 package com.abclinic.server.model.entity.payload.record;
 
 import com.abclinic.server.base.Views;
+import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.payload.Payload;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.Practitioner;
@@ -21,9 +22,9 @@ import java.time.LocalDateTime;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Record extends Payload {
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "patient_id")
+    @JoinColumn(name = "inquiry_id")
     @JsonView(Views.Abridged.class)
-    private Patient patient;
+    private Inquiry inquiry;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "practitioner_id")
@@ -48,18 +49,18 @@ public class Record extends Payload {
 
     }
 
-    public Record(Patient patient, Practitioner practitioner, int recordType) {
-        this.patient = patient;
+    public Record(Inquiry inquiry, Practitioner practitioner, int recordType) {
+        this.inquiry = inquiry;
         this.practitioner = practitioner;
         this.recordType = recordType;
     }
 
-    public Patient getPatient() {
-        return patient;
+    public Inquiry getInquiry() {
+        return inquiry;
     }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
+    public void setInquiry(Inquiry inquiry) {
+        this.inquiry = inquiry;
     }
 
     public Practitioner getPractitioner() {
