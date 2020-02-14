@@ -17,15 +17,15 @@ import java.util.Optional;
  */
 public interface DietitianRecordRepository extends JpaRepository<DietRecord, Long> {
     Optional<DietRecord> findById(long id);
-
-    @Query("select dr from DietRecord dr " +
-            "where (:patient is null or dr.patient.name like :patient) " +
-            "and (:status is null or dr.status = :status)")
-    Optional<List<DietRecord>> findByPatientAndStatus(@Param("patient") String patientName, @Param("status") int status, Pageable pageable);
-
-    @Query("select dr from DietRecord dr " +
-            "where (:patient is null or dr.patient.name like :patient) " +
-            "and (:status is null or dr.status = :status) " +
-            "and dr.practitioner = :practitioner")
-    Optional<List<DietRecord>> findByPractitionerAndPatientAndStatus(@Param("practitioner") Practitioner practitioner, @Param("patient") String patientName, @Param("status") int status, Pageable pageable);
+//
+//    @Query("select dr from DietRecord dr " +
+//            "where (:patient is null or dr.patient.name like :patient) " +
+//            "and (:status is null or dr.status = :status)")
+//    Optional<List<DietRecord>> findByPatientAndStatus(@Param("patient") String patientName, @Param("status") int status, Pageable pageable);
+//
+//    @Query("select dr from DietRecord dr " +
+//            "where (:patient is null or dr.patient.name like :patient) " +
+//            "and (:status is null or dr.status = :status) " +
+//            "and dr.practitioner = :practitioner")
+//    Optional<List<DietRecord>> findByPractitionerAndPatientAndStatus(@Param("practitioner") Practitioner practitioner, @Param("patient") String patientName, @Param("status") int status, Pageable pageable);
 }
