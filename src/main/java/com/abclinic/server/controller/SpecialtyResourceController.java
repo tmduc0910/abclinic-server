@@ -71,7 +71,7 @@ public class SpecialtyResourceController extends BaseController {
             tags = "Điều phối viên"
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "Mã ID của chuyên môn", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "id", value = "Mã ID của chuyên môn", required = true, dataType = "int", example = "1"),
             @ApiImplicitParam(name = "name", value = "Tên chuyên môn", required = true, dataType = "string"),
             @ApiImplicitParam(name = "detail", value = "Mô tả chuyên môn", required = true, dataType = "string")
     })
