@@ -5,15 +5,19 @@ import com.abclinic.server.base.BaseController;
 import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.RecordType;
 import com.abclinic.server.exception.BadRequestException;
+import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
+import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.Dietitian;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.Specialist;
 import com.abclinic.server.model.entity.user.User;
+import com.abclinic.server.service.NotificationService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,6 +36,9 @@ import java.util.Optional;
  */
 @RestController
 public class InquiryResourceController extends BaseController {
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     public void init() {
@@ -64,7 +71,7 @@ public class InquiryResourceController extends BaseController {
             save(inquiry);
 
             //Send notification
-
+            notificationService.makeNotification(user, NotificationFactory.getInquiryMessages(inquiry));
             return new ResponseEntity(HttpStatus.CREATED);
         } else throw new BadRequestException(user.getId(), "Loại yêu cầu không hợp lệ");
     }
@@ -84,7 +91,7 @@ public class InquiryResourceController extends BaseController {
             @ApiResponse(code = 200, message = "Danh sách yêu cầu tư vấn"),
             @ApiResponse(code = 404, message = "Không tìm thấy yêu cầu hợp lệ")
     })
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Public.class)
     public ResponseEntity<List<Inquiry>> getInquiryList(@ApiIgnore @RequestAttribute("User") User user,
 //                                                        @RequestParam(value = "assigned", defaultValue = "false") boolean assigned,
                                                         @RequestParam("page") int page,
@@ -108,11 +115,56 @@ public class InquiryResourceController extends BaseController {
                 break;
             case PATIENT:
                 Patient patient = patientRepository.findById(user.getId());
-                inquiries = inquiryRepository.findByPatient(patient);
+                inquiries = inquiryRepository.findByPatient(patient, pageable);
                 break;
         }
         if (inquiries.isPresent())
             return new ResponseEntity<>(inquiries.get(), HttpStatus.OK);
         else throw new NotFoundException(user.getId());
+    }
+
+    @GetMapping("/inquiries/{id}")
+    @ApiOperation(
+            value = "Lấy thông tin chi tiết yêu cầu tư vấn",
+            notes = "Trả về thông tin chi tiết yêu cầu tư vấn hoặc 403 FORBIDDEN hoặc 404 NOT FOUND",
+            tags = {"Nhân viên phòng khám", "Bệnh nhân"}
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "Mã ID của yêu cầu tư vấn", required = true, paramType = "path", dataType = "int", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Thông tin chi tiết yêu cầu tư vấn"),
+            @ApiResponse(code = 403, message = "Bạn không có quyền truy cập"),
+            @ApiResponse(code = 404, message = "Yêu cầu tư vấn không tồn tại")
+    })
+    @JsonView(Views.Private.class)
+    public ResponseEntity<Inquiry> getInquiryDetail(@ApiIgnore @RequestAttribute("user") User user,
+                                                    @PathVariable("id") long id) {
+        Optional<Inquiry> op = inquiryRepository.findById(id);
+        if (op.isPresent()) {
+            Inquiry inquiry = op.get();
+            switch (user.getRole()) {
+                case COORDINATOR:
+                    if (inquiry.getPatient().getPractitioner() != null)
+                        throw new ForbiddenException(user.getId(), "Điều phối viên không được truy cập vào yêu cầu này.");
+                    break;
+                case PRACTITIONER:
+                    if (!inquiry.getPatient().getPractitioner().equals(user))
+                        throw new ForbiddenException(user.getId(), "Bệnh nhân này không thuộc phạm vi quản lý của bác sĩ");
+                    break;
+                case DIETITIAN:
+                    if (!inquiry.getPatient().getDietitians().contains(user))
+                        throw new ForbiddenException(user.getId(), "Bệnh nhân này không thuộc phạm vi quản lý của bác sĩ");
+                    break;
+                case SPECIALIST:
+                    if (!inquiry.getPatient().getSpecialists().contains(user))
+                        throw new ForbiddenException(user.getId(), "Bệnh nhân này không thuộc phạm vi quản lý của bác sĩ");
+                    break;
+                case PATIENT:
+                    if (!inquiry.getPatient().equals(user))
+                        throw new ForbiddenException(user.getId(), "Bệnh nhân không được truy cập vào yêu cầu từ bệnh nhân khác");
+            }
+            return new ResponseEntity<>(inquiry, HttpStatus.OK);
+        } else throw new NotFoundException(user.getId());
     }
 }

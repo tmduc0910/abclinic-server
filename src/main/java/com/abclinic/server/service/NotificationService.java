@@ -7,7 +7,9 @@ import com.abclinic.server.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 /**
  * @author tmduc
@@ -55,5 +57,9 @@ public class NotificationService {
         Notification notification = new Notification(sender, notificationMessage.getTargetUser(), message, notificationMessage.getMessageType().getValue());
         notification.setPayloadId(notificationMessage.getPayload().getId());
         return notificationRepository.save(notification);
+    }
+
+    public List<Notification> makeNotification(User sender, List<NotificationMessage> notificationMessages) {
+        return notificationMessages.stream().map(m -> makeNotification(sender, m)).collect(Collectors.toList());
     }
 }

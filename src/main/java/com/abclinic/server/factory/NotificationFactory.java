@@ -33,7 +33,7 @@ public class NotificationFactory {
         return null;
     }
 
-    public static List<NotificationMessage> getMessages(Inquiry payload) {
+    public static List<NotificationMessage> getInquiryMessages(Inquiry payload) {
         List<NotificationMessage> list = new ArrayList<>();
         NotificationMessage message = getMessage(MessageType.INQUIRE, payload.getPatient().getPractitioner(), payload);
         list.add(message);

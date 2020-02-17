@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
     Optional<Inquiry> findById(long id);
-    Optional<List<Inquiry>> findByPatient(Patient patient);
+    Optional<List<Inquiry>> findByPatient(Patient patient, Pageable pageable);
     Optional<List<Inquiry>> findByPatientPractitioner(Practitioner practitioner, Pageable pageable);
     Optional<List<Inquiry>> findByPatientIn(List<Patient> patients, Pageable pageable);
 }
