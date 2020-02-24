@@ -40,6 +40,7 @@ import java.util.Optional;
  * @package com.abclinic.server.controller
  * @created 1/11/2020 2:42 PM
  */
+@RestController
 public class RecordResourceController extends BaseController {
 
     @Autowired
