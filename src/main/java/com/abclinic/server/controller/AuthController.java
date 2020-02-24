@@ -4,6 +4,7 @@ import com.abclinic.server.base.BaseController;
 import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.Role;
 import com.abclinic.server.constant.RoleValue;
+import com.abclinic.server.constant.Status;
 import com.abclinic.server.exception.DuplicateValueException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.WrongCredentialException;
@@ -29,6 +30,7 @@ import java.util.UUID;
 @Api(tags = "Xác thực")
 @RequestMapping("/auth")
 public class AuthController extends BaseController {
+    //TODO: Implements Spring Security + AWT
 
     @Override
     public void init() {
@@ -188,6 +190,7 @@ public class AuthController extends BaseController {
                 break;
             case RoleValue.PATIENT:
                 u = new Patient(name, email, gender, tryParse(dateOfBirth), password, phoneNumber);
+                u.setStatus(Status.User.UNASSIGNED);
                 break;
         }
         save(u);

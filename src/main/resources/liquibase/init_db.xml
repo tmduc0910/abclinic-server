@@ -161,9 +161,6 @@
             <column name="inquiry_id" type="int(11)">
                 <constraints foreignKeyName="fk_mr_inquiry" references="inquiry(id)"/>
             </column>
-            <column name="doctor_id" type="int(11)">
-                <constraints foreignKeyName="fk_mr_doctor" references="user(id)"/>
-            </column>
             <column name="disease_id" type="int(11)">
                 <constraints foreignKeyName="fk_mr_disease" references="disease(id)"/>
             </column>
@@ -179,9 +176,6 @@
             </column>
             <column name="inquiry_id" type="int(11)">
                 <constraints foreignKeyName="fk_dr_inquiry" references="inquiry(id)"/>
-            </column>
-            <column name="doctor_id" type="int(11)">
-                <constraints foreignKeyName="fk_dr_doctor" references="user(id)"/>
             </column>
             <column name="note" type="nvarchar(1000)"/>
             <column name="prescription" type="nvarchar(1000)"/>
@@ -238,7 +232,7 @@
             <column name="payload_id" type="int(11)"/>
             <column name="message" type="nvarchar(255)"/>
             <column name="type" type="int(2)"/>
-            <column name="isRead" type="bit" defaultValue="1"/>
+            <column name="is_read" type="bit" defaultValue="1"/>
             <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
         </createTable>
     </changeSet>

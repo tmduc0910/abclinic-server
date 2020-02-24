@@ -5,6 +5,7 @@ import com.abclinic.server.base.BaseController;
 import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.MessageType;
 import com.abclinic.server.constant.RecordType;
+import com.abclinic.server.constant.Status;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
@@ -115,7 +116,7 @@ public class PatientResourceController extends BaseController {
             @ApiImplicitParam(name = "inquiry-id", value = "Mã ID của yêu cầu tư vấn muốn duyệt", required = true, dataType = "int", example = "1")
     })
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Yêu cầu thành công"),
+            @ApiResponse(code = 201, message = "Yêu cầu thành công"),
             @ApiResponse(code = 400, message = "ID bác sĩ không tồn tại")
     })
     public ResponseEntity addPatientDoctor(@ApiIgnore @RequestAttribute("User") User user,
@@ -128,17 +129,18 @@ public class PatientResourceController extends BaseController {
             case COORDINATOR:
                 Practitioner practitioner = practitionerRepository.findById(doctorId);
                 message.setTargetUser(practitioner);
+                break;
             case PRACTITIONER:
                 Doctor subDoc;
                 if (inquiry.getType() == RecordType.MEDICAL.getValue())
                     subDoc = specialistRepository.findById(doctorId);
                 else subDoc = dietitianRepository.findById(doctorId);
                 message.setTargetUser(subDoc);
-            default:
-                if (message.getTargetUser() != null)
-                    notificationService.makeNotification(user, message);
-                else throw new BadRequestException(user.getId(), "ID bác sĩ không tồn tại");
+                break;
         }
+        if (message.getTargetUser() != null)
+            notificationService.makeNotification(user, message);
+        else throw new BadRequestException(user.getId(), "ID bác sĩ không tồn tại");
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
@@ -175,10 +177,12 @@ public class PatientResourceController extends BaseController {
                     case SPECIALIST:
                         doctor = specialistRepository.findById(user.getId());
                         patient.addSpecialist((Specialist) doctor);
+                        patient.setStatus(Status.User.ACTIVATED);
                         break;
                     case DIETITIAN:
                         doctor = dietitianRepository.findById(user.getId());
                         patient.addDietitian((Dietitian) doctor);
+                        patient.setStatus(Status.User.ACTIVATED);
                         break;
                 }
                 save(patient);

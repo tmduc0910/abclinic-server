@@ -114,7 +114,7 @@ public abstract class BaseController {
             healthIndexRepository.save((HealthIndex) o);
         else if (o instanceof HealthIndexSchedule)
             healthIndexScheduleRepository.save((HealthIndexSchedule) o);
-        else if (o instanceof NotificationRepository)
+        else if (o instanceof Notification)
             notificationRepository.save((Notification) o);
     }
 

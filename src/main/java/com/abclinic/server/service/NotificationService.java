@@ -4,6 +4,7 @@ import com.abclinic.server.model.entity.notification.Notification;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.NotificationRepository;
+import com.abclinic.server.websocket.WebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +21,12 @@ import java.util.stream.Collectors;
 @Service
 public class NotificationService {
     private NotificationRepository notificationRepository;
+    private WebSocketService webSocketService;
 
     @Autowired
-    public NotificationService(NotificationRepository notificationRepository) {
+    public NotificationService(NotificationRepository notificationRepository, WebSocketService webSocketService) {
         this.notificationRepository = notificationRepository;
+        this.webSocketService = webSocketService;
     }
 
     public String pack(User sender, NotificationMessage message) {
@@ -56,6 +59,7 @@ public class NotificationService {
         String message = pack(sender, notificationMessage);
         Notification notification = new Notification(sender, notificationMessage.getTargetUser(), message, notificationMessage.getMessageType().getValue());
         notification.setPayloadId(notificationMessage.getPayload().getId());
+        webSocketService.broadcast(sender, notification);
         return notificationRepository.save(notification);
     }
 

@@ -2,6 +2,7 @@ package com.abclinic.server.model.entity.user;
 
 import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.RoleValue;
+import com.abclinic.server.model.entity.payload.Inquiry;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.Where;
 import org.hibernate.annotations.WhereJoinTable;
@@ -15,6 +16,10 @@ import java.util.List;
 public class Patient extends User {
     @JsonView(Views.Private.class)
     private String address;
+
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = Inquiry.class, mappedBy = "patient")
+    @JsonView(Views.Private.class)
+    private List<Inquiry> inquiries;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "practitioner_id")
@@ -59,6 +64,14 @@ public class Patient extends User {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public List<Inquiry> getInquiries() {
+        return inquiries;
+    }
+
+    public void setInquiries(List<Inquiry> inquiries) {
+        this.inquiries = inquiries;
     }
 
     public Practitioner getPractitioner() {

@@ -63,16 +63,16 @@ public class DoctorResourceController extends BaseController {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("role"));
         Optional result;
         try {
-            result = userRepository.findByRoleAndStatus(Integer.parseInt(type), Status.ACTIVATED, pageable);
+            result = userRepository.findByRoleAndStatus(Integer.parseInt(type), Status.User.ACTIVATED, pageable);
         } catch (NumberFormatException e) {
-            result = userRepository.findAllByRoleIsLessThanAndStatus(Role.PATIENT.getValue(), Status.ACTIVATED, pageable);
+            result = userRepository.findAllByRoleIsLessThanAndStatus(Role.PATIENT.getValue(), Status.User.ACTIVATED, pageable);
         }
         if (result.isPresent())
             return new ResponseEntity(result.get(), HttpStatus.OK);
         else throw new NotFoundException(user.getId());
     }
 
-    @DeleteMapping("/doctors/")
+    @DeleteMapping("/doctors")
     @Restricted(included = Coordinator.class)
     @ApiOperation(
             value = "Xóa một bác sĩ",
@@ -91,7 +91,7 @@ public class DoctorResourceController extends BaseController {
         Optional<User> op = userRepository.findById(id);
         if (op.isPresent()) {
             User doctor = op.get();
-            doctor.setStatus(Status.DEACTIVATED);
+            doctor.setStatus(Status.User.DEACTIVATED);
             save(doctor);
             return new ResponseEntity(HttpStatus.OK);
         } else throw new NotFoundException(user.getId());

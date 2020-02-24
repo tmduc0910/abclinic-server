@@ -2,6 +2,7 @@ package com.abclinic.server.model.entity.payload;
 
 import com.abclinic.server.base.Views;
 import com.abclinic.server.model.entity.user.Patient;
+import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.service.GooglePhotosService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CreationTimestamp;
@@ -63,7 +64,7 @@ public class Inquiry extends Payload {
     }
 
     public List<String> getAlbum() {
-        return GooglePhotosService.getAlbumImages(albumId);
+        return albumId == null ? null : GooglePhotosService.getAlbumImages(albumId);
     }
 
     public int getType() {
@@ -112,5 +113,19 @@ public class Inquiry extends Payload {
 
     public void setReplies(List<Reply> replies) {
         this.replies = replies;
+    }
+
+    public boolean of(User user) {
+        switch (user.getRole()) {
+            case DIETITIAN:
+                return patient.getDietitians().contains(user);
+            case SPECIALIST:
+                return patient.getSpecialists().contains(user);
+            case PRACTITIONER:
+                return patient.getPractitioner().equals(user);
+            case PATIENT:
+                return patient.equals(user);
+        }
+        return false;
     }
 }

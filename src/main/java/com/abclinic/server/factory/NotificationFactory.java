@@ -25,14 +25,6 @@ public class NotificationFactory {
         return new NotificationMessage(messageType, target, payload);
     }
 
-    public static <T extends Payload> NotificationMessage getMessage(T payload) {
-        if (payload instanceof Record)
-            return getMessage(MessageType.ADVICE, ((Record) payload).getInquiry().getPatient(), payload);
-        else if (payload instanceof Reply)
-            return getMessage(MessageType.REPLY, ((Reply) payload).getInquiry().getPatient(), payload);
-        return null;
-    }
-
     public static List<NotificationMessage> getInquiryMessages(Inquiry payload) {
         List<NotificationMessage> list = new ArrayList<>();
         NotificationMessage message = getMessage(MessageType.INQUIRE, payload.getPatient().getPractitioner(), payload);

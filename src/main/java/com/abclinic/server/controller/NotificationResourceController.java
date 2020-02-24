@@ -113,8 +113,11 @@ public class NotificationResourceController extends BaseController {
                                                         @PathVariable("id") long id) {
         Notification notification = notificationRepository.findById(id);
         if (notification != null) {
-            if (notification.getReceiver().equals(user))
+            if (notification.getReceiver().equals(user)) {
+                notification.setIsRead(true);
+                save(notification);
                 return new ResponseEntity<>(notification, HttpStatus.OK);
+            }
             else throw new ForbiddenException(user.getId(), "Không được phép truy cập thông báo của người dùng khác");
         } else throw new NotFoundException(user.getId());
     }

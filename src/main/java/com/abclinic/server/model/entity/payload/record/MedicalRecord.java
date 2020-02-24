@@ -34,19 +34,14 @@ public class MedicalRecord extends Record {
     @JsonView(Views.Abridged.class)
     private String diagnose;
 
-    @JsonView(Views.Abridged.class)
-    private String prescription;
-
-    @JsonView(Views.Abridged.class)
-    private String note;
-
     public MedicalRecord() {
 
     }
 
-    public MedicalRecord(Inquiry inquiry, Practitioner practitioner, Disease disease) {
-        super(inquiry, practitioner, RecordType.MEDICAL.getValue());
-        this.disease = disease;
+    public MedicalRecord(Inquiry inquiry, String note, String prescription, Specialist specialist, String diagnose) {
+        super(inquiry, RecordType.MEDICAL.getValue(), note, prescription);
+        this.specialist = specialist;
+        this.diagnose = diagnose;
     }
 
     public Specialist getSpecialist() {
@@ -79,21 +74,5 @@ public class MedicalRecord extends Record {
 
     public void setDiagnose(String diagnose) {
         this.diagnose = diagnose;
-    }
-
-    public String getPrescription() {
-        return prescription;
-    }
-
-    public void setPrescription(String prescription) {
-        this.prescription = prescription;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
     }
 }

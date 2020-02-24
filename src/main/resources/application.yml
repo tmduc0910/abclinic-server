@@ -27,6 +27,11 @@ logging:
     org:
       hibernate:
         SQL: debug
+jwt:
+  secret: abclinic-sec
+app:
+  firebase:
+    configuration-file: D:/keen-optics-259713-firebase-adminsdk-9lt2z-9c1c0ada03.json
   ## File Storage Properties
   # All files uploaded through the REST API will be stored in this directory
 file:

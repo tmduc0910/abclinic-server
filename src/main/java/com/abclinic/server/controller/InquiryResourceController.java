@@ -9,10 +9,7 @@ import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.entity.payload.Inquiry;
-import com.abclinic.server.model.entity.user.Dietitian;
-import com.abclinic.server.model.entity.user.Patient;
-import com.abclinic.server.model.entity.user.Specialist;
-import com.abclinic.server.model.entity.user.User;
+import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
@@ -26,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,7 +60,7 @@ public class InquiryResourceController extends BaseController {
             @ApiResponse(code = 400, message = "Loại yêu cầu không hợp lệ")
     })
     public ResponseEntity createInquiry(@ApiIgnore @RequestAttribute("User") User user,
-                                        @RequestParam("album_id") String albumId,
+                                        @Nullable @RequestParam("album_id") String albumId,
                                         @RequestParam("type") int type,
                                         @RequestParam("content") String content) {
         Patient patient = patientRepository.findById(user.getId());
@@ -83,7 +81,7 @@ public class InquiryResourceController extends BaseController {
             tags = {"Nhân viên phòng khám", "Bệnh nhân"}
     )
     @ApiImplicitParams({
-//            @ApiImplicitParam(name = "assigned", value = "Tìm bệnh nhân đã được đa khoa gán cho cấp dưới", paramType = "query", type = "boolean", allowableValues = "true, false"),
+            @ApiImplicitParam(name = "assigned", value = "Tìm bệnh nhân đã được đa khoa gán cho cấp dưới", paramType = "query", type = "boolean", allowableValues = "true, false"),
             @ApiImplicitParam(name = "page", value = "Số thứ tự trang", required = true, paramType = "query", allowableValues = "range[1, infinity]", example = "1"),
             @ApiImplicitParam(name = "size", value = "Kích thước trang", required = true, paramType = "query", example = "4")
     })
@@ -93,7 +91,7 @@ public class InquiryResourceController extends BaseController {
     })
     @JsonView(Views.Public.class)
     public ResponseEntity<List<Inquiry>> getInquiryList(@ApiIgnore @RequestAttribute("User") User user,
-//                                                        @RequestParam(value = "assigned", defaultValue = "false") boolean assigned,
+                                                        @RequestParam(value = "assigned", defaultValue = "false") boolean assigned,
                                                         @RequestParam("page") int page,
                                                         @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt"));
@@ -103,7 +101,10 @@ public class InquiryResourceController extends BaseController {
                 inquiries = inquiryRepository.findByPatientPractitioner(null, pageable);
                 break;
             case PRACTITIONER:
-                inquiries = inquiryRepository.findByPatientPractitioner(practitionerRepository.findById(user.getId()), pageable);
+                Practitioner practitioner = practitionerRepository.findById(user.getId());
+                if (!assigned)
+                    inquiries = inquiryRepository.findByPatientPractitionerAndPatientSpecialistsIsNullOrPatientDietitiansIsNull(practitioner, pageable);
+                else inquiries = inquiryRepository.findByPatientPractitioner(practitioner, pageable);
                 break;
             case SPECIALIST:
                 Specialist specialist = specialistRepository.findById(user.getId());

@@ -1,6 +1,7 @@
 package com.abclinic.server.repository;
 
 import com.abclinic.server.model.entity.payload.record.DietRecord;
+import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.Practitioner;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,6 +18,9 @@ import java.util.Optional;
  */
 public interface DietitianRecordRepository extends JpaRepository<DietRecord, Long> {
     Optional<DietRecord> findById(long id);
+    Optional<List<DietRecord>> findByInquiryPatientPractitionerId(long id, Pageable pageable);
+    Optional<List<DietRecord>> findByInquiryPatientIdAndStatus(long id, int status, Pageable pageable);
+    Optional<List<DietRecord>> findByDietitianId(long id, Pageable pageable);
 //
 //    @Query("select dr from DietRecord dr " +
 //            "where (:patient is null or dr.patient.name like :patient) " +

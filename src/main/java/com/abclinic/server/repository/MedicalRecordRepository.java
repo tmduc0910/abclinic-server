@@ -16,9 +16,10 @@ import java.util.Optional;
 public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, Long> {
     Optional<MedicalRecord> findById(long id);
 //    Optional<List<MedicalRecord>> findByPatient(Patient patient);
+    Optional<List<MedicalRecord>> findByInquiryPatientPractitionerId(long id, Pageable pageable);
+    Optional<List<MedicalRecord>> findByInquiryPatientIdAndStatus(long id, int status, Pageable pageable);
     Optional<List<MedicalRecord>> findByDisease(Disease disease);
-    Optional<List<MedicalRecord>> findByPractitioner(Practitioner practitioner);
-    Optional<List<MedicalRecord>> findBySpecialist(Specialist specialist);
+    Optional<List<MedicalRecord>> findBySpecialistId(long id, Pageable pageable);
 
 //    @Query("select mr from MedicalRecord mr " +
 //            "where (:patient is null or mr.patient.name like :patient) " +

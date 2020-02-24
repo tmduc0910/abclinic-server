@@ -48,7 +48,7 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
                 User user = op.get();
                 if (user.getUid() == null)
                     throw new UnauthorizedActionException(user.getId(), "Tài khoản chưa đăng nhập");
-                if (user.getStatus() != Status.ACTIVATED)
+                if (user.getStatus() == Status.User.DEACTIVATED)
                     throw new ForbiddenException(user.getId(), "Tài khoản đã bị xóa hoặc vô hiệu hóa");
 //                else if (requestUri.contains("/admin") && user.getRole() == Role.PATIENT)
 //                    throw new UnauthorizedActionException(user.getId(), "Bạn chưa đăng nhập");

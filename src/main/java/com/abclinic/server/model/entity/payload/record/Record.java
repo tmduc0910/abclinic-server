@@ -1,6 +1,7 @@
 package com.abclinic.server.model.entity.payload.record;
 
 import com.abclinic.server.base.Views;
+import com.abclinic.server.constant.Status;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.payload.Payload;
 import com.abclinic.server.model.entity.user.Patient;
@@ -26,16 +27,17 @@ public class Record extends Payload {
     @JsonView(Views.Abridged.class)
     private Inquiry inquiry;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "practitioner_id")
-    @JsonView(Views.Abridged.class)
-    private Practitioner practitioner;
-
     @JsonView(Views.Confidential.class)
     private int recordType;
 
     @JsonView(Views.Confidential.class)
     private int status;
+
+    @JsonView(Views.Abridged.class)
+    private String note;
+
+    @JsonView(Views.Abridged.class)
+    private String prescription;
 
     @CreationTimestamp
     @JsonView(Views.Abridged.class)
@@ -49,10 +51,12 @@ public class Record extends Payload {
 
     }
 
-    public Record(Inquiry inquiry, Practitioner practitioner, int recordType) {
+    public Record(Inquiry inquiry, int recordType, String note, String prescription) {
         this.inquiry = inquiry;
-        this.practitioner = practitioner;
         this.recordType = recordType;
+        this.note = note;
+        this.prescription = prescription;
+        this.status = Status.Payload.UNREAD;
     }
 
     public Inquiry getInquiry() {
@@ -61,14 +65,6 @@ public class Record extends Payload {
 
     public void setInquiry(Inquiry inquiry) {
         this.inquiry = inquiry;
-    }
-
-    public Practitioner getPractitioner() {
-        return practitioner;
-    }
-
-    public void setPractitioner(Practitioner practitioner) {
-        this.practitioner = practitioner;
     }
 
     public int getRecordType() {
@@ -85,6 +81,22 @@ public class Record extends Payload {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getPrescription() {
+        return prescription;
+    }
+
+    public void setPrescription(String prescription) {
+        this.prescription = prescription;
     }
 
     public LocalDateTime getCreatedAt() {

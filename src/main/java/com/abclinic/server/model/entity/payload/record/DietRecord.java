@@ -30,18 +30,13 @@ public class DietRecord extends Record {
     @JsonView(Views.Public.class)
     private List<HealthIndexSchedule<DietRecord>> schedules;
 
-    @JsonView(Views.Abridged.class)
-    private String note;
-
-    @JsonView(Views.Abridged.class)
-    private String prescription;
-
     public DietRecord() {
 
     }
 
-    public DietRecord(Inquiry inquiry, Practitioner practitioner) {
-        super(inquiry, practitioner, RecordType.DIET.getValue());
+    public DietRecord(Inquiry inquiry, String note, String prescription, Dietitian dietitian) {
+        super(inquiry, RecordType.DIET.getValue(), note, prescription);
+        this.dietitian = dietitian;
     }
 
     public Dietitian getDietitian() {
@@ -60,19 +55,4 @@ public class DietRecord extends Record {
         this.schedules = schedules;
     }
 
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public String getPrescription() {
-        return prescription;
-    }
-
-    public void setPrescription(String prescription) {
-        this.prescription = prescription;
-    }
 }
