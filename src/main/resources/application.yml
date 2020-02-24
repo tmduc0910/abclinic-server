@@ -1,12 +1,12 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/abclinic
-    username: root
-    password: 12345678
+    url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
+    username: LQmSwtESHO
+    password: EqtgG6sTqN
   liquibase:
     enabled: true
     change-log: classpath:/liquibase/db-changelog.xml
-    drop-first: true
+    drop-first: false
   servlet:
     ## MULTIPART (MultipartProperties)
     multipart:
@@ -22,6 +22,7 @@ server:
   port: 8109
   servlet:
     context-path: /api
+  forward-headers-strategy: framework
 logging:
   level:
     org:
