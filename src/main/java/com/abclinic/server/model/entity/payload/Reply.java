@@ -30,7 +30,7 @@ public class Reply extends Payload {
     private int status;
 
     @CreationTimestamp
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp

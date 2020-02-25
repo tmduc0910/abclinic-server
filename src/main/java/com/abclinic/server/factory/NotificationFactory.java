@@ -1,6 +1,7 @@
 package com.abclinic.server.factory;
 
 import com.abclinic.server.constant.MessageType;
+import com.abclinic.server.constant.Status;
 import com.abclinic.server.model.entity.notification.Notification;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
 import com.abclinic.server.model.entity.payload.HealthIndex;
@@ -25,9 +26,9 @@ public class NotificationFactory {
         return new NotificationMessage(messageType, target, payload);
     }
 
-    public static List<NotificationMessage> getInquiryMessages(Inquiry payload) {
+    public static List<NotificationMessage> getMessages(Inquiry payload) {
         List<NotificationMessage> list = new ArrayList<>();
-        NotificationMessage message = getMessage(MessageType.INQUIRE, payload.getPatient().getPractitioner(), payload);
+        NotificationMessage message = getMessage(payload.getStatus() == Status.Payload.UNREAD ? MessageType.INQUIRE : MessageType.REPLY, payload.getPatient().getPractitioner(), payload);
         list.add(message);
         list.addAll(payload.getPatient().getDietitians().stream().map(d -> {
             message.setTargetUser(d);

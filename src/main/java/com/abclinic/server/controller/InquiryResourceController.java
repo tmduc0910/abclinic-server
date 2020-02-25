@@ -69,7 +69,7 @@ public class InquiryResourceController extends BaseController {
             save(inquiry);
 
             //Send notification
-            notificationService.makeNotification(user, NotificationFactory.getInquiryMessages(inquiry));
+            notificationService.makeNotification(user, NotificationFactory.getMessages(inquiry));
             return new ResponseEntity(HttpStatus.CREATED);
         } else throw new BadRequestException(user.getId(), "Loại yêu cầu không hợp lệ");
     }
