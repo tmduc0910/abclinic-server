@@ -139,7 +139,7 @@ public class InquiryResourceController extends BaseController {
             @ApiResponse(code = 404, message = "Yêu cầu tư vấn không tồn tại")
     })
     @JsonView(Views.Private.class)
-    public ResponseEntity<Inquiry> getInquiryDetail(@ApiIgnore @RequestAttribute("user") User user,
+    public ResponseEntity<Inquiry> getInquiryDetail(@ApiIgnore @RequestAttribute("User") User user,
                                                     @PathVariable("id") long id) {
         Optional<Inquiry> op = inquiryRepository.findById(id);
         if (op.isPresent()) {

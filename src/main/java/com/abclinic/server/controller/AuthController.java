@@ -150,7 +150,7 @@ public class AuthController extends BaseController {
             @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string"),
             @ApiImplicitParam(name = "name", value = "Họ tên người dùng", required = true, dataType = "string"),
             @ApiImplicitParam(name = "gender", value = "Giới tính người dùng (nam, nữ, khác)", allowableValues = "0, 1, 2", required = true, dataType = "int", example = "0"),
-            @ApiImplicitParam(name = "dob", value = "Ngày tháng năm sinh của người dùng", format = "YYYY-MM-dd", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "dob", value = "Ngày tháng năm sinh của người dùng (dd/MM/yyyy)", format = "dd/MM/yyyy", required = true, dataType = "string"),
             @ApiImplicitParam(name = "phone", value = "SĐT của người dùng", required = true, dataType = "string")
     })
     @ApiResponses({

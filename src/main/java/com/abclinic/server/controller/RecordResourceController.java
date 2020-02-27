@@ -72,7 +72,7 @@ public class RecordResourceController extends BaseController {
             @ApiResponse(code = 400, message = "Mã ID của yêu cầu tư vấn không tồn tại"),
             @ApiResponse(code = 403, message = "Chỉ có bác sĩ... mới có thể tư vấn...")
     })
-    public ResponseEntity createRecord(@ApiIgnore @RequestAttribute("user") User user,
+    public ResponseEntity createRecord(@ApiIgnore @RequestAttribute("User") User user,
                                        @RequestParam("inquiry-id") long inquiryId,
                                        @RequestParam("diagnose") @Nullable String diagnose,
                                        @RequestParam("note") String note,
@@ -117,7 +117,7 @@ public class RecordResourceController extends BaseController {
             @ApiResponse(code = 400, message = "Mã ID của tư vấn không tồn tại"),
             @ApiResponse(code = 403, message = "Bác sĩ không phụ trách bệnh nhân này")
     })
-    public ResponseEntity editRecord(@ApiIgnore @RequestAttribute("user") User user,
+    public ResponseEntity editRecord(@ApiIgnore @RequestAttribute("User") User user,
                                      @RequestParam("record-id") long recordId,
                                      @RequestParam("diagnose") @Nullable String diagnose,
                                      @RequestParam("note") String note,
@@ -155,7 +155,7 @@ public class RecordResourceController extends BaseController {
             @ApiResponse(code = 404, message = "Không tìm thấy tư vấn nào")
     })
     @JsonView(Views.Abridged.class)
-    public ResponseEntity getRecordList(@ApiIgnore @RequestAttribute("user") User user,
+    public ResponseEntity getRecordList(@ApiIgnore @RequestAttribute("User") User user,
                                         @RequestParam(value = "type", defaultValue = "0") int type,
                                         @RequestParam("page") int page,
                                         @RequestParam("size") int size) {
@@ -197,7 +197,7 @@ public class RecordResourceController extends BaseController {
             @ApiResponse(code = 404, message = "Mã ID của tư vấn không tồn tại")
     })
     @JsonView(Views.Private.class)
-    public ResponseEntity getRecordDetail(@ApiIgnore @RequestAttribute("user") User user,
+    public ResponseEntity getRecordDetail(@ApiIgnore @RequestAttribute("User") User user,
                                           @PathVariable long id) {
         try {
             Record record = recordService.getRecord(id);
