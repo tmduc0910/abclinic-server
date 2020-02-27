@@ -44,7 +44,7 @@ public class MiscController extends BaseController {
     @ApiOperation(value = "Trả về danh sách tài khoản đang lưu trong hệ thống")
     public ResponseEntity<List<AccountDto>> handleGetAllAccount() {
         return new ResponseEntity<>(userRepository.findAll().stream()
-                .map(u -> new AccountDto(u.getId(), u.getEmail(), u.getPhoneNumber(), u.getPassword(), u.getName()))
+                .map(u -> new AccountDto(u.getId(), u.getUid(), u.getEmail(), u.getPhoneNumber(), u.getPassword(), u.getName()))
                 .collect(Collectors.toList()), HttpStatus.OK);
     }
 }

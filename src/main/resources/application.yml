@@ -1,14 +1,14 @@
 spring:
   datasource:
 ##    LOCAL MYSQL
-#    url: jdbc:mysql://localhost:3306/abclinic
-#    username: root
-#    password: 12345678
+    url: jdbc:mysql://localhost:3306/abclinic
+    username: root
+    password: 12345678
 
 ##    REMOTE MYSQL
-    url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
-    username: LQmSwtESHO
-    password: EqtgG6sTqN
+#    url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
+#    username: LQmSwtESHO
+#    password: EqtgG6sTqN
 
   liquibase:
     enabled: true
@@ -36,9 +36,6 @@ logging:
         SQL: debug
 jwt:
   secret: abclinic-sec
-app:
-  firebase:
-    configuration-file: D:/keen-optics-259713-firebase-adminsdk-9lt2z-9c1c0ada03.json
   ## File Storage Properties
   # All files uploaded through the REST API will be stored in this directory
 file:

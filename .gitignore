@@ -32,3 +32,6 @@ build/
 
 ### Local upload temp folder ###
 **/src/main/resources/uploads/**
+
+### Mysql Configuration ###
+**/src/main/resources/application.yml
