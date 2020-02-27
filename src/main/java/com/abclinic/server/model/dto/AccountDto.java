@@ -7,13 +7,15 @@ package com.abclinic.server.model.dto;
  */
 public class AccountDto {
     private long id;
+    private String uid;
     private String email;
     private String phone;
     private String password;
     private String name;
 
-    public AccountDto(long id, String email, String phone, String password, String name) {
+    public AccountDto(long id, String uid, String email, String phone, String password, String name) {
         this.id = id;
+        this.uid = uid;
         this.email = email;
         this.phone = phone;
         this.password = password;
@@ -22,6 +24,10 @@ public class AccountDto {
 
     public long getId() {
         return id;
+    }
+
+    public String getUid() {
+        return uid;
     }
 
     public String getEmail() {
