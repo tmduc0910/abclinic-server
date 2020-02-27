@@ -59,7 +59,7 @@ public class NotificationService {
         String message = pack(sender, notificationMessage);
         Notification notification = new Notification(sender, notificationMessage.getTargetUser(), message, notificationMessage.getMessageType().getValue());
         notification.setPayloadId(notificationMessage.getPayload().getId());
-        webSocketService.broadcast(sender, notification);
+        webSocketService.broadcast(sender, message);
         return notificationRepository.save(notification);
     }
 

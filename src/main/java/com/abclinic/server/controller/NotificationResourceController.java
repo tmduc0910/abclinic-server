@@ -8,6 +8,7 @@ import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.entity.notification.Notification;
+import com.abclinic.server.model.entity.notification.NotificationMessage;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -35,39 +36,19 @@ import java.util.Optional;
 public class NotificationResourceController extends BaseController {
 
     @Autowired
-    private NotificationService notificationService;
+    NotificationService service;
 
     @Override
     public void init() {
         this.logger = LoggerFactory.getLogger(NotificationResourceController.class);
     }
 
-/*    @PostMapping("/notifications")
-    public ResponseEntity createNotification(@ApiIgnore @RequestAttribute("user") User user,
-                                             @RequestParam("notification_id") long notificationId,
-                                             @RequestParam("is_accepted") boolean isAccepted) {
-        Notification notification = notificationRepository.findById(notificationId);
-        if (notification != null) {
-            if (notification.getType() == MessageType.ASSIGN.getValue()) {
-                Patient patient = patientRepository.findById(notification.getSender().getId());
-                if (isAccepted) {
-                    Doctor doctor;
-                    switch (user.getRole()) {
-                        case PRACTITIONER:
-                            doctor = practitionerRepository.findById(user.getId());
-                            patient.setPractitioner((Practitioner) doctor);
-                            break;
-                        case DIETITIAN:
-                            doctor = dietitianRepository.findById(user.getId());
-                            patient.
-                            break;
-                        case SPECIALIST:
-
-                    }
-                }
-            }
-        }
-    }*/
+    @PostMapping("/notifications")
+    @ApiOperation(value = "", tags = "Khác")
+    public ResponseEntity createNotification(@ApiIgnore @RequestAttribute("User") User user) {
+        service.makeNotification(userRepository.findById(5).get(), new NotificationMessage(MessageType.INQUIRE, user, inquiryRepository.findById(1).get()));
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
 
     @GetMapping("/notifications")
     @ApiOperation(
@@ -84,7 +65,7 @@ public class NotificationResourceController extends BaseController {
             @ApiResponse(code = 404, message = "Không tìm thấy thông báo nào")
     })
     @JsonView(Views.Abridged.class)
-    public ResponseEntity<List<Notification>> getNotifications(@ApiIgnore @RequestAttribute("user") User user,
+    public ResponseEntity<List<Notification>> getNotifications(@ApiIgnore @RequestAttribute("User") User user,
                                                                @RequestParam("page") int page,
                                                                @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
@@ -109,7 +90,7 @@ public class NotificationResourceController extends BaseController {
             @ApiResponse(code = 404, message = "Thông báo không tồn tại")
     })
     @JsonView(Views.Private.class)
-    public ResponseEntity<Notification> getNotification(@ApiIgnore @RequestAttribute("user") User user,
+    public ResponseEntity<Notification> getNotification(@ApiIgnore @RequestAttribute("User") User user,
                                                         @PathVariable("id") long id) {
         Notification notification = notificationRepository.findById(id);
         if (notification != null) {

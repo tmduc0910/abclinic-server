@@ -55,7 +55,7 @@ public class ReplyResourceController extends BaseController {
             @ApiResponse(code = 400, message = "Mã ID của yêu cầu tư vấn không tồn tại"),
             @ApiResponse(code = 403, message = "Bạn không có quyền tạo câu trả lời cho tư vấn này")
     })
-    public ResponseEntity createReply(@ApiIgnore @RequestAttribute("user") User user,
+    public ResponseEntity createReply(@ApiIgnore @RequestAttribute("User") User user,
                                       @RequestParam("inquiry-id") long inquiryId,
                                       @RequestParam("reply") String reply) {
         Optional<Inquiry> op = inquiryRepository.findById(inquiryId);
@@ -85,7 +85,7 @@ public class ReplyResourceController extends BaseController {
             @ApiResponse(code = 404, message = "Không có câu trả lời nào theo yêu cầu")
     })
     @JsonView(Views.Abridged.class)
-    public ResponseEntity<List<Reply>> getReplyList(@ApiIgnore @RequestAttribute("user") User user,
+    public ResponseEntity<List<Reply>> getReplyList(@ApiIgnore @RequestAttribute("User") User user,
                                                     @RequestParam("inquiry-id") long inquiryId) {
         Optional<List<Reply>> op = replyRepository.findByInquiryId(inquiryId);
         if (op.isPresent())
