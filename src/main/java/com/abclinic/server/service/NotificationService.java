@@ -1,7 +1,9 @@
 package com.abclinic.server.service;
 
+import com.abclinic.server.constant.MessageType;
 import com.abclinic.server.model.entity.notification.Notification;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
+import com.abclinic.server.model.entity.payload.HealthIndexSchedule;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.NotificationRepository;
 import com.abclinic.server.websocket.WebSocketService;
@@ -46,12 +48,13 @@ public class NotificationService {
         builder.add("đã");
         builder.add(message.getMessageType().getAction());
         builder.add("cho bạn");
-//        if (message.getPayload() instanceof Inquiry)
-//            builder.add("yêu cầu tư vấn này.");
-//        else if (message.getPayload() instanceof Record)
-//            builder.add("tư vấn này.");
-//        else if (message.getPayload() instanceof Reply)
-//            builder.add("trả lời tư vấn này.");
+//        if (message.getMessageType() == MessageType.SCHEDULE_REMINDER)
+//            return new StringJoiner(" ")
+//                    .add("Bạn")
+//            .add(message.getMessageType().getAction())
+//            .add("vào")
+//            .add()
+
         return builder.toString();
     }
 
