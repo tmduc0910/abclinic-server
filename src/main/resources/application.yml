@@ -11,9 +11,9 @@ spring:
 #    password: EqtgG6sTqN
 
 ##    HELIO HOST
-    url: jdbc:mysql://johnny.heliohost.org:3306/abclinic_db
-    username: abclinic_testing001
-    password: G^G234L]@&V7
+    url: jdbc:mysql://abclinic.heliohost.org:3306/abclinic_db
+    username: abclinic_admin
+    password: DPL}heLQe;q7
 
   liquibase:
     enabled: true
