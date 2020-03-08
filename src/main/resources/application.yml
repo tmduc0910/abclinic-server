@@ -10,10 +10,10 @@ spring:
 #    username: LQmSwtESHO
 #    password: EqtgG6sTqN
 
-##    db4free.net
-    url: jdbc:mysql://db4free.net:3306/abclinic
-    username: abclinic
-    password: 12345678
+##    HELIO HOST
+    url: jdbc:mysql://johnny.heliohost.org:3306/abclinic_db
+    username: abclinic_admin
+    password: DPL}heLQe;q7
 
   liquibase:
     enabled: true
@@ -38,7 +38,7 @@ logging:
   level:
     org:
       hibernate:
-        SQL: debug
+        SQL:
 jwt:
   secret: abclinic-sec
   ## File Storage Properties
