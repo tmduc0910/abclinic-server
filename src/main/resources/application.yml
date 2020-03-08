@@ -6,14 +6,19 @@ spring:
 #    password: 12345678
 
 ##    REMOTE MYSQL
-    url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
-    username: LQmSwtESHO
-    password: EqtgG6sTqN
+#    url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
+#    username: LQmSwtESHO
+#    password: EqtgG6sTqN
+
+##    db4free.net
+    url: jdbc:mysql://db4free.net:3306/abclinic
+    username: abclinic
+    password: 12345678
 
   liquibase:
     enabled: true
     change-log: classpath:/liquibase/db-changelog.xml
-    drop-first: false
+    drop-first: true
   servlet:
     ## MULTIPART (MultipartProperties)
     multipart:
