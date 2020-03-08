@@ -5,7 +5,7 @@ spring:
 #    username: root
 #    password: 12345678
 
-##    REMOTE MYSQL
+  ##    REMOTE MYSQL
 #    url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
 #    username: LQmSwtESHO
 #    password: EqtgG6sTqN
@@ -14,6 +14,10 @@ spring:
     url: jdbc:mysql://abclinic.heliohost.org:3306/abclinic_db
     username: abclinic_admin
     password: DPL}heLQe;q7
+
+    hikari:
+      idle-timeout: 60000
+      max-lifetime: 180000
 
   liquibase:
     enabled: true
@@ -30,6 +34,8 @@ spring:
       max-file-size: 200MB
       # Max Request Size
       max-request-size: 215MB
+  jpa:
+    open-in-view: false
 server:
   port: 8109
   servlet:
