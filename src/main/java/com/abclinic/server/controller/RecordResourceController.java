@@ -146,7 +146,7 @@ public class RecordResourceController extends BaseController {
             tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng", "Bệnh nhân"}
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "type", value = "Loại tư vấn(0: khám bệnh, 1: dinh dưỡng)", allowableValues = "0, 1", dataType = "int"),
+            @ApiImplicitParam(name = "type", value = "Loại tư vấn(0: khám bệnh, 1: dinh dưỡng)", allowableValues = "0, 1", dataType = "int", example = "0"),
             @ApiImplicitParam(name = "page", value = "Số thứ tự trang", required = true, paramType = "query", allowableValues = "range[1, infinity]", example = "1"),
             @ApiImplicitParam(name = "size", value = "Kích thước trang", required = true, paramType = "query", example = "4")
     })

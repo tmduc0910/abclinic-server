@@ -199,7 +199,7 @@
             <column name="description" type="nvarchar(255)"/>
         </createTable>
 
-        <createTable tableName="patient_health_index">
+        <createTable tableName="health_index_schedule">
             <column name="id" type="int(11)" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
@@ -217,6 +217,7 @@
             <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
             <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
             <column name="started_at" type="TIMESTAMP"/>
+            <column name="ended_at" type="TIMESTAMP"/>
         </createTable>
 
         <createTable tableName="health_index_field">
@@ -234,7 +235,7 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="schedule_id" type="int(11)">
-                <constraints foreignKeyName="fk_phif_schedule" references="patient_health_index(id)"/>
+                <constraints foreignKeyName="fk_phif_schedule" references="health_index_schedule(id)"/>
             </column>
             <column name="field_id" type="int(11)">
                 <constraints foreignKeyName="fk_phif_hif" references="health_index_field(id)"/>
