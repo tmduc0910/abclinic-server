@@ -13,12 +13,7 @@ spring:
 ##    HELIO HOST
     url: jdbc:mysql://abclinic.heliohost.org:3306/abclinic_db
     username: abclinic_admin
-    password: DPL}heLQe;q7
-
-    hikari:
-      idle-timeout: 60000
-      max-lifetime: 180000
-
+    password: fapsWsEBuNFL
   liquibase:
     enabled: true
     change-log: classpath:/liquibase/db-changelog.xml
@@ -44,7 +39,7 @@ logging:
   level:
     org:
       hibernate:
-        SQL:
+        SQL: info
 jwt:
   secret: abclinic-sec
   ## File Storage Properties
