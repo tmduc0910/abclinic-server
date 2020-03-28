@@ -40,6 +40,7 @@ public class DoctorResourceController extends BaseController {
     }
 
     @GetMapping("/doctors")
+    @Transactional
     @Restricted(excluded = Patient.class)
     @ApiOperation(
             value = "Lọc và lấy danh sách bác sĩ",
@@ -99,6 +100,7 @@ public class DoctorResourceController extends BaseController {
     }
 
     @GetMapping("/doctors/{id}")
+    @Transactional
     @ApiOperation(
             value = "Lấy thông tin chi tiết bác sĩ",
             notes = "Trả về thông tin chi tiết của một bác sĩ hoặc 404 NOT FOUND",
