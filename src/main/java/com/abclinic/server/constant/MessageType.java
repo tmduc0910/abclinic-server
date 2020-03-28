@@ -13,7 +13,8 @@ public enum MessageType {
     ACCEPT_ASSIGN(4, "chấp nhận quản lý bệnh nhân"),
     DENY_ASSIGN(5, "từ chối quản lý bệnh nhân"),
     SCHEDULE(6, "đặt lịch gửi chỉ số sức khỏe"),
-    SEND_INDEX(7, "gửi chỉ số sức khỏe");
+    SEND_INDEX(7, "gửi chỉ số sức khỏe"),
+    SCHEDULE_REMINDER(8, "có lịch gửi chỉ số sức khỏe phải nộp");
 
     private int value;
     private String action;

@@ -62,7 +62,7 @@ public class ImageController extends BaseController {
                                                   @RequestParam("files") MultipartFile[] files) {
         Patient patient = patientRepository.findById(user.getId());
         if (files.length == 0)
-            throw new BadRequestException(patient.getId(), "must upload at least 1 image");
+            throw new BadRequestException(patient.getId(), "phải ít nhất upload lên 1 ảnh");
         Album album = GooglePhotosService.makeAlbum();
 //        ImageAlbum imageAlbum = new ImageAlbum(album.getId(), patient, content, type);
 //        save(imageAlbum);
