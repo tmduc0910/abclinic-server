@@ -62,7 +62,7 @@ public class RecordResourceController extends BaseController {
             tags = {"Chuyên khoa", "Dinh dưỡng"}
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "inquiry-id", value = "Mã ID của yêu cầu tư vấn", required = true, dataType = "long", example = "1"),
+            @ApiImplicitParam(name = "inquiry-id", value = "Mã ID của yêu cầu tư vấn", required = true, dataType = "int", example = "1"),
             @ApiImplicitParam(name = "diagnose", value = "Chẩn đoán", dataType = "string", example = "Chẩn đoán"),
             @ApiImplicitParam(name = "note", value = "Ghi chú", required = true, dataType = "string", example = "Ghi chú"),
             @ApiImplicitParam(name = "prescription", value = "Kê đơn", required = true, dataType = "string", example = "Kê đơn")

@@ -47,7 +47,7 @@ public class ReplyResourceController extends BaseController {
             tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng", "Bệnh nhân"}
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "inquiry-id", value = "Mã ID của yêu cầu tư vấn", required = true, paramType = "long", example = "1"),
+            @ApiImplicitParam(name = "inquiry-id", value = "Mã ID của yêu cầu tư vấn", required = true, paramType = "int", example = "1"),
             @ApiImplicitParam(name = "reply", value = "Câu trả lời", required = true, paramType = "string", example = "thắc mắc")
     })
     @ApiResponses({
