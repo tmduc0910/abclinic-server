@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.*;
 
 @Configuration
-@EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
     @Bean
     public AuthenticationInterceptor authenticationInterceptor() {
@@ -34,10 +33,5 @@ public class WebConfig implements WebMvcConfigurer {
 //        registry.addInterceptor(doctorInterceptor())
 //                .addPathPatterns("/admin/**")
 //                .excludePathPatterns("/misc/**");
-    }
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**");
     }
 }
