@@ -3,6 +3,7 @@ package com.abclinic.server.model.entity.user;
 import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.RoleValue;
 import com.abclinic.server.model.entity.Specialty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.WhereJoinTable;
 
@@ -13,6 +14,8 @@ import java.util.List;
 @Entity
 @Table(name = "specialist")
 public class Specialist extends Doctor {
+
+    @Transient
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "specialty_id")
     @JsonView(Views.Public.class)
