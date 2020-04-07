@@ -14,6 +14,7 @@ import com.abclinic.server.model.entity.notification.NotificationMessage;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
+import com.abclinic.server.service.PatientService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,9 @@ public class PatientResourceController extends BaseController {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private PatientService patientService;
+
     @Override
     public void init() {
         this.logger = LoggerFactory.getLogger(PatientResourceController.class);
@@ -65,27 +69,8 @@ public class PatientResourceController extends BaseController {
                                       @RequestParam("page") int page,
                                       @RequestParam("size") int size) {
         Optional<List<Patient>> op = Optional.empty();
-        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
-        switch (user.getRole()) {
-            case COORDINATOR:
-                op = patientRepository.findByPractitioner(null, pageable);
-                break;
-            case PRACTITIONER:
-                Practitioner practitioner = practitionerRepository.findById(user.getId());
-                op = patientRepository.findByPractitioner(practitioner, pageable);
-                break;
-            case SPECIALIST:
-                Specialist specialist = specialistRepository.findById(user.getId());
-                op = patientRepository.findBySpecialists(specialist, pageable);
-                break;
-            case DIETITIAN:
-                Dietitian dietitian = dietitianRepository.findById(user.getId());
-                op = patientRepository.findByDietitians(dietitian, pageable);
-                break;
-        }
-        if (op.isPresent())
-            return new ResponseEntity(op.get(), HttpStatus.OK);
-        else throw new NotFoundException(user.getId());
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("name").ascending());
+        return new ResponseEntity(patientService.getPatientsByDoctor(user, pageable), HttpStatus.OK);
     }
 
     @GetMapping("/patients/{id}")
