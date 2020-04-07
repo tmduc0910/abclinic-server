@@ -13,13 +13,13 @@ import org.springframework.stereotype.Component;
 /**
  * @author tmduc
  * @package com.abclinic.server.model.dao
- * @created 4/7/2020 8:17 PM
+ * @created 4/7/2020 7:46 PM
  */
 @Component
 public class DoctorDAO {
-    private final PractitionerRepository practitionerRepository;
-    private final SpecialistRepository specialistRepository;
-    private final DietitianRepository dietitianRepository;
+    private PractitionerRepository practitionerRepository;
+    private SpecialistRepository specialistRepository;
+    private DietitianRepository dietitianRepository;
 
     @Autowired
     public DoctorDAO(PractitionerRepository practitionerRepository, SpecialistRepository specialistRepository, DietitianRepository dietitianRepository) {

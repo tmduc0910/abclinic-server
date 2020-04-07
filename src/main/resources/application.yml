@@ -29,8 +29,6 @@ spring:
       max-file-size: 200MB
       # Max Request Size
       max-request-size: 215MB
-  jpa:
-    open-in-view: false
 server:
   port: 8109
   servlet:
@@ -39,7 +37,7 @@ logging:
   level:
     org:
       hibernate:
-        SQL: info
+        SQL: debug
 jwt:
   secret: abclinic-sec
   ## File Storage Properties
