@@ -25,7 +25,7 @@ public class User {
     @JsonView(Views.Private.class)
     private String uid;
 
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Abridged.class)
     private int role;
 
     @JsonView(Views.Abridged.class)

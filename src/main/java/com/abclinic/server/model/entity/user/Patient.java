@@ -3,7 +3,9 @@ package com.abclinic.server.model.entity.user;
 import com.abclinic.server.base.Views;
 import com.abclinic.server.constant.RoleValue;
 import com.abclinic.server.model.entity.payload.Inquiry;
+import com.abclinic.server.serializer.ViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.Where;
 import org.hibernate.annotations.WhereJoinTable;
 
@@ -19,6 +21,7 @@ public class Patient extends User {
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Inquiry.class, mappedBy = "patient")
     @JsonView(Views.Private.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private List<Inquiry> inquiries;
 
     @ManyToOne(fetch = FetchType.LAZY)
