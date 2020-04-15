@@ -1,23 +1,23 @@
 spring:
   datasource:
     ##    LOCAL MYSQL
-#    url: jdbc:mysql://localhost:3306/abclinic
-#    username: root
-#    password: 12345678
+    #    url: jdbc:mysql://localhost:3306/abclinic
+    #    username: root
+    #    password: 12345678
 
-  ##    REMOTE MYSQL
-      url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
-      username: LQmSwtESHO
-      password: WM8UIRif1q
+    ##    REMOTE MYSQL
+    url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
+    username: LQmSwtESHO
+    password: WM8UIRif1q
 
   ##    HELIO HOST
-#      url: jdbc:mysql://abclinic.heliohost.org:3306/abclinic_db
-#      username: abclinic_admin
-#      password: QGE_L9vRQUhv
+  #      url: jdbc:mysql://abclinic.heliohost.org:3306/abclinic_db
+  #      username: abclinic_admin
+  #      password: QGE_L9vRQUhv
   liquibase:
     enabled: true
     change-log: classpath:/liquibase/db-changelog.xml
-    drop-first: true
+    drop-first: false
   servlet:
     ## MULTIPART (MultipartProperties)
     multipart:
