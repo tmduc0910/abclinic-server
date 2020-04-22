@@ -1,8 +1,9 @@
 package com.abclinic.server.model.entity.user;
 
 
-import com.abclinic.server.base.Views;
-import com.abclinic.server.constant.Role;
+import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.Role;
+import com.abclinic.server.common.constant.UserStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CreationTimestamp;
@@ -42,6 +43,9 @@ public class User {
     @JsonView(Views.Public.class)
     private LocalDate dateOfBirth;
 
+    @JsonView(Views.Abridged.class)
+    private int age;
+
     @JsonView(Views.Confidential.class)
     private String password;
 
@@ -73,6 +77,8 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.password = password;
         this.phoneNumber = phoneNumber;
+        this.age = LocalDateTime.now().getYear() - dateOfBirth.getYear();
+        this.status = UserStatus.NEW.getValue();
     }
 
     public long getId() {
@@ -125,6 +131,14 @@ public class User {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 
     public String getPassword() {

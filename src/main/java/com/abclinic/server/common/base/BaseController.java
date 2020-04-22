@@ -1,4 +1,4 @@
-package com.abclinic.server.base;
+package com.abclinic.server.common.base;
 
 import com.abclinic.server.model.dto.ErrorDto;
 import com.abclinic.server.model.entity.*;

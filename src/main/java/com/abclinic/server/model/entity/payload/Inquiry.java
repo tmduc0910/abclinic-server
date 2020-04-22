@@ -1,6 +1,6 @@
 package com.abclinic.server.model.entity.payload;
 
-import com.abclinic.server.base.Views;
+import com.abclinic.server.common.base.Views;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.service.GooglePhotosService;
@@ -23,6 +23,8 @@ public class Inquiry extends Payload {
 
     @JsonView(Views.Public.class)
     private String albumId;
+
+
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Reply.class, mappedBy = "inquiry")
     @JsonView(Views.Public.class)

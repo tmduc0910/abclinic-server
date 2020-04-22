@@ -1,6 +1,6 @@
 package com.abclinic.server.model.entity.notification;
 
-import com.abclinic.server.constant.MessageType;
+import com.abclinic.server.common.constant.MessageType;
 import com.abclinic.server.model.entity.payload.Payload;
 import com.abclinic.server.model.entity.user.User;
 

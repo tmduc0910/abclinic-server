@@ -1,13 +1,11 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
-import com.abclinic.server.base.BaseController;
-import com.abclinic.server.base.Views;
-import com.abclinic.server.constant.Role;
-import com.abclinic.server.constant.Status;
-import com.abclinic.server.exception.ForbiddenException;
+import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.Role;
+import com.abclinic.server.common.constant.Status;
 import com.abclinic.server.exception.NotFoundException;
-import com.abclinic.server.model.entity.Specialty;
 import com.abclinic.server.model.entity.user.Coordinator;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.transaction.Transactional;
-import java.util.List;
 import java.util.Optional;
 
 /**

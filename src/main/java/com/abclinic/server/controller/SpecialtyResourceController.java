@@ -1,7 +1,7 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
-import com.abclinic.server.base.BaseController;
+import com.abclinic.server.common.base.BaseController;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.Specialty;
 import com.abclinic.server.model.entity.user.Coordinator;
@@ -9,16 +9,11 @@ import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**

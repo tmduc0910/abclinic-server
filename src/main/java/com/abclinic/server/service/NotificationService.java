@@ -1,9 +1,7 @@
 package com.abclinic.server.service;
 
-import com.abclinic.server.constant.MessageType;
 import com.abclinic.server.model.entity.notification.Notification;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
-import com.abclinic.server.model.entity.payload.HealthIndexSchedule;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.NotificationRepository;
 import com.abclinic.server.websocket.WebSocketService;

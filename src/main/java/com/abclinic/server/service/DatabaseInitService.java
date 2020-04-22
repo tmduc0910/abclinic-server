@@ -1,6 +1,6 @@
 package com.abclinic.server.service;
 
-import com.abclinic.server.constant.Role;
+import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.controller.AuthController;
 import com.abclinic.server.model.entity.Disease;
 import com.abclinic.server.model.entity.user.User;

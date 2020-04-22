@@ -1,6 +1,6 @@
 package com.abclinic.server.exception;
 
-import com.abclinic.server.base.BaseRuntimeException;
+import com.abclinic.server.common.base.BaseRuntimeException;
 import org.springframework.http.HttpStatus;
 
 public class UnauthorizedActionException extends BaseRuntimeException {

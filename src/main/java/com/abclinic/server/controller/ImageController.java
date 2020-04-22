@@ -1,7 +1,7 @@
 package com.abclinic.server.controller;
 
-import com.abclinic.server.base.BaseController;
-import com.abclinic.server.base.Views;
+import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.common.base.Views;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
@@ -17,6 +17,7 @@ import io.swagger.annotations.*;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

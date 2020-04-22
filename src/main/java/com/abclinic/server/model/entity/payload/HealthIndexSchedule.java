@@ -1,7 +1,6 @@
 package com.abclinic.server.model.entity.payload;
 
-import com.abclinic.server.base.Views;
-import com.abclinic.server.model.entity.payload.HealthIndex;
+import com.abclinic.server.common.base.Views;
 import com.abclinic.server.model.entity.payload.record.Record;
 import com.abclinic.server.model.entity.user.Doctor;
 import com.abclinic.server.model.entity.user.User;
@@ -10,9 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.sql.Time;
 import java.time.LocalDateTime;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author tmduc

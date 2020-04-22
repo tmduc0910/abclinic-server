@@ -1,6 +1,6 @@
 package com.abclinic.server.model.entity.user;
 
-import com.abclinic.server.constant.RoleValue;
+import com.abclinic.server.common.constant.RoleValue;
 
 import javax.persistence.*;
 import java.time.LocalDate;

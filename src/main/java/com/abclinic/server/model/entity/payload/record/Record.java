@@ -1,11 +1,9 @@
 package com.abclinic.server.model.entity.payload.record;
 
-import com.abclinic.server.base.Views;
-import com.abclinic.server.constant.Status;
+import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.Status;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.payload.Payload;
-import com.abclinic.server.model.entity.user.Patient;
-import com.abclinic.server.model.entity.user.Practitioner;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;

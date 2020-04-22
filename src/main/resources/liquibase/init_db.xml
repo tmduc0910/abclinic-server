@@ -14,9 +14,10 @@
             <column name="email" type="varchar(225)"/>
             <column name="gender" type="int(2)"/>
             <column name="dob" type="date"/>
+            <column name="age" type="int(3)"/>
             <column name="password" type="varchar(45)"/>
             <column name="phone_number" type="varchar(45)"/>
-            <column name="status" type="int(11)" defaultValue="3"/>
+            <column name="status" type="int(11)" defaultValue="1"/>
             <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
             <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
             <column name="avatar" type="varchar(225)"/>

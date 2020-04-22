@@ -1,6 +1,6 @@
 package com.abclinic.server.model.entity.payload;
 
-import com.abclinic.server.base.Views;
+import com.abclinic.server.common.base.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.GeneratedValue;

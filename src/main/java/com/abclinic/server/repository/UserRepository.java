@@ -1,6 +1,7 @@
 package com.abclinic.server.repository;
 
 import com.abclinic.server.model.entity.user.User;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -15,7 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByPhoneNumber(String phoneNumber);
     Optional<User> findByEmail(String email);
     Optional<User> findByEmailOrPhoneNumber(String email, String phone);
-    Optional<List<User>> findAllByRoleIsLessThanAndStatus(int role, int status, Pageable pageable);
-    Optional<List<User>> findByRoleAndStatus(int role, int status, Pageable pageable);
-    Optional<List<User>> findByStatus(int status, Pageable pageable);
+    Optional<Page<User>> findAllByRoleIsLessThanAndStatus(int role, int status, Pageable pageable);
+    Optional<Page<User>> findByRoleAndStatus(int role, int status, Pageable pageable);
+    Optional<Page<User>> findByStatus(int status, Pageable pageable);
 }

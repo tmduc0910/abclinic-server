@@ -1,10 +1,9 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
-import com.abclinic.server.base.BaseController;
-import com.abclinic.server.base.Views;
+import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.common.base.Views;
 import com.abclinic.server.exception.BadRequestException;
-import com.abclinic.server.model.entity.Specialty;
 import com.abclinic.server.model.entity.user.*;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
@@ -16,10 +15,8 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author tmduc

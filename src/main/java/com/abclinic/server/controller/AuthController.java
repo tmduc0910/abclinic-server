@@ -1,10 +1,11 @@
 package com.abclinic.server.controller;
 
-import com.abclinic.server.base.BaseController;
-import com.abclinic.server.base.Views;
-import com.abclinic.server.constant.Role;
-import com.abclinic.server.constant.RoleValue;
-import com.abclinic.server.constant.Status;
+import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.Role;
+import com.abclinic.server.common.constant.RoleValue;
+import com.abclinic.server.common.constant.Status;
+import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.exception.DuplicateValueException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.WrongCredentialException;
@@ -190,7 +191,6 @@ public class AuthController extends BaseController {
                 break;
             case RoleValue.PATIENT:
                 u = new Patient(name, email, gender, tryParse(dateOfBirth), password, phoneNumber);
-                u.setStatus(Status.User.UNASSIGNED);
                 break;
         }
         save(u);

@@ -1,14 +1,10 @@
 package com.abclinic.server.factory;
 
-import com.abclinic.server.constant.MessageType;
-import com.abclinic.server.constant.Status;
-import com.abclinic.server.model.entity.notification.Notification;
+import com.abclinic.server.common.constant.MessageType;
+import com.abclinic.server.common.constant.Status;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
-import com.abclinic.server.model.entity.payload.HealthIndex;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.payload.Payload;
-import com.abclinic.server.model.entity.payload.Reply;
-import com.abclinic.server.model.entity.payload.record.Record;
 import com.abclinic.server.model.entity.user.User;
 
 import java.util.ArrayList;

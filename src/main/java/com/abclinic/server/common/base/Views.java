@@ -1,4 +1,4 @@
-package com.abclinic.server.base;
+package com.abclinic.server.common.base;
 
 public class Views {
     public static class Abridged {}

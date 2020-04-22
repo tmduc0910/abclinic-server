@@ -1,21 +1,19 @@
-package com.abclinic.server.service;
+package com.abclinic.server.service.entity;
 
-import com.abclinic.server.constant.Status;
-import com.abclinic.server.exception.BadRequestException;
+import com.abclinic.server.common.constant.Status;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.model.entity.payload.record.DietRecord;
 import com.abclinic.server.model.entity.payload.record.MedicalRecord;
 import com.abclinic.server.model.entity.payload.record.Record;
-import com.abclinic.server.model.entity.user.Practitioner;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.DietitianRecordRepository;
 import com.abclinic.server.repository.MedicalRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.naming.directory.NoSuchAttributeException;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -44,7 +42,7 @@ public class RecordService {
         return (T) op.get();
     }
 
-    public Optional<List<MedicalRecord>> getMedicalRecordsByUser(User user, Pageable pageable) {
+    public Optional<Page<MedicalRecord>> getMedicalRecordsByUser(User user, Pageable pageable) {
         switch (user.getRole()) {
             case PRACTITIONER:
                 return medicalRecordRepository.findByInquiryPatientPractitionerId(user.getId(), pageable);
@@ -57,7 +55,7 @@ public class RecordService {
         }
     }
 
-    public Optional<List<DietRecord>> getDietitianRecordsByUser(User user, Pageable pageable) {
+    public Optional<Page<DietRecord>> getDietitianRecordsByUser(User user, Pageable pageable) {
         switch (user.getRole()) {
             case PRACTITIONER:
                 return dietitianRecordRepository.findByInquiryPatientPractitionerId(user.getId(), pageable);

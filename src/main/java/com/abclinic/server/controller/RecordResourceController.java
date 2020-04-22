@@ -1,12 +1,12 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
-import com.abclinic.server.base.BaseController;
-import com.abclinic.server.base.Views;
-import com.abclinic.server.constant.MessageType;
-import com.abclinic.server.constant.RecordType;
-import com.abclinic.server.constant.Role;
-import com.abclinic.server.constant.Status;
+import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.MessageType;
+import com.abclinic.server.common.constant.RecordType;
+import com.abclinic.server.common.constant.Role;
+import com.abclinic.server.common.constant.Status;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
@@ -17,7 +17,7 @@ import com.abclinic.server.model.entity.payload.record.MedicalRecord;
 import com.abclinic.server.model.entity.payload.record.Record;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
-import com.abclinic.server.service.RecordService;
+import com.abclinic.server.service.entity.RecordService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Nullable;
 import javax.naming.directory.NoSuchAttributeException;
-import java.util.List;
 import java.util.Optional;
 
 /**

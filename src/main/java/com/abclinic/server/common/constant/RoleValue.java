@@ -1,4 +1,4 @@
-package com.abclinic.server.constant;
+package com.abclinic.server.common.constant;
 
 public class RoleValue {
     public static final int PRACTITIONER = 0;

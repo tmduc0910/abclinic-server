@@ -1,20 +1,20 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
-import com.abclinic.server.base.BaseController;
-import com.abclinic.server.base.Views;
-import com.abclinic.server.constant.MessageType;
-import com.abclinic.server.constant.RecordType;
-import com.abclinic.server.constant.Status;
+import com.abclinic.server.common.PatientPredicatesBuilder;
+import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.MessageType;
+import com.abclinic.server.common.constant.RecordType;
+import com.abclinic.server.common.constant.Status;
 import com.abclinic.server.exception.BadRequestException;
-import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.entity.notification.Notification;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
-import com.abclinic.server.service.PatientService;
+import com.abclinic.server.service.entity.PatientService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
@@ -56,6 +56,7 @@ public class PatientResourceController extends BaseController {
             tags = "Nhân viên phòng khám"
     )
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "search", value = "Filter lọc bệnh nhân (name, status, gender, age)", paramType = "query", example = "status=1,name=admin,"),
             @ApiImplicitParam(name = "page", value = "Số thứ tự trang", required = true, paramType = "query", allowableValues = "range[1, infinity]", example = "1"),
             @ApiImplicitParam(name = "size", value = "Kích thước trang", required = true, paramType = "query", example = "4")
     })
@@ -66,11 +67,11 @@ public class PatientResourceController extends BaseController {
     @JsonView(Views.Abridged.class)
     @Restricted(excluded = Patient.class)
     public ResponseEntity getPatients(@ApiIgnore @RequestAttribute("User") User user,
+                                      @RequestParam(value = "search", defaultValue = "") String search,
                                       @RequestParam("page") int page,
                                       @RequestParam("size") int size) {
-        Optional<List<Patient>> op = Optional.empty();
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("name").ascending());
-        return new ResponseEntity(patientService.getPatientsByDoctor(user, pageable), HttpStatus.OK);
+        return new ResponseEntity(patientService.getPatients(user, search, new PatientPredicatesBuilder(), pageable), HttpStatus.OK);
     }
 
     @GetMapping("/patients/{id}")

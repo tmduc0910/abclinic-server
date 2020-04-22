@@ -1,4 +1,4 @@
-package com.abclinic.server.constant;
+package com.abclinic.server.common.constant;
 
 import com.abclinic.server.model.entity.user.*;
 

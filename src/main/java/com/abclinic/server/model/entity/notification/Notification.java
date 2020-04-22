@@ -1,6 +1,6 @@
 package com.abclinic.server.model.entity.notification;
 
-import com.abclinic.server.base.Views;
+import com.abclinic.server.common.base.Views;
 import com.abclinic.server.model.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CreationTimestamp;

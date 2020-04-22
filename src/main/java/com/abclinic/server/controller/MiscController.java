@@ -1,8 +1,7 @@
 package com.abclinic.server.controller;
 
-import com.abclinic.server.base.BaseController;
+import com.abclinic.server.common.base.BaseController;
 import com.abclinic.server.model.dto.AccountDto;
-import com.abclinic.server.repository.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.LoggerFactory;

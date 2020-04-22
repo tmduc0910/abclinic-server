@@ -1,9 +1,9 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
-import com.abclinic.server.base.BaseController;
-import com.abclinic.server.base.Views;
-import com.abclinic.server.constant.RecordType;
+import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.RecordType;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -90,12 +90,12 @@ public class InquiryResourceController extends BaseController {
             @ApiResponse(code = 404, message = "Không tìm thấy yêu cầu hợp lệ")
     })
     @JsonView(Views.Public.class)
-    public ResponseEntity<List<Inquiry>> getInquiryList(@ApiIgnore @RequestAttribute("User") User user,
+    public ResponseEntity<Page<Inquiry>> getInquiryList(@ApiIgnore @RequestAttribute("User") User user,
                                                         @RequestParam(value = "assigned", defaultValue = "false") boolean assigned,
                                                         @RequestParam("page") int page,
                                                         @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt"));
-        Optional<List<Inquiry>> inquiries = Optional.empty();
+        Optional<Page<Inquiry>> inquiries = Optional.empty();
         switch (user.getRole()) {
             case COORDINATOR:
                 inquiries = inquiryRepository.findByPatientPractitioner(null, pageable);

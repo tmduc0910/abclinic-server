@@ -1,6 +1,8 @@
 package com.abclinic.server.repository;
 
 import com.abclinic.server.model.entity.payload.Reply;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

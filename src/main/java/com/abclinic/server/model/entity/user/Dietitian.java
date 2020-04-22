@@ -1,9 +1,8 @@
 package com.abclinic.server.model.entity.user;
 
-import com.abclinic.server.base.Views;
-import com.abclinic.server.constant.RoleValue;
+import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.RoleValue;
 import com.abclinic.server.model.entity.Specialty;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
@@ -54,5 +53,10 @@ public class Dietitian extends Doctor {
 
     public void setPatients(List<Patient> patients) {
         this.patients = patients;
+    }
+
+    @Override
+    public String toString() {
+        return "Dinh dưỡng " + getId();
     }
 }

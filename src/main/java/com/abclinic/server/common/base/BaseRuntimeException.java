@@ -1,4 +1,4 @@
-package com.abclinic.server.base;
+package com.abclinic.server.common.base;
 
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.http.HttpStatus;

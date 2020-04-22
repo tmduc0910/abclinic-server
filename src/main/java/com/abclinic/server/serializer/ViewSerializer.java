@@ -1,6 +1,6 @@
 package com.abclinic.server.serializer;
 
-import com.abclinic.server.base.Views;
+import com.abclinic.server.common.base.Views;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

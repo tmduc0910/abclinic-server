@@ -1,15 +1,13 @@
 package com.abclinic.server.model.entity.user;
 
-import com.abclinic.server.base.Views;
-import com.abclinic.server.constant.RoleValue;
+import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.RoleValue;
 import com.abclinic.server.model.entity.Specialty;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -65,5 +63,10 @@ public class Practitioner extends Doctor {
 
     public void addSpecialties(Specialty... specialties) {
         this.specialties.addAll(Arrays.asList(specialties));
+    }
+
+    @Override
+    public String toString() {
+        return "Đa khoa " + getId();
     }
 }

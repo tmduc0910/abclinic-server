@@ -1,11 +1,9 @@
 package com.abclinic.server.model.entity.user;
 
-import com.abclinic.server.base.Views;
-import com.abclinic.server.constant.RoleValue;
+import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.RoleValue;
 import com.abclinic.server.model.entity.Specialty;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.WhereJoinTable;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -60,5 +58,10 @@ public class Specialist extends Doctor {
 
     public void setPatients(List<Patient> patients) {
         this.patients = patients;
+    }
+
+    @Override
+    public String toString() {
+        return "Chuyên khoa " + getId();
     }
 }

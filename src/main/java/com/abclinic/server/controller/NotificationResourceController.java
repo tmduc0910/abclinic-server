@@ -1,21 +1,19 @@
 package com.abclinic.server.controller;
 
-import com.abclinic.server.annotation.authorized.Restricted;
-import com.abclinic.server.base.BaseController;
-import com.abclinic.server.base.Views;
-import com.abclinic.server.constant.MessageType;
+import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.MessageType;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
-import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.entity.notification.Notification;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
-import org.aspectj.weaver.ast.Not;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -65,11 +63,11 @@ public class NotificationResourceController extends BaseController {
             @ApiResponse(code = 404, message = "Không tìm thấy thông báo nào")
     })
     @JsonView(Views.Abridged.class)
-    public ResponseEntity<List<Notification>> getNotifications(@ApiIgnore @RequestAttribute("User") User user,
+    public ResponseEntity<Page<Notification>> getNotifications(@ApiIgnore @RequestAttribute("User") User user,
                                                                @RequestParam("page") int page,
                                                                @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Optional<List<Notification>> op = notificationRepository.findByReceiver(user, pageable);
+        Optional<Page<Notification>> op = notificationRepository.findByReceiver(user, pageable);
         if (op.isPresent())
             return new ResponseEntity<>(op.get(), HttpStatus.OK);
         else throw new NotFoundException(user.getId());
