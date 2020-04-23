@@ -7,5 +7,5 @@ package com.abclinic.server.common.constant;
  */
 public class Constant {
     public static final String FILTER_REGEX = "(\\w+?)(=|<|>)(\\w+?),";
-    public static final String[] ALLOWED_FILTERS = {"name", "age", "status", "gender", "practitioner.id", "dietitian", "specialist"};
+//    public static final String[] ALLOWED_FILTERS = {"name", "age", "status", "gender", "practitioner.id", "dietitian", "specialist"};
 }

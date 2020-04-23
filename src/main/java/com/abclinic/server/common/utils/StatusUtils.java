@@ -12,7 +12,7 @@ import java.util.List;
  * @package com.abclinic.server.utils
  * @created 4/22/2020 9:18 AM
  */
-public class StatusUtil {
+public class StatusUtils {
     public static List<UserStatus> decode(User user) {
         List<UserStatus> list = new ArrayList<>();
         UserStatus.getList().forEach(s -> {
@@ -27,6 +27,20 @@ public class StatusUtil {
                 .mapToInt(UserStatus::getValue)
                 .reduce((a, b) -> a & b)
                 .orElse(UserStatus.NEW.getValue());
+    }
+
+    public static <T extends User> T update(T user, UserStatus newStatus) {
+        if (newStatus != null && !containsStatus(user, newStatus)) {
+            user.setStatus(user.getStatus() + newStatus.getValue());
+        }
+        return user;
+    }
+
+    public static <T extends User> T remove(T user, UserStatus toRemove) {
+        if (containsStatus(user, toRemove)) {
+            user.setStatus(user.getStatus() - toRemove.getValue());
+        }
+        return user;
     }
 
     public static boolean containsStatus(User user, UserStatus status) {

@@ -1,12 +1,14 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
-import com.abclinic.server.common.PatientPredicatesBuilder;
+import com.abclinic.server.common.constant.UserStatus;
+import com.abclinic.server.common.criteria.PatientPredicateBuilder;
 import com.abclinic.server.common.base.BaseController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.MessageType;
 import com.abclinic.server.common.constant.RecordType;
 import com.abclinic.server.common.constant.Status;
+import com.abclinic.server.common.utils.StatusUtils;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.entity.notification.Notification;
@@ -26,9 +28,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * @author tmduc
@@ -71,9 +70,10 @@ public class PatientResourceController extends BaseController {
                                       @RequestParam("page") int page,
                                       @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("name").ascending());
-        return new ResponseEntity(patientService.getPatients(user, search, new PatientPredicatesBuilder(), pageable), HttpStatus.OK);
+        return new ResponseEntity(patientService.getPatients(user, search, new PatientPredicateBuilder(), pageable), HttpStatus.OK);
     }
 
+    //TODO: Optimize using State pattern or Command pattern
     @GetMapping("/patients/{id}")
     @Restricted(excluded = Patient.class)
     @ApiOperation(
@@ -110,30 +110,47 @@ public class PatientResourceController extends BaseController {
                                            @RequestParam("doctor-id") long doctorId,
                                            @RequestParam("inquiry-id") long inquiryId) {
         Inquiry inquiry = inquiryRepository.findById(inquiryId).get();
+        UserStatus newStatus = null;
+        Patient patient = inquiry.getPatient();
         NotificationMessage message = NotificationFactory.getMessage(MessageType.ASSIGN, null, inquiry);
         switch (user.getRole()) {
             case COORDINATOR:
                 Practitioner practitioner = practitionerRepository.findById(doctorId);
                 message.setTargetUser(practitioner);
+
+                //Gán bệnh nhân cho bác sĩ
+                patient.setPractitioner(practitioner);
+                newStatus = UserStatus.ASSIGN_L1;
                 break;
             case PRACTITIONER:
                 Doctor subDoc;
-                if (inquiry.getType() == RecordType.MEDICAL.getValue())
+                if (inquiry.getType() == RecordType.MEDICAL.getValue()) {
                     subDoc = specialistRepository.findById(doctorId);
-                else subDoc = dietitianRepository.findById(doctorId);
+                    patient.addSpecialist((Specialist) subDoc);
+                    newStatus = UserStatus.ASSIGN_L2;
+                }
+                else {
+                    subDoc = dietitianRepository.findById(doctorId);
+                    patient.addDietitian((Dietitian) subDoc);
+                    newStatus = UserStatus.ASSIGN_L3;
+                }
                 message.setTargetUser(subDoc);
                 break;
         }
+        patient = (Patient) StatusUtils.update(user, newStatus);
+        save(patient);
         if (message.getTargetUser() != null)
             notificationService.makeNotification(user, message);
+
         else throw new BadRequestException(user.getId(), "ID bác sĩ không tồn tại");
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
+    //TODO: Optimize
     @PutMapping("/patients/{id}/doctor")
     @Restricted(included = {Practitioner.class, Specialist.class, Dietitian.class})
     @ApiOperation(
-            value = "Tạo yêu cầu gán bệnh nhân cho bác sĩ quản lý",
+            value = "Trả lời yêu cầu gán bệnh nhân cho bác sĩ quản lý",
             notes = "Trả về 200 OK",
             tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
     )
@@ -151,24 +168,18 @@ public class PatientResourceController extends BaseController {
                                             @PathVariable("id") long id) {
         Patient patient = patientRepository.findById(id);
         Notification notification = notificationRepository.findById(notificationId);
-        Doctor doctor;
         if (notification.getType() == MessageType.ASSIGN.getValue()) {
             Inquiry inquiry = inquiryRepository.findById(notification.getPayloadId()).get();
-            if (isAccepted) {
+            if (!isAccepted) {
                 switch (user.getRole()) {
                     case PRACTITIONER:
-                        doctor = practitionerRepository.findById(user.getId());
-                        patient.setPractitioner((Practitioner) doctor);
+                        patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L1);
                         break;
                     case SPECIALIST:
-                        doctor = specialistRepository.findById(user.getId());
-                        patient.addSpecialist((Specialist) doctor);
-                        patient.setStatus(Status.User.ACTIVATED);
+                        patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L2);
                         break;
                     case DIETITIAN:
-                        doctor = dietitianRepository.findById(user.getId());
-                        patient.addDietitian((Dietitian) doctor);
-                        patient.setStatus(Status.User.ACTIVATED);
+                        patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L3);
                         break;
                 }
                 save(patient);

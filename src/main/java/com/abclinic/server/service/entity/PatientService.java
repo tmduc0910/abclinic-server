@@ -1,6 +1,7 @@
 package com.abclinic.server.service.entity;
 
-import com.abclinic.server.common.PatientPredicatesBuilder;
+import com.abclinic.server.common.criteria.PatientPredicateBuilder;
+import com.abclinic.server.common.criteria.UserPredicateBuilder;
 import com.abclinic.server.common.constant.Constant;
 import com.abclinic.server.common.utils.StringUtils;
 import com.abclinic.server.exception.NotFoundException;
@@ -55,7 +56,7 @@ public class PatientService {
     }
 
     @Transactional
-    public Page<Patient> getPatients(User user, String search, PatientPredicatesBuilder builder, Pageable pageable) {
+    public Page<Patient> getPatients(User user, String search, PatientPredicateBuilder builder, Pageable pageable) {
         if (!StringUtils.endsWith(search, ","))
             search += ",";
 

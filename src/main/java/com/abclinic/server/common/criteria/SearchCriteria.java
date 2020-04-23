@@ -1,4 +1,4 @@
-package com.abclinic.server.common;
+package com.abclinic.server.common.criteria;
 
 /**
  * @author tmduc

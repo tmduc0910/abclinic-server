@@ -5,13 +5,17 @@ import com.abclinic.server.common.base.BaseController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.Status;
+import com.abclinic.server.common.constant.UserStatus;
+import com.abclinic.server.common.criteria.DoctorPredicateBuilder;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.user.Coordinator;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
+import com.abclinic.server.service.entity.DoctorService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -31,6 +35,9 @@ import java.util.Optional;
 @RestController
 public class DoctorResourceController extends BaseController {
 
+    @Autowired
+    private DoctorService doctorService;
+
     @Override
     public void init() {
         this.logger = LoggerFactory.getLogger(DoctorResourceController.class);
@@ -45,7 +52,7 @@ public class DoctorResourceController extends BaseController {
             tags = "Nhân viên phòng khám"
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "type", value = "Loại bác sĩ, rỗng là lấy tất (đa khoa, chuyên khoa, dinh dưỡng, điều phối)", allowEmptyValue = true, required = false, allowableValues = "0, 1, 2, 3", dataType = "int", paramType = "query", example = "0"),
+            @ApiImplicitParam(name = "search", value = "Filter lọc bệnh nhân (name, status, specialty, role, experience)", paramType = "query", example = "status=1,name=admin,"),
             @ApiImplicitParam(name = "page", value = "Số thứ tự trang", required = true, paramType = "query", allowableValues = "range[1, infinity]", example = "1"),
             @ApiImplicitParam(name = "size", value = "Kích thước trang", required = true, paramType = "query", example = "4")
     })
@@ -56,19 +63,22 @@ public class DoctorResourceController extends BaseController {
     })
     @JsonView(Views.Public.class)
     public ResponseEntity getDoctorList(@ApiIgnore @RequestAttribute("User") User user,
-                                        @RequestParam(value = "type", required = false) String type,
+                                        @RequestParam(value = "search", defaultValue = "") String search,
                                         @RequestParam("page") int page,
                                         @RequestParam("size") int size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("role"));
-        Optional result;
-        try {
-            result = userRepository.findByRoleAndStatus(Integer.parseInt(type), Status.User.ACTIVATED, pageable);
-        } catch (NumberFormatException e) {
-            result = userRepository.findAllByRoleIsLessThanAndStatus(Role.PATIENT.getValue(), Status.User.ACTIVATED, pageable);
-        }
-        if (result.isPresent())
-            return new ResponseEntity(result.get(), HttpStatus.OK);
-        else throw new NotFoundException(user.getId());
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("role").and(Sort.by("name").ascending()));
+//        Optional result;
+//        try {
+//            result = userRepository.findByRoleAndStatus(Integer.parseInt(type), UserStatus.NEW.getValue(), pageable);
+//        } catch (NumberFormatException e) {
+//            result = userRepository.findAllByRoleIsLessThanAndStatus(Role.PATIENT.getValue(),
+//                    UserStatus.NEW.getValue(), pageable);
+//        }
+//        if (result.isPresent())
+//            return new ResponseEntity(result.get(), HttpStatus.OK);
+//        else throw new NotFoundException(user.getId());
+
+        return new ResponseEntity(doctorService.getDoctors(user, search, new DoctorPredicateBuilder(), pageable), HttpStatus.OK);
     }
 
     @DeleteMapping("/doctors")
@@ -90,7 +100,7 @@ public class DoctorResourceController extends BaseController {
         Optional<User> op = userRepository.findById(id);
         if (op.isPresent()) {
             User doctor = op.get();
-            doctor.setStatus(Status.User.DEACTIVATED);
+            doctor.setStatus(UserStatus.DEACTIVATED.getValue());
             save(doctor);
             return new ResponseEntity(HttpStatus.OK);
         } else throw new NotFoundException(user.getId());

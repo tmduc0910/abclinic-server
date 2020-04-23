@@ -1,6 +1,7 @@
-package com.abclinic.server.common;
+package com.abclinic.server.common.criteria;
 
-import com.abclinic.server.model.entity.user.Patient;
+import com.abclinic.server.common.utils.StringUtils;
+import com.abclinic.server.model.entity.user.User;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.core.types.dsl.PathBuilder;
@@ -11,33 +12,20 @@ import com.querydsl.core.types.dsl.StringPath;
  * @package com.abclinic.server.common
  * @created 4/22/2020 2:27 PM
  */
-public class PatientPredicate {
+public class UserPredicate<T extends User> {
     private SearchCriteria criteria;
+    private PathBuilder<T> entityPath;
 
-    public PatientPredicate(SearchCriteria criteria) {
+    public UserPredicate(SearchCriteria criteria) {
         this.criteria = criteria;
     }
 
-    public BooleanExpression getPredicate() {
-        PathBuilder<Patient> entityPath = new PathBuilder<>(Patient.class, "patient");
-        if (isNumeric(criteria.getValue().toString())) {
-            final NumberPath<Integer> path = entityPath.getNumber(criteria.getKey(), Integer.class);
-            final int value = Integer.parseInt(criteria.getValue().toString());
-            switch (criteria.getOperation()) {
-                case "=":
-                    return path.eq(value);
-                case ">":
-                    return path.goe(value);
-                case "<":
-                    return path.loe(value);
-            }
-        } else {
-            final StringPath path = entityPath.getString(criteria.getKey());
-            if (criteria.getOperation().equalsIgnoreCase("=")) {
-                return path.containsIgnoreCase(criteria.getValue().toString());
-            }
-        }
-        return null;
+    public UserPredicate() {
+
+    }
+
+    public void setEntityPath(PathBuilder<T> entityPath) {
+        this.entityPath = entityPath;
     }
 
     public SearchCriteria getCriteria() {
@@ -48,12 +36,26 @@ public class PatientPredicate {
         this.criteria = criteria;
     }
 
-    public static boolean isNumeric(String s) {
-        try {
-            Integer.parseInt(s);
-        } catch (NumberFormatException e) {
-            return false;
+    public BooleanExpression getPredicate() {
+        if (StringUtils.isNumeric(criteria.getValue().toString())) {
+            final NumberPath<Integer> path = entityPath.getNumber(criteria.getKey(), Integer.class);
+            final int value = Integer.parseInt(criteria.getValue().toString());
+            switch (criteria.getOperation()) {
+                case "=":
+                    return path.eq(value);
+                case ">":
+                    return path.goe(value);
+                case "<":
+                    return path.loe(value);
+                case "!":
+                    return path.ne(value);
+            }
+        } else {
+            final StringPath path = entityPath.getString(criteria.getKey());
+            if (criteria.getOperation().equalsIgnoreCase("=")) {
+                return path.containsIgnoreCase(criteria.getValue().toString());
+            }
         }
-        return true;
+        return null;
     }
 }

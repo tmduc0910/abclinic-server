@@ -17,4 +17,20 @@ public class StringUtils {
     public static boolean endsWith(String s, String c) {
         return s.endsWith(c);
     }
+
+    public static boolean isNumeric(String s) {
+        try {
+            Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean contains(String s, String c) {
+        if (!isNull(s) && !isNull(c)) {
+            return s.contains(c);
+        }
+        return false;
+    }
 }

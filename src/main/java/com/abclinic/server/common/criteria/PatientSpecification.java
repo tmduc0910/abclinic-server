@@ -1,4 +1,4 @@
-package com.abclinic.server.common;
+package com.abclinic.server.common.criteria;
 
 import com.abclinic.server.model.entity.user.Patient;
 import org.springframework.data.jpa.domain.Specification;
