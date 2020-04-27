@@ -24,8 +24,6 @@ public class Inquiry extends Payload {
     @JsonView(Views.Public.class)
     private String albumId;
 
-
-
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Reply.class, mappedBy = "inquiry")
     @JsonView(Views.Public.class)
     private List<Reply> replies;
@@ -33,7 +31,7 @@ public class Inquiry extends Payload {
     @JsonView(Views.Abridged.class)
     private String content;
 
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Abridged.class)
     private int type;
 
     @JsonView(Views.Confidential.class)

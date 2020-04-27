@@ -10,10 +10,10 @@ public enum FilterConstant {
     AGE("age"),
     GENDER("gender"),
     STATUS("status"),
-    PRACTITIONER("practitioner_id"),
-    SPECIALIST("specialist_id"),
-    DIETITIAN("dietitian_id"),
-    SPECIALTY("specialty_id"),
+    PRACTITIONER("practitioner.id"),
+    SPECIALIST("specialist.id"),
+    DIETITIAN("dietitian.id"),
+    SPECIALTY("specialty.id"),
     EXPERIENCE("experience"),
     ROLE("role");
 

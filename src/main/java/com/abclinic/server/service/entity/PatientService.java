@@ -72,10 +72,10 @@ public class PatientService {
                 builder.with("practitioner.id", "=", doctorDAO.getPractitioner((Doctor) user).getId());
                 break;
             case SPECIALIST:
-                builder.with("specialist", "=", doctorDAO.getSpecialist((Doctor) user));
+                builder.with("specialist.id", "=", doctorDAO.getSpecialist((Doctor) user).getId());
                 break;
             case DIETITIAN:
-                builder.with("dietitian", "=", doctorDAO.getDietitian((Doctor) user));
+                builder.with("dietitian.id", "=", doctorDAO.getDietitian((Doctor) user).getId());
                 break;
         }
         BooleanExpression expression = builder.build();

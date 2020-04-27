@@ -21,6 +21,9 @@ public abstract class UserPredicateBuilder<T extends User> {
 
     UserPredicateBuilder() {
         params = new ArrayList<>();
+        allowedFilters.add(FilterConstant.PRACTITIONER.getValue());
+        allowedFilters.add(FilterConstant.DIETITIAN.getValue());
+        allowedFilters.add(FilterConstant.SPECIALIST.getValue());
         config();
     }
 
