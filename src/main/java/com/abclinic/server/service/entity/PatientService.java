@@ -9,6 +9,7 @@ import com.abclinic.server.model.dao.DoctorDAO;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.PatientRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ import java.util.regex.Pattern;
  * @created 4/7/2020 8:19 PM
  */
 @Service
-public class PatientService {
+public class PatientService implements DbService<Patient> {
     private PatientRepository patientRepository;
     private DoctorDAO doctorDAO;
 
@@ -82,5 +83,10 @@ public class PatientService {
         if (expression != null)
             return patientRepository.findAll(expression, pageable);
         return patientRepository.findAll(pageable);
+    }
+
+    @Override
+    public Patient getById(long id) throws NotFoundException {
+        return patientRepository.findById(id).orElseThrow(NotFoundException::new);
     }
 }

@@ -3,7 +3,9 @@ package com.abclinic.server.model.entity.user;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.RoleValue;
 import com.abclinic.server.model.entity.Specialty;
+import com.abclinic.server.serializer.ViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -26,6 +28,7 @@ public class Dietitian extends Doctor {
             inverseJoinColumns = @JoinColumn(name = "patient_id")
     )
     @JsonView(Views.Private.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private List<Patient> patients;
 
     public Dietitian() {

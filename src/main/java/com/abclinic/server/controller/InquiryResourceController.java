@@ -4,6 +4,8 @@ import com.abclinic.server.annotation.authorized.Restricted;
 import com.abclinic.server.common.base.BaseController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.RecordType;
+import com.abclinic.server.common.constant.UserStatus;
+import com.abclinic.server.common.utils.StatusUtils;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
@@ -11,6 +13,7 @@ import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
+import com.abclinic.server.service.entity.PatientService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
@@ -34,6 +37,9 @@ import java.util.Optional;
  */
 @RestController
 public class InquiryResourceController extends BaseController {
+
+    @Autowired
+    private PatientService patientService;
 
     @Autowired
     private NotificationService notificationService;
@@ -63,15 +69,18 @@ public class InquiryResourceController extends BaseController {
                                         @Nullable @RequestParam("album_id") String albumId,
                                         @RequestParam("type") int type,
                                         @RequestParam("content") String content) {
-        Patient patient = patientRepository.findById(user.getId());
-        if (type < RecordType.values().length) {
-            Inquiry inquiry = new Inquiry(patient, albumId, content, type);
-            save(inquiry);
+        Patient patient = patientService.getById(user.getId());
+        if (!StatusUtils.containsStatus(user, UserStatus.NEW) &&
+                !StatusUtils.containsStatus(user, UserStatus.DEACTIVATED)) {
+            if (type < RecordType.values().length) {
+                Inquiry inquiry = new Inquiry(patient, albumId, content, type);
+                save(inquiry);
 
-            //Send notification
-            notificationService.makeNotification(user, NotificationFactory.getMessages(inquiry));
-            return new ResponseEntity(HttpStatus.CREATED);
-        } else throw new BadRequestException(user.getId(), "Loại yêu cầu không hợp lệ");
+                //Send notification
+                notificationService.makeNotification(user, NotificationFactory.getMessages(inquiry));
+                return new ResponseEntity(HttpStatus.CREATED);
+            } else throw new BadRequestException(user.getId(), "Loại yêu cầu không hợp lệ");
+        } else throw new ForbiddenException(user.getId(), "Trạng thái người dùng không hợp lệ");
     }
 
     @GetMapping("/inquiries")
@@ -81,7 +90,7 @@ public class InquiryResourceController extends BaseController {
             tags = {"Nhân viên phòng khám", "Bệnh nhân"}
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "assigned", value = "Tìm bệnh nhân đã được đa khoa gán cho cấp dưới", paramType = "query", type = "boolean", allowableValues = "true, false"),
+            @ApiImplicitParam(name = "assigned", value = "Tìm bệnh nhân đã được đa khoa gán cho cấp dưới", paramType = "query", dataType = "boolean", allowableValues = "true, false"),
             @ApiImplicitParam(name = "page", value = "Số thứ tự trang", required = true, paramType = "query", allowableValues = "range[1, infinity]", example = "1"),
             @ApiImplicitParam(name = "size", value = "Kích thước trang", required = true, paramType = "query", example = "4")
     })
@@ -115,7 +124,7 @@ public class InquiryResourceController extends BaseController {
                 inquiries = inquiryRepository.findByPatientIn(dietitian.getPatients(), pageable);
                 break;
             case PATIENT:
-                Patient patient = patientRepository.findById(user.getId());
+                Patient patient = patientService.getById(user.getId());
                 inquiries = inquiryRepository.findByPatient(patient, pageable);
                 break;
         }

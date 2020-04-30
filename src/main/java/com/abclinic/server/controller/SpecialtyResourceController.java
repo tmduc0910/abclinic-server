@@ -51,11 +51,11 @@ public class SpecialtyResourceController extends BaseController {
             @ApiImplicitParam(name = "detail", value = "Mô tả chuyên môn", required = true, dataType = "string")
     })
     @Restricted(included = Coordinator.class)
-    public ResponseEntity addSpecialty(@RequestParam("name") String name,
+    public ResponseEntity<Specialty> addSpecialty(@RequestParam("name") String name,
                                        @RequestParam("detail") String detail) {
         Specialty specialty = new Specialty(name, detail);
         save(specialty);
-        return new ResponseEntity(HttpStatus.CREATED);
+        return new ResponseEntity<>(specialty, HttpStatus.CREATED);
     }
 
     @PutMapping("/specialties")

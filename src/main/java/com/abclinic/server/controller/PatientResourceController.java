@@ -86,7 +86,7 @@ public class PatientResourceController extends BaseController {
     })
     @JsonView(Views.Private.class)
     public ResponseEntity<Patient> getPatient(@PathVariable("id") long id) {
-        return new ResponseEntity<>(patientRepository.findById(id), HttpStatus.OK);
+        return new ResponseEntity<>(patientService.getById(id), HttpStatus.OK);
     }
 
     @PostMapping("/patients/{id}/doctor")
@@ -111,7 +111,7 @@ public class PatientResourceController extends BaseController {
                                            @RequestParam("inquiry-id") long inquiryId) {
         Inquiry inquiry = inquiryRepository.findById(inquiryId).get();
         UserStatus newStatus = null;
-        Patient patient = inquiry.getPatient();
+        Patient patient = patientService.getById((int) id);
         NotificationMessage message = NotificationFactory.getMessage(MessageType.ASSIGN, null, inquiry);
         switch (user.getRole()) {
             case COORDINATOR:
@@ -137,7 +137,7 @@ public class PatientResourceController extends BaseController {
                 message.setTargetUser(subDoc);
                 break;
         }
-        patient = (Patient) StatusUtils.update(user, newStatus);
+        patient = StatusUtils.update(patient, newStatus);
         save(patient);
         if (message.getTargetUser() != null)
             notificationService.makeNotification(user, message);
@@ -166,7 +166,7 @@ public class PatientResourceController extends BaseController {
                                             @RequestParam("notification-id") long notificationId,
                                             @RequestParam("is-accepted") boolean isAccepted,
                                             @PathVariable("id") long id) {
-        Patient patient = patientRepository.findById(id);
+        Patient patient = patientService.getById(id);
         Notification notification = notificationRepository.findById(notificationId);
         if (notification.getType() == MessageType.ASSIGN.getValue()) {
             Inquiry inquiry = inquiryRepository.findById(notification.getPayloadId()).get();

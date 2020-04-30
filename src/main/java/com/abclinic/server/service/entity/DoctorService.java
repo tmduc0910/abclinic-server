@@ -4,10 +4,9 @@ import com.abclinic.server.common.constant.Constant;
 import com.abclinic.server.common.constant.FilterConstant;
 import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.criteria.DoctorPredicateBuilder;
-import com.abclinic.server.common.criteria.UserPredicateBuilder;
 import com.abclinic.server.common.utils.StringUtils;
+import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.user.Doctor;
-import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.DietitianRepository;
 import com.abclinic.server.repository.PractitionerRepository;
@@ -20,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  * @created 4/23/2020 8:41 PM
  */
 @Service
-public class DoctorService {
+public class DoctorService implements DbService<User> {
     private PractitionerRepository practitionerRepository;
     private SpecialistRepository specialistRepository;
     private DietitianRepository dietitianRepository;
@@ -65,5 +65,10 @@ public class DoctorService {
         if (expression != null)
             return userRepository.findAll(expression, pageable);
         return userRepository.findAll(pageable);
+    }
+
+    @Override
+    public User getById(long id) {
+        return userRepository.findById(id).orElseThrow(NotFoundException::new);
     }
 }

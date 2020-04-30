@@ -11,11 +11,13 @@ import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.service.GooglePhotosService;
+import com.abclinic.server.service.entity.PatientService;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.google.photos.types.proto.Album;
 import io.swagger.annotations.*;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -44,6 +46,9 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/images")
 public class ImageController extends BaseController {
 
+    @Autowired
+    private PatientService patientService;
+
     @Value("${file.upload-dir}")
     private String uploadDirectory;
 
@@ -61,7 +66,7 @@ public class ImageController extends BaseController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<AlbumDto> processUpload(@ApiIgnore @RequestAttribute("User") User user,
                                                   @RequestParam("files") MultipartFile[] files) {
-        Patient patient = patientRepository.findById(user.getId());
+        Patient patient = patientService.getById(user.getId());
         if (files.length == 0)
             throw new BadRequestException(patient.getId(), "phải ít nhất upload lên 1 ảnh");
         Album album = GooglePhotosService.makeAlbum();

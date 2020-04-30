@@ -5,6 +5,7 @@ import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.UserStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -23,7 +24,7 @@ public class User {
     @JsonView(Views.Abridged.class)
     private long id;
 
-    @JsonView(Views.Private.class)
+    @JsonIgnore
     private String uid;
 
     @JsonView(Views.Abridged.class)

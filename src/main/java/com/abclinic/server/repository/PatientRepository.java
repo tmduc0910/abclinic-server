@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public interface PatientRepository extends JpaRepository<Patient, Long>,
         QuerydslPredicateExecutor<Patient>, QuerydslBinderCustomizer<QPatient> {
-    Patient findById(long id);
+    Optional<Patient> findById(long id);
     Page<Patient> findAll(Pageable pageable);
     Optional<Page<Patient>> findByPractitioner(Practitioner practitioner, Pageable pageable);
     Optional<Page<Patient>> findByPractitionerAndStatus(Practitioner practitioner, int status, Pageable pageable);

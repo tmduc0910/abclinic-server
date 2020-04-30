@@ -2,7 +2,9 @@ package com.abclinic.server.model.entity.notification;
 
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.model.entity.user.User;
+import com.abclinic.server.serializer.ViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -24,11 +26,13 @@ public class Notification {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sender_id")
     @JsonView(Views.Abridged.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private User sender;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "receiver_id")
     @JsonView(Views.Private.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private User receiver;
 
     @JsonView(Views.Private.class)

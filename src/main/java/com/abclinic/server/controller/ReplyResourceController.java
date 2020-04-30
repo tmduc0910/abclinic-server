@@ -48,8 +48,8 @@ public class ReplyResourceController extends BaseController {
             tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng", "Bệnh nhân"}
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "inquiry-id", value = "Mã ID của yêu cầu tư vấn", required = true, paramType = "int", example = "1"),
-            @ApiImplicitParam(name = "reply", value = "Câu trả lời", required = true, paramType = "string", example = "thắc mắc")
+            @ApiImplicitParam(name = "inquiry-id", value = "Mã ID của yêu cầu tư vấn", required = true, dataType = "long", example = "1"),
+            @ApiImplicitParam(name = "reply", value = "Câu trả lời", required = true, dataType = "string", example = "thắc mắc")
     })
     @ApiResponses({
             @ApiResponse(code = 201, message = "Tạo câu trả lời thành công"),
@@ -79,7 +79,7 @@ public class ReplyResourceController extends BaseController {
             tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng", "Bệnh nhân"}
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "inquiry-id", value = "Mã ID của yêu cầu tư vấn", required = true, paramType = "long", example = "1")
+            @ApiImplicitParam(name = "inquiry-id", value = "Mã ID của yêu cầu tư vấn", required = true, dataType = "long", example = "1")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Danh sách trả lời theo yêu cầu"),

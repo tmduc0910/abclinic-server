@@ -5,9 +5,11 @@ import com.abclinic.server.common.base.BaseController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.model.entity.user.*;
+import com.abclinic.server.service.entity.PatientService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,9 @@ import java.util.stream.Collectors;
 @RestController
 @Api(tags = "Thông tin cá nhân")
 public class UserInfoResourceController extends BaseController {
+
+    @Autowired
+    private PatientService patientService;
 
     @Override
     public void init() {
@@ -60,7 +65,7 @@ public class UserInfoResourceController extends BaseController {
                                        @Nullable @RequestParam("description") String description) {
         switch (user.getRole()) {
             case PATIENT:
-                Patient patient = patientRepository.findById(user.getId());
+                Patient patient = patientService.getById(user.getId());
                 patient.setAddress(address);
                 save(patient);
             case COORDINATOR:

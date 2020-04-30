@@ -66,7 +66,7 @@ public class NotificationResourceController extends BaseController {
     public ResponseEntity<Page<Notification>> getNotifications(@ApiIgnore @RequestAttribute("User") User user,
                                                                @RequestParam("page") int page,
                                                                @RequestParam("size") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
         Optional<Page<Notification>> op = notificationRepository.findByReceiver(user, pageable);
         if (op.isPresent())
             return new ResponseEntity<>(op.get(), HttpStatus.OK);

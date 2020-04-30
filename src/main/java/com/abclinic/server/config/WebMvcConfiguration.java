@@ -16,7 +16,7 @@ import java.util.List;
 
 @EnableWebMvc
 @Configuration
-@ComponentScan(basePackages = { "com.abclinic.server" })
+@ComponentScan(basePackages = {"com.abclinic.server"})
 public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
     final static Logger log = LoggerFactory.getLogger(WebMvcConfiguration.class);
 
@@ -26,11 +26,5 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
         converters.add(new MappingJackson2HttpMessageConverter(mapper));
         log.info("Jackson Configured");
         log.info(converters.toString());
-    }
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("http://127.0.0.1:5500")
-                .allowedMethods("GET", "POST", "PUT", "DELETE");
     }
 }

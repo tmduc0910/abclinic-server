@@ -116,6 +116,8 @@ public abstract class BaseController {
             healthIndexScheduleRepository.save((HealthIndexSchedule) o);
         else if (o instanceof Notification)
             notificationRepository.save((Notification) o);
+        else if (o instanceof Specialty)
+            specialtyRepository.save((Specialty) o);
     }
 
     @ExceptionHandler(value = BaseRuntimeException.class)
