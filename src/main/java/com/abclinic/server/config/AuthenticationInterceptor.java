@@ -23,7 +23,10 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
         if (requestUri.startsWith("/api/error") || requestUri.contains("swagger") || requestUri.contains("api-docs"))
             return true;
 
-        response.addHeader("Access-Control-Allow-Origin", "*");
+        if (request.getMethod().contains("OPTIONS"))
+            return true;
+
+//        response.addHeader("Access-Control-Allow-Origin", "*");
         response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         response.addHeader("Access-Control-Max-Age", "1000");
         response.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
