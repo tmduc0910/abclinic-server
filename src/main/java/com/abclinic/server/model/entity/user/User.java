@@ -4,6 +4,7 @@ package com.abclinic.server.model.entity.user;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.UserStatus;
+import com.abclinic.server.common.utils.DateTimeUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -78,7 +79,7 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.age = LocalDateTime.now().getYear() - dateOfBirth.getYear();
+        this.age = DateTimeUtils.getDistanceByYear(dateOfBirth);
         this.status = UserStatus.NEW.getValue();
     }
 

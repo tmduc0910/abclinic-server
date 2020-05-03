@@ -6,7 +6,7 @@ import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.MessageType;
 import com.abclinic.server.common.constant.RecordType;
 import com.abclinic.server.common.constant.Role;
-import com.abclinic.server.common.constant.Status;
+import com.abclinic.server.common.constant.PayloadStatus;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
@@ -91,7 +91,7 @@ public class RecordResourceController extends BaseController {
                 else
                     throw new ForbiddenException(user.getId(), "Chỉ có bác sĩ dinh dưỡng mới có thể tư vấn dinh dưỡng");
             }
-            inquiry.setStatus(Status.Payload.PROCESSED);
+            inquiry.setStatus(PayloadStatus.PROCESSED);
             save(inquiry);
             save(record);
             notificationService.makeNotification(user, NotificationFactory.getMessage(MessageType.ADVICE, inquiry.getPatient().getPractitioner(), record));
@@ -128,7 +128,7 @@ public class RecordResourceController extends BaseController {
                 if (record.getRecordType() == RecordType.MEDICAL.getValue())
                     ((MedicalRecord) record).setDiagnose(diagnose);
                 record.setPrescription(prescription);
-                record.setStatus(Status.Payload.PROCESSED);
+                record.setStatus(PayloadStatus.PROCESSED);
                 save(record);
             } else throw new ForbiddenException(user.getId(), "Bác sĩ không phụ trách bệnh nhân này");
             return new ResponseEntity(HttpStatus.OK);

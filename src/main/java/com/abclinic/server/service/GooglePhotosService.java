@@ -1,5 +1,6 @@
 package com.abclinic.server.service;
 
+import com.abclinic.server.common.utils.DateTimeUtils;
 import com.google.api.gax.rpc.ApiException;
 import com.google.common.collect.ImmutableList;
 import com.google.photos.library.v1.PhotosLibraryClient;
@@ -52,7 +53,7 @@ public class GooglePhotosService {
     }
 
     public static Album makeAlbum() {
-        return makeAlbum("album-" + LocalDateTime.now().toString());
+        return makeAlbum("album-" + DateTimeUtils.getCurrent().toString());
     }
 
     public static Album makeAlbum(String title) {

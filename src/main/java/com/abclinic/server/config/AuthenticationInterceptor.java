@@ -1,6 +1,5 @@
 package com.abclinic.server.config;
 
-import com.abclinic.server.common.constant.Status;
 import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.UnauthorizedActionException;

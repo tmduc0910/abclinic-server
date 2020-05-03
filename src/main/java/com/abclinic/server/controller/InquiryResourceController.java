@@ -13,6 +13,7 @@ import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
+import com.abclinic.server.service.entity.InquiryService;
 import com.abclinic.server.service.entity.PatientService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
@@ -43,6 +44,9 @@ public class InquiryResourceController extends BaseController {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private InquiryService inquiryService;
 
     @Override
     public void init() {
@@ -104,33 +108,7 @@ public class InquiryResourceController extends BaseController {
                                                         @RequestParam("page") int page,
                                                         @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt"));
-        Optional<Page<Inquiry>> inquiries = Optional.empty();
-        switch (user.getRole()) {
-            case COORDINATOR:
-                inquiries = inquiryRepository.findByPatientPractitioner(null, pageable);
-                break;
-            case PRACTITIONER:
-                Practitioner practitioner = practitionerRepository.findById(user.getId());
-                if (!assigned)
-                    inquiries = inquiryRepository.findByPatientPractitionerAndPatientSpecialistsIsNullOrPatientDietitiansIsNull(practitioner, pageable);
-                else inquiries = inquiryRepository.findByPatientPractitioner(practitioner, pageable);
-                break;
-            case SPECIALIST:
-                Specialist specialist = specialistRepository.findById(user.getId());
-                inquiries = inquiryRepository.findByPatientIn(specialist.getPatients(), pageable);
-                break;
-            case DIETITIAN:
-                Dietitian dietitian = dietitianRepository.findById(user.getId());
-                inquiries = inquiryRepository.findByPatientIn(dietitian.getPatients(), pageable);
-                break;
-            case PATIENT:
-                Patient patient = patientService.getById(user.getId());
-                inquiries = inquiryRepository.findByPatient(patient, pageable);
-                break;
-        }
-        if (inquiries.isPresent())
-            return new ResponseEntity<>(inquiries.get(), HttpStatus.OK);
-        else throw new NotFoundException(user.getId());
+        return new ResponseEntity<>(inquiryService.getList(user, assigned, pageable), HttpStatus.OK);
     }
 
     @GetMapping("/inquiries/{id}")
@@ -150,31 +128,28 @@ public class InquiryResourceController extends BaseController {
     @JsonView(Views.Private.class)
     public ResponseEntity<Inquiry> getInquiryDetail(@ApiIgnore @RequestAttribute("User") User user,
                                                     @PathVariable("id") long id) {
-        Optional<Inquiry> op = inquiryRepository.findById(id);
-        if (op.isPresent()) {
-            Inquiry inquiry = op.get();
-            switch (user.getRole()) {
-                case COORDINATOR:
-                    if (inquiry.getPatient().getPractitioner() != null)
-                        throw new ForbiddenException(user.getId(), "Điều phối viên không được truy cập vào yêu cầu này.");
-                    break;
-                case PRACTITIONER:
-                    if (!inquiry.getPatient().getPractitioner().equals(user))
-                        throw new ForbiddenException(user.getId(), "Bệnh nhân này không thuộc phạm vi quản lý của bác sĩ");
-                    break;
-                case DIETITIAN:
-                    if (!inquiry.getPatient().getDietitians().contains(user))
-                        throw new ForbiddenException(user.getId(), "Bệnh nhân này không thuộc phạm vi quản lý của bác sĩ");
-                    break;
-                case SPECIALIST:
-                    if (!inquiry.getPatient().getSpecialists().contains(user))
-                        throw new ForbiddenException(user.getId(), "Bệnh nhân này không thuộc phạm vi quản lý của bác sĩ");
-                    break;
-                case PATIENT:
-                    if (!inquiry.getPatient().equals(user))
-                        throw new ForbiddenException(user.getId(), "Bệnh nhân không được truy cập vào yêu cầu từ bệnh nhân khác");
-            }
-            return new ResponseEntity<>(inquiry, HttpStatus.OK);
-        } else throw new NotFoundException(user.getId());
+        Inquiry inquiry = inquiryService.getById(id);
+        switch (user.getRole()) {
+            case COORDINATOR:
+                if (inquiry.getPatient().getPractitioner() != null)
+                    throw new ForbiddenException(user.getId(), "Điều phối viên không được truy cập vào yêu cầu này.");
+                break;
+            case PRACTITIONER:
+                if (!inquiry.getPatient().getPractitioner().equals(user))
+                    throw new ForbiddenException(user.getId(), "Bệnh nhân này không thuộc phạm vi quản lý của bác sĩ");
+                break;
+            case DIETITIAN:
+                if (!inquiry.getPatient().getDietitians().contains(user))
+                    throw new ForbiddenException(user.getId(), "Bệnh nhân này không thuộc phạm vi quản lý của bác sĩ");
+                break;
+            case SPECIALIST:
+                if (!inquiry.getPatient().getSpecialists().contains(user))
+                    throw new ForbiddenException(user.getId(), "Bệnh nhân này không thuộc phạm vi quản lý của bác sĩ");
+                break;
+            case PATIENT:
+                if (!inquiry.getPatient().equals(user))
+                    throw new ForbiddenException(user.getId(), "Bệnh nhân không được truy cập vào yêu cầu từ bệnh nhân khác");
+        }
+        return new ResponseEntity<>(inquiry, HttpStatus.OK);
     }
 }

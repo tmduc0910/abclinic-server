@@ -7,7 +7,6 @@ import com.abclinic.server.common.base.BaseController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.MessageType;
 import com.abclinic.server.common.constant.RecordType;
-import com.abclinic.server.common.constant.Status;
 import com.abclinic.server.common.utils.StatusUtils;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.factory.NotificationFactory;
@@ -70,10 +69,9 @@ public class PatientResourceController extends BaseController {
                                       @RequestParam("page") int page,
                                       @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("name").ascending());
-        return new ResponseEntity(patientService.getPatients(user, search, new PatientPredicateBuilder(), pageable), HttpStatus.OK);
+        return new ResponseEntity(patientService.getList(user, search, new PatientPredicateBuilder(), pageable), HttpStatus.OK);
     }
 
-    //TODO: Optimize using State pattern or Command pattern
     @GetMapping("/patients/{id}")
     @Restricted(excluded = Patient.class)
     @ApiOperation(
@@ -89,6 +87,7 @@ public class PatientResourceController extends BaseController {
         return new ResponseEntity<>(patientService.getById(id), HttpStatus.OK);
     }
 
+    //TODO: Optimize using State pattern or Command pattern
     @PostMapping("/patients/{id}/doctor")
     @Restricted(included = {Coordinator.class, Practitioner.class})
     @ApiOperation(

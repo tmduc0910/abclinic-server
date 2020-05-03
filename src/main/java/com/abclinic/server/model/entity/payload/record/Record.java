@@ -1,7 +1,7 @@
 package com.abclinic.server.model.entity.payload.record;
 
 import com.abclinic.server.common.base.Views;
-import com.abclinic.server.common.constant.Status;
+import com.abclinic.server.common.constant.PayloadStatus;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.payload.Payload;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -54,7 +54,7 @@ public class Record extends Payload {
         this.recordType = recordType;
         this.note = note;
         this.prescription = prescription;
-        this.status = Status.Payload.UNREAD;
+        this.status = PayloadStatus.UNREAD;
     }
 
     public Inquiry getInquiry() {

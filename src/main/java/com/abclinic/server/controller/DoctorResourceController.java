@@ -3,8 +3,6 @@ package com.abclinic.server.controller;
 import com.abclinic.server.annotation.authorized.Restricted;
 import com.abclinic.server.common.base.BaseController;
 import com.abclinic.server.common.base.Views;
-import com.abclinic.server.common.constant.Role;
-import com.abclinic.server.common.constant.Status;
 import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.common.criteria.DoctorPredicateBuilder;
 import com.abclinic.server.exception.NotFoundException;
@@ -67,18 +65,7 @@ public class DoctorResourceController extends BaseController {
                                         @RequestParam("page") int page,
                                         @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("role").and(Sort.by("name").ascending()));
-//        Optional result;
-//        try {
-//            result = userRepository.findByRoleAndStatus(Integer.parseInt(type), UserStatus.NEW.getValue(), pageable);
-//        } catch (NumberFormatException e) {
-//            result = userRepository.findAllByRoleIsLessThanAndStatus(Role.PATIENT.getValue(),
-//                    UserStatus.NEW.getValue(), pageable);
-//        }
-//        if (result.isPresent())
-//            return new ResponseEntity(result.get(), HttpStatus.OK);
-//        else throw new NotFoundException(user.getId());
-
-        return new ResponseEntity(doctorService.getDoctors(user, search, new DoctorPredicateBuilder(), pageable), HttpStatus.OK);
+        return new ResponseEntity(doctorService.getList(user, search, new DoctorPredicateBuilder(), pageable), HttpStatus.OK);
     }
 
     @DeleteMapping("/doctors")
@@ -120,12 +107,13 @@ public class DoctorResourceController extends BaseController {
             @ApiResponse(code = 200, message = "Thông tin chi tiết bác sĩ"),
             @ApiResponse(code = 404, message = "ID của bác sĩ không tồn tại")
     })
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Private.class)
     public ResponseEntity getDoctorDetail(@ApiIgnore @RequestAttribute("User") User user,
                                           @PathVariable(value = "id") long id) {
-        Optional result = userRepository.findById(id);
-        if (result.isPresent())
-            return new ResponseEntity(result.get(), HttpStatus.OK);
-        else throw new NotFoundException(user.getId(), "Bác sĩ không tồn tại");
+        try {
+            return new ResponseEntity(doctorService.getById(id), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            throw new NotFoundException(user.getId(), "Bác sĩ không tồn tại");
+        }
     }
 }

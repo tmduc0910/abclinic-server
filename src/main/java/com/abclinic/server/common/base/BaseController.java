@@ -80,11 +80,6 @@ public abstract class BaseController {
     @PostConstruct
     public abstract void init();
 
-    protected LocalDate tryParse(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        return LocalDate.parse(date, formatter);
-    }
-
     public void save(Object o) {
         if (o instanceof Practitioner)
             practitionerRepository.save((Practitioner) o);

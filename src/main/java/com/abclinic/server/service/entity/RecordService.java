@@ -1,6 +1,6 @@
 package com.abclinic.server.service.entity;
 
-import com.abclinic.server.common.constant.Status;
+import com.abclinic.server.common.constant.PayloadStatus;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.model.entity.payload.record.DietRecord;
 import com.abclinic.server.model.entity.payload.record.MedicalRecord;
@@ -49,7 +49,7 @@ public class RecordService {
             case SPECIALIST:
                 return medicalRecordRepository.findBySpecialistId(user.getId(), pageable);
             case PATIENT:
-                return medicalRecordRepository.findByInquiryPatientIdAndStatus(user.getId(), Status.Payload.PROCESSED, pageable);
+                return medicalRecordRepository.findByInquiryPatientIdAndStatus(user.getId(), PayloadStatus.PROCESSED, pageable);
             default:
                 throw new ForbiddenException(user.getId(), "Bạn không thể truy cập vào kiểu tư vấn này");
         }
@@ -62,7 +62,7 @@ public class RecordService {
             case DIETITIAN:
                 return dietitianRecordRepository.findByDietitianId(user.getId(), pageable);
             case PATIENT:
-                return dietitianRecordRepository.findByInquiryPatientIdAndStatus(user.getId(), Status.Payload.PROCESSED, pageable);
+                return dietitianRecordRepository.findByInquiryPatientIdAndStatus(user.getId(), PayloadStatus.PROCESSED, pageable);
             default:
                 throw new ForbiddenException(user.getId(), "Bạn không thể truy cập vào kiểu tư vấn này");
         }

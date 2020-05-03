@@ -2,23 +2,17 @@ package com.abclinic.server.service.entity;
 
 import com.abclinic.server.common.criteria.PatientPredicateBuilder;
 import com.abclinic.server.common.criteria.UserPredicateBuilder;
-import com.abclinic.server.common.constant.Constant;
-import com.abclinic.server.common.utils.StringUtils;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.dao.DoctorDAO;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.PatientRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author tmduc
@@ -26,7 +20,7 @@ import java.util.regex.Pattern;
  * @created 4/7/2020 8:19 PM
  */
 @Service
-public class PatientService implements DbService<Patient> {
+public class PatientService implements DataMapperService<Patient> {
     private PatientRepository patientRepository;
     private DoctorDAO doctorDAO;
 
@@ -36,50 +30,42 @@ public class PatientService implements DbService<Patient> {
         this.doctorDAO = doctorDAO;
     }
 
-    @Transactional
-    public Page<Patient> getPatientsByDoctor(User user, Pageable pageable) throws NotFoundException {
-        Optional<Page<Patient>> op = Optional.empty();
-        switch (user.getRole()) {
-            case COORDINATOR:
-                op = patientRepository.findByPractitioner(null, pageable);
-                break;
-            case PRACTITIONER:
-                op = patientRepository.findByPractitioner((Practitioner) user, pageable);
-                break;
-            case SPECIALIST:
-                op = patientRepository.findBySpecialists((Specialist) user, pageable);
-                break;
-            case DIETITIAN:
-                op = patientRepository.findByDietitians((Dietitian) user, pageable);
-                break;
-        }
-        return op.orElseThrow(() -> new NotFoundException(user.getId()));
-    }
+//    @Transactional
+//    public Page<Patient> getPatientsByDoctor(User user, Pageable pageable) throws NotFoundException {
+//        Optional<Page<Patient>> op = Optional.empty();
+//        switch (user.getRole()) {
+//            case COORDINATOR:
+//                op = patientRepository.findByPractitioner(null, pageable);
+//                break;
+//            case PRACTITIONER:
+//                op = patientRepository.findByPractitioner((Practitioner) user, pageable);
+//                break;
+//            case SPECIALIST:
+//                op = patientRepository.findBySpecialists((Specialist) user, pageable);
+//                break;
+//            case DIETITIAN:
+//                op = patientRepository.findByDietitians((Dietitian) user, pageable);
+//                break;
+//        }
+//        return op.orElseThrow(() -> new NotFoundException(user.getId()));
+//    }
 
     @Transactional
-    public Page<Patient> getPatients(User user, String search, PatientPredicateBuilder builder, Pageable pageable) {
-        if (!StringUtils.endsWith(search, ","))
-            search += ",";
-
-        if (!StringUtils.isNull(search)) {
-            Pattern pattern = Pattern.compile(Constant.FILTER_REGEX, Pattern.UNICODE_CHARACTER_CLASS);
-            Matcher matcher = pattern.matcher(search + ",");
-            while (matcher.find()) {
-                builder.with(matcher.group(1), matcher.group(2), matcher.group(3));
-            }
-        }
+    @Override
+    public Page<Patient> getList(User user, String search, UserPredicateBuilder builder, Pageable pageable) {
+        PatientPredicateBuilder predBuilder = (PatientPredicateBuilder) builder.init(search);
         switch (user.getRole()) {
             case PRACTITIONER:
-                builder.with("practitioner.id", "=", doctorDAO.getPractitioner((Doctor) user).getId());
+                predBuilder.with("practitioner.id", "=", doctorDAO.getPractitioner((Doctor) user).getId());
                 break;
             case SPECIALIST:
-                builder.with("specialist.id", "=", doctorDAO.getSpecialist((Doctor) user).getId());
+                predBuilder.with("specialist.id", "=", doctorDAO.getSpecialist((Doctor) user).getId());
                 break;
             case DIETITIAN:
-                builder.with("dietitian.id", "=", doctorDAO.getDietitian((Doctor) user).getId());
+                predBuilder.with("dietitian.id", "=", doctorDAO.getDietitian((Doctor) user).getId());
                 break;
         }
-        BooleanExpression expression = builder.build();
+        BooleanExpression expression = predBuilder.build();
         if (expression != null)
             return patientRepository.findAll(expression, pageable);
         return patientRepository.findAll(pageable);

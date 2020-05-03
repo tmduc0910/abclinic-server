@@ -32,7 +32,6 @@ public class Practitioner extends Doctor {
     @JsonSerialize(using = ViewSerializer.class)
     private List<Patient> patients;
 
-
     public Practitioner() {
     }
 
