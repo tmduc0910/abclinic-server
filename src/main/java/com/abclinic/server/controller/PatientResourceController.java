@@ -9,6 +9,7 @@ import com.abclinic.server.common.constant.MessageType;
 import com.abclinic.server.common.constant.RecordType;
 import com.abclinic.server.common.utils.StatusUtils;
 import com.abclinic.server.exception.BadRequestException;
+import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.entity.notification.Notification;
@@ -91,9 +92,19 @@ public class PatientResourceController extends CustomController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "Mã ID của bệnh nhân", required = true, paramType = "path", dataType = "int", example = "1")
     })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Thông tin chi tiết bệnh nhân"),
+            @ApiResponse(code = 403, message = "Bệnh nhân không thuộc quyền quản lý")
+    })
     @JsonView(Views.Private.class)
-    public ResponseEntity<Patient> getPatient(@PathVariable("id") long id) {
-        return new ResponseEntity<>(patientService.getById(id), HttpStatus.OK);
+    public ResponseEntity<Patient> getPatient(@ApiIgnore @RequestAttribute("User") User user,
+                                              @PathVariable("id") long id) {
+        Patient patient = patientService.getById(id);
+        if (patient.getPractitioner().equals(user) ||
+                patient.getDietitians().contains(user) ||
+                patient.getSpecialists().contains(user))
+            return new ResponseEntity<>(patient, HttpStatus.OK);
+        throw new ForbiddenException(user.getId(), "Bệnh nhân không thuộc quyền quản lý");
     }
 
     //TODO: Optimize using State pattern or Command pattern
@@ -137,8 +148,7 @@ public class PatientResourceController extends CustomController {
                         subDoc = (Specialist) doctorService.getById(doctorId);
                         patient.addSpecialist((Specialist) subDoc);
                         newStatus = UserStatus.ASSIGN_L2;
-                    }
-                    else {
+                    } else {
                         subDoc = (Dietitian) doctorService.getById(doctorId);
                         patient.addDietitian((Dietitian) subDoc);
                         newStatus = UserStatus.ASSIGN_L3;

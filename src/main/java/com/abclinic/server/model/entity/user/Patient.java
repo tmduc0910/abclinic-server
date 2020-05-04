@@ -19,7 +19,7 @@ public class Patient extends User {
     private String address;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Inquiry.class, mappedBy = "patient")
-    @JsonView(Views.Confidential.class)
+    @JsonView(Views.Private.class)
     @JsonSerialize(using = ViewSerializer.class)
     private List<Inquiry> inquiries;
 
