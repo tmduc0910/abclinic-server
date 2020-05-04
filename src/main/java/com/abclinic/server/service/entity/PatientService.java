@@ -1,7 +1,7 @@
 package com.abclinic.server.service.entity;
 
 import com.abclinic.server.common.criteria.PatientPredicateBuilder;
-import com.abclinic.server.common.criteria.UserPredicateBuilder;
+import com.abclinic.server.common.criteria.EntityPredicateBuilder;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.dao.DoctorDAO;
 import com.abclinic.server.model.entity.user.*;
@@ -50,9 +50,9 @@ public class PatientService implements DataMapperService<Patient> {
 //        return op.orElseThrow(() -> new NotFoundException(user.getId()));
 //    }
 
-    @Transactional
     @Override
-    public Page<Patient> getList(User user, String search, UserPredicateBuilder builder, Pageable pageable) {
+    @Transactional
+    public Page<Patient> getList(User user, String search, EntityPredicateBuilder builder, Pageable pageable) {
         PatientPredicateBuilder predBuilder = (PatientPredicateBuilder) builder.init(search);
         switch (user.getRole()) {
             case PRACTITIONER:
@@ -72,7 +72,13 @@ public class PatientService implements DataMapperService<Patient> {
     }
 
     @Override
+    @Transactional
     public Patient getById(long id) throws NotFoundException {
         return patientRepository.findById(id).orElseThrow(NotFoundException::new);
+    }
+
+    @Override
+    public Patient save(Patient obj) {
+        return patientRepository.save(obj);
     }
 }

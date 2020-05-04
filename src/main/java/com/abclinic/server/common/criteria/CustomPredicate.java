@@ -12,15 +12,15 @@ import com.querydsl.core.types.dsl.StringPath;
  * @package com.abclinic.server.common
  * @created 4/22/2020 2:27 PM
  */
-public class UserPredicate<T extends User> {
+public class CustomPredicate<T extends User> {
     private SearchCriteria criteria;
     private PathBuilder<T> entityPath;
 
-    public UserPredicate(SearchCriteria criteria) {
+    public CustomPredicate(SearchCriteria criteria) {
         this.criteria = criteria;
     }
 
-    public UserPredicate() {
+    public CustomPredicate() {
 
     }
 

@@ -1,12 +1,11 @@
 package com.abclinic.server.controller;
 
-import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.annotation.authorized.Restricted;
+import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
-import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.RoleValue;
 import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.exception.DuplicateValueException;
-import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.WrongCredentialException;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.entity.UserService;
@@ -31,7 +30,7 @@ import java.util.UUID;
 @RestController
 @Api(tags = "Xác thực")
 @RequestMapping("/auth")
-public class AuthController extends BaseController {
+public class AuthController extends CustomController {
 
     @Autowired
     private UserService userService;
@@ -64,7 +63,7 @@ public class AuthController extends BaseController {
 //        }).orElseThrow(WrongCredentialException::new);
 //    }
 
-    @PostMapping(value = "/login/email")
+    @PostMapping(value = "/login")
     @ApiOperation(value = "Người dùng đăng nhập qua account", notes = "Trả về chuỗi UID hoặc 404 NOT FOUND\n" +
             "Trường UID được trả về sẽ được gán vào header Authorization ở tất cả các API sau đó.")
     @ApiImplicitParams({
@@ -80,12 +79,13 @@ public class AuthController extends BaseController {
                                                       @RequestParam(name = "password") String password) {
         return userService.findByUsernamePassword(username, password).map(u -> {
             u.setUid(UUID.randomUUID().toString());
-            save(u);
+            userService.save(u);
             return new ResponseEntity<>(u.getUid(), HttpStatus.OK);
         }).orElseThrow(WrongCredentialException::new);
     }
 
     @PostMapping(value = "/sign_up")
+    @Restricted(included = Coordinator.class)
     @ApiOperation(value = "Đăng kí tài khoản", notes = "Trả về 201 CREATED hoặc 409 CONFLICT")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "role", value = "Kiểu người dùng (đa khoa, chuyên khoa, dinh dưỡng, điều phối, bệnh nhân)", required = true, allowableValues = "0, 1, 2, 3, 4", dataType = "int", example = "0"),
@@ -110,13 +110,8 @@ public class AuthController extends BaseController {
                                         @RequestParam(name = "gender") int gender,
                                         @RequestParam(name = "dob") String dateOfBirth,
                                         @RequestParam(name = "phone") String phoneNumber) {
-        if (userRepository.findByEmail(email).isPresent() || userRepository.findByPhoneNumber(phoneNumber).isPresent())
+        if (userService.findByEmail(email).isPresent() || userService.findByPhoneNumber(phoneNumber).isPresent())
             throw new DuplicateValueException();
-        if (user != null) {
-            if (user.getRole() != Role.COORDINATOR)
-                throw new ForbiddenException(user.getId(), "Chỉ có điều phối viên mới được đăng ký cho bệnh nhân");
-            else role = Role.PATIENT.getValue();
-        }
         User u = null;
         switch (role) {
             case RoleValue.PRACTITIONER:
@@ -135,7 +130,19 @@ public class AuthController extends BaseController {
                 u = new Patient(name, email, gender, DateTimeUtils.parseDate(dateOfBirth), password, phoneNumber);
                 break;
         }
-        save(u);
+        userService.save(u);
         return new ResponseEntity(HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/sign_out")
+    @ApiOperation(value = "Đăng xuất tài khoản", notes = "Trả về 200 OK")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Đăng xuất thành công")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity processSignOut(@ApiIgnore @RequestAttribute(name = "User") User user) {
+        user.setUid(null);
+        userService.save(user);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

@@ -1,11 +1,15 @@
 package com.abclinic.server.service;
 
+import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.notification.Notification;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.NotificationRepository;
+import com.abclinic.server.service.entity.DataMapperService;
 import com.abclinic.server.websocket.WebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +23,7 @@ import java.util.stream.Collectors;
  */
 
 @Service
-public class NotificationService {
+public class NotificationService implements DataMapperService<Notification> {
     private NotificationRepository notificationRepository;
     private WebSocketService webSocketService;
 
@@ -66,5 +70,20 @@ public class NotificationService {
 
     public List<Notification> makeNotification(User sender, List<NotificationMessage> notificationMessages) {
         return notificationMessages.stream().map(m -> makeNotification(sender, m)).collect(Collectors.toList());
+    }
+
+    @Override
+    public Notification getById(long id) throws NotFoundException {
+        return notificationRepository.findById(id).orElseThrow(NotFoundException::new);
+    }
+
+    @Override
+    public Notification save(Notification obj) {
+        return notificationRepository.save(obj);
+    }
+
+    @Override
+    public Page<Notification> getList(User user, Pageable pageable) {
+        return notificationRepository.findByReceiver(user, pageable).orElseThrow(NotFoundException::new);
     }
 }

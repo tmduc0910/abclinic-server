@@ -1,0 +1,24 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="record_changeset" author="ductm">
+        <addColumn tableName="medical_record">
+            <column name="record_type" type="int(1)"/>
+            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
+            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
+            <column name="specialist_id" type="int(11)">
+                <constraints foreignKeyName="mr_sid_specialist" references="specialist(id)"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="dietitian_record">
+            <column name="record_type" type="int(1)"/>
+            <column name="created_at" defaultValueComputed="CURRENT_TIMESTAMP" type="TIMESTAMP"/>
+            <column name="updated_at" defaultValueComputed="NOW() ON UPDATE NOW()" type="TIMESTAMP"/>
+            <column name="dietitian_id" type="int(11)">
+                <constraints foreignKeyName="dr_did_dietitian" references="dietitian(id)"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

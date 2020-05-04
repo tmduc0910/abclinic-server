@@ -3,6 +3,7 @@ package com.abclinic.server.model.entity.payload;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.model.entity.payload.record.Record;
 import com.abclinic.server.model.entity.user.Doctor;
+import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,10 +22,10 @@ import java.time.LocalDateTime;
 @Table(name = "health_index_schedule")
 public class HealthIndexSchedule<T extends Record> extends Payload {
 
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Record.class)
-    @JoinColumn(name = "record_id")
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Patient.class)
+    @JoinColumn(name = "patient_id")
     @JsonView(Views.Abridged.class)
-    private T record;
+    private Patient patient;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
     @JoinColumn(name = "doctor_id")
@@ -61,18 +62,18 @@ public class HealthIndexSchedule<T extends Record> extends Payload {
 
     }
 
-    public HealthIndexSchedule(T record, Doctor doctor, HealthIndex index) {
-        this.record = record;
+    public HealthIndexSchedule(Patient patient, Doctor doctor, HealthIndex index) {
+        this.patient = patient;
         this.doctor = doctor;
         this.index = index;
     }
 
-    public T getRecord() {
-        return record;
+    public Patient getPatient() {
+        return patient;
     }
 
-    public void setRecord(T record) {
-        this.record = record;
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 
     public Doctor getDoctor() {

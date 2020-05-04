@@ -1,11 +1,14 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
-import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.model.entity.user.*;
+import com.abclinic.server.service.entity.DoctorService;
 import com.abclinic.server.service.entity.PatientService;
+import com.abclinic.server.service.entity.SpecialtyService;
+import com.abclinic.server.service.entity.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
@@ -27,10 +30,19 @@ import java.util.stream.Collectors;
  */
 @RestController
 @Api(tags = "Thông tin cá nhân")
-public class UserInfoResourceController extends BaseController {
+public class UserInfoResourceController extends CustomController {
 
     @Autowired
     private PatientService patientService;
+
+    @Autowired
+    private DoctorService doctorService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private SpecialtyService specialtyService;
 
     @Override
     public void init() {
@@ -58,7 +70,7 @@ public class UserInfoResourceController extends BaseController {
             @ApiImplicitParam(name = "address", value = "Địa chỉ cư trú của bệnh nhân", required = true, dataType = "string"),
             @ApiImplicitParam(name = "description", value = "Mô tả lí lịch của bác sĩ", required = true, dataType = "string")
     })
-    public ResponseEntity editUserInfo(@ApiIgnore @RequestAttribute("User") User user,
+    public ResponseEntity<? extends User> editUserInfo(@ApiIgnore @RequestAttribute("User") User user,
                                        @Nullable @RequestParam("email") String email,
                                        @Nullable @RequestParam("phone") String phone,
                                        @Nullable @RequestParam("address") String address,
@@ -67,27 +79,27 @@ public class UserInfoResourceController extends BaseController {
             case PATIENT:
                 Patient patient = patientService.getById(user.getId());
                 patient.setAddress(address);
-                save(patient);
+                patientService.save(patient);
             case COORDINATOR:
             case SPECIALIST:
-                Specialist specialist = specialistRepository.findById(user.getId());
+                Specialist specialist = (Specialist) doctorService.getById(user.getId());
                 specialist.setDescription(description);
-                save(specialist);
+                doctorService.save(specialist);
             case PRACTITIONER:
-                Practitioner practitioner = practitionerRepository.findById(user.getId());
+                Practitioner practitioner = (Practitioner) doctorService.getById(user.getId());
                 practitioner.setDescription(description);
-                save(practitioner);
+                doctorService.save(practitioner);
             case DIETITIAN:
-                Dietitian dietitian = dietitianRepository.findById(user.getId());
+                Dietitian dietitian = (Dietitian) doctorService.getById(user.getId());
                 dietitian.setDescription(description);
-                save(dietitian);
+                doctorService.save(dietitian);
             default:
                 user.setEmail(email);
                 user.setPhoneNumber(phone);
-                save(user);
+                user = userService.save(user);
                 break;
         }
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PutMapping("/user/specialties")
@@ -103,35 +115,40 @@ public class UserInfoResourceController extends BaseController {
             @ApiResponse(code = 400, message = "Bác sĩ dinh dưỡng/chuyên khoa chỉ có thể chọn tối đa 1 chuyên môn")
     })
     @Restricted(excluded = {Patient.class, Coordinator.class})
-    public ResponseEntity editSpecialties(@ApiIgnore @RequestAttribute("User") User user,
+    public ResponseEntity<? extends User> editSpecialties(@ApiIgnore @RequestAttribute("User") User user,
                                           @RequestParam("specialties") long[] specialtyIds) {
         switch (user.getRole()) {
             case PRACTITIONER:
-                Practitioner practitioner = practitionerRepository.findById(user.getId());
+                Practitioner practitioner = (Practitioner) doctorService.getById(user.getId());
                 practitioner.setSpecialties(Arrays.stream(specialtyIds)
-                        .mapToObj(id -> specialtyRepository.findById(id))
+                        .mapToObj(id -> specialtyService.getById(id))
                         .filter(Objects::nonNull)
                         .collect(Collectors.toSet()));
-                save(practitioner);
-                break;
+                practitioner = (Practitioner) doctorService.save(practitioner);
+                return new ResponseEntity<>(practitioner, HttpStatus.OK);
             case DIETITIAN:
                 if (specialtyIds.length > 1)
                     throw new BadRequestException(user.getId(), "Bác sĩ dinh dưỡng chỉ có thể chọn tối đa 1 chuyên môn");
+                else if (specialtyIds.length == 0)
+                    throw new BadRequestException(user.getId(), "Mảng chuyên môn rỗng");
                 else {
-                    Dietitian dietitian = dietitianRepository.findById(user.getId());
-                    dietitian.setSpecialty(specialtyRepository.findById(specialtyIds[0]));
-                    save(dietitian);
+                    Dietitian dietitian = (Dietitian) doctorService.getById(user.getId());
+                    dietitian.setSpecialty(specialtyService.getById(specialtyIds[0]));
+                    dietitian = (Dietitian) doctorService.save(dietitian);
+                    return new ResponseEntity<>(dietitian, HttpStatus.OK);
                 }
-                break;
             case SPECIALIST:
                 if (specialtyIds.length > 1)
                     throw new BadRequestException(user.getId(), "Bác sĩ chuyên khoa chỉ có thể chọn tối đa 1 chuyên môn");
+                else if (specialtyIds.length == 0)
+                    throw new BadRequestException(user.getId(), "Mảng chuyên môn rỗng");
                 else {
-                    Specialist specialist = specialistRepository.findById(user.getId());
-                    specialist.setSpecialty(specialtyRepository.findById(specialtyIds[0]));
-                    save(specialist);
+                    Specialist specialist = (Specialist) doctorService.getById(user.getId());
+                    specialist.setSpecialty(specialtyService.getById(specialtyIds[0]));
+                    specialist = (Specialist) doctorService.save(specialist);
+                    return new ResponseEntity<>(specialist, HttpStatus.OK);
                 }
         }
-        return new ResponseEntity(HttpStatus.OK);
+        return null;
     }
 }

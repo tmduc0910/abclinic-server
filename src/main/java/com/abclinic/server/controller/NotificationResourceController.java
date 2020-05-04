@@ -1,12 +1,9 @@
 package com.abclinic.server.controller;
 
-import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
-import com.abclinic.server.common.constant.MessageType;
 import com.abclinic.server.exception.ForbiddenException;
-import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.notification.Notification;
-import com.abclinic.server.model.entity.notification.NotificationMessage;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -22,30 +19,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.util.List;
-import java.util.Optional;
-
 /**
  * @author tmduc
  * @package com.abclinic.server.controller
  * @created 2/13/2020 2:00 PM
  */
 @RestController
-public class NotificationResourceController extends BaseController {
+public class NotificationResourceController extends CustomController {
 
     @Autowired
-    NotificationService service;
+    private NotificationService notificationService;
 
     @Override
     public void init() {
         this.logger = LoggerFactory.getLogger(NotificationResourceController.class);
-    }
-
-    @PostMapping("/notifications")
-    @ApiOperation(value = "", tags = "Khác")
-    public ResponseEntity createNotification(@ApiIgnore @RequestAttribute("User") User user) {
-        service.makeNotification(userRepository.findById(5).get(), new NotificationMessage(MessageType.INQUIRE, user, inquiryRepository.findById(1).get()));
-        return new ResponseEntity(HttpStatus.CREATED);
     }
 
     @GetMapping("/notifications")
@@ -67,10 +54,7 @@ public class NotificationResourceController extends BaseController {
                                                                @RequestParam("page") int page,
                                                                @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
-        Optional<Page<Notification>> op = notificationRepository.findByReceiver(user, pageable);
-        if (op.isPresent())
-            return new ResponseEntity<>(op.get(), HttpStatus.OK);
-        else throw new NotFoundException(user.getId());
+        return new ResponseEntity<>(notificationService.getList(user, pageable), HttpStatus.OK);
     }
 
     @GetMapping("/notifications/{id}")
@@ -90,14 +74,11 @@ public class NotificationResourceController extends BaseController {
     @JsonView(Views.Private.class)
     public ResponseEntity<Notification> getNotification(@ApiIgnore @RequestAttribute("User") User user,
                                                         @PathVariable("id") long id) {
-        Notification notification = notificationRepository.findById(id);
-        if (notification != null) {
-            if (notification.getReceiver().equals(user)) {
-                notification.setIsRead(true);
-                save(notification);
-                return new ResponseEntity<>(notification, HttpStatus.OK);
-            }
-            else throw new ForbiddenException(user.getId(), "Không được phép truy cập thông báo của người dùng khác");
-        } else throw new NotFoundException(user.getId());
+        Notification notification = notificationService.getById(id);
+        if (notification.getReceiver().equals(user)) {
+            notification.setIsRead(true);
+            notificationService.save(notification);
+            return new ResponseEntity<>(notification, HttpStatus.OK);
+        } else throw new ForbiddenException(user.getId(), "Không được phép truy cập thông báo của người dùng khác");
     }
 }

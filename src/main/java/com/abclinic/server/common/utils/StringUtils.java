@@ -14,7 +14,15 @@ public class StringUtils {
         return Integer.toBinaryString(i);
     }
 
+    public static boolean startsWith(String s, String c) {
+        if (isNull(s))
+            return false;
+        return s.startsWith(c);
+    }
+
     public static boolean endsWith(String s, String c) {
+        if (isNull(s))
+            return false;
         return s.endsWith(c);
     }
 

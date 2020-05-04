@@ -1,7 +1,7 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
-import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.common.criteria.DoctorPredicateBuilder;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
 
 /**
  * @author tmduc
@@ -31,7 +30,7 @@ import java.util.Optional;
  * @created 1/11/2020 2:47 PM
  */
 @RestController
-public class DoctorResourceController extends BaseController {
+public class DoctorResourceController extends CustomController {
 
     @Autowired
     private DoctorService doctorService;
@@ -84,13 +83,10 @@ public class DoctorResourceController extends BaseController {
     })
     public ResponseEntity deleteDoctor(@ApiIgnore @RequestAttribute("User") User user,
                                        @RequestParam("id") long id) {
-        Optional<User> op = userRepository.findById(id);
-        if (op.isPresent()) {
-            User doctor = op.get();
-            doctor.setStatus(UserStatus.DEACTIVATED.getValue());
-            save(doctor);
-            return new ResponseEntity(HttpStatus.OK);
-        } else throw new NotFoundException(user.getId());
+        User doctor = doctorService.getById(id);
+        doctor.setStatus(UserStatus.DEACTIVATED.getValue());
+        doctorService.save(doctor);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("/doctors/{id}")

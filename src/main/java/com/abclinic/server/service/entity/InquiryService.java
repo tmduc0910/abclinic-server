@@ -1,6 +1,5 @@
 package com.abclinic.server.service.entity;
 
-import com.abclinic.server.common.criteria.UserPredicateBuilder;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.*;
@@ -11,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -31,6 +31,11 @@ public class InquiryService implements DataMapperService<Inquiry> {
         this.doctorService = doctorService;
     }
 
+    @Transactional
+    public List<Inquiry> getByPatient(Patient patient) {
+        return inquiryRepository.findByPatient(patient).orElseThrow(NotFoundException::new);
+    }
+
     @Override
     @Transactional
     public Inquiry getById(long id) throws NotFoundException {
@@ -48,7 +53,7 @@ public class InquiryService implements DataMapperService<Inquiry> {
             case PRACTITIONER:
                 Practitioner practitioner = (Practitioner) doctorService.getById(user.getId());
                 if (!assigned)
-                    inquiries = inquiryRepository.findByPatientPractitionerAndPatientSpecialistsIsNullOrPatientDietitiansIsNull(practitioner, pageable);
+                    inquiries = inquiryRepository.findByPatientPractitionerAndPatientSpecialistsIsNullOrPatientPractitionerAndPatientDietitiansIsNull(practitioner, practitioner, pageable);
                 else inquiries = inquiryRepository.findByPatientPractitioner(practitioner, pageable);
                 break;
             case SPECIALIST:
@@ -65,5 +70,10 @@ public class InquiryService implements DataMapperService<Inquiry> {
                 break;
         }
         return inquiries.orElseThrow(NotFoundException::new);
+    }
+
+    @Override
+    public Inquiry save(Inquiry obj) {
+        return inquiryRepository.save(obj);
     }
 }

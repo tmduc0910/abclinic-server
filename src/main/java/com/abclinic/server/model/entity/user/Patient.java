@@ -19,13 +19,14 @@ public class Patient extends User {
     private String address;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Inquiry.class, mappedBy = "patient")
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Confidential.class)
     @JsonSerialize(using = ViewSerializer.class)
     private List<Inquiry> inquiries;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "practitioner_id")
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Public.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private Practitioner practitioner;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -36,6 +37,7 @@ public class Patient extends User {
             inverseJoinColumns = @JoinColumn(name = "doctor_id")
     )
     @JsonView(Views.Confidential.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private List<Specialist> specialists;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -46,6 +48,7 @@ public class Patient extends User {
             inverseJoinColumns = @JoinColumn(name = "doctor_id")
     )
     @JsonView(Views.Confidential.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private List<Dietitian> dietitians;
 
     public Patient() {

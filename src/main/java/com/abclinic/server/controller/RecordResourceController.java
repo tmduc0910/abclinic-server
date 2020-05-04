@@ -1,7 +1,7 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
-import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.MessageType;
 import com.abclinic.server.common.constant.RecordType;
@@ -17,11 +17,14 @@ import com.abclinic.server.model.entity.payload.record.MedicalRecord;
 import com.abclinic.server.model.entity.payload.record.Record;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
+import com.abclinic.server.service.entity.DoctorService;
+import com.abclinic.server.service.entity.InquiryService;
 import com.abclinic.server.service.entity.RecordService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -31,8 +34,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Nullable;
-import javax.naming.directory.NoSuchAttributeException;
-import java.util.Optional;
 
 /**
  * @author tmduc
@@ -40,7 +41,13 @@ import java.util.Optional;
  * @created 1/11/2020 2:42 PM
  */
 @RestController
-public class RecordResourceController extends BaseController {
+public class RecordResourceController extends CustomController {
+
+    @Autowired
+    private InquiryService inquiryService;
+
+    @Autowired
+    private DoctorService doctorService;
 
     @Autowired
     private NotificationService notificationService;
@@ -71,32 +78,33 @@ public class RecordResourceController extends BaseController {
             @ApiResponse(code = 400, message = "Mã ID của yêu cầu tư vấn không tồn tại"),
             @ApiResponse(code = 403, message = "Chỉ có bác sĩ... mới có thể tư vấn...")
     })
-    public ResponseEntity createRecord(@ApiIgnore @RequestAttribute("User") User user,
+    public ResponseEntity<? extends Record> createRecord(@ApiIgnore @RequestAttribute("User") User user,
                                        @RequestParam("inquiry-id") long inquiryId,
                                        @RequestParam("diagnose") @Nullable String diagnose,
                                        @RequestParam("note") String note,
                                        @RequestParam("prescription") String prescription) {
-        Optional<Inquiry> op = inquiryRepository.findById(inquiryId);
-        if (op.isPresent()) {
-            Inquiry inquiry = op.get();
+        try {
+            Inquiry inquiry = inquiryService.getById(inquiryId);
             Record record;
             if (inquiry.getType() == RecordType.MEDICAL.getValue()) {
                 if (user.getRole() == Role.SPECIALIST)
-                    record = new MedicalRecord(inquiry, diagnose, prescription, specialistRepository.findById(user.getId()), note);
+                    record = new MedicalRecord(inquiry, diagnose, prescription, (Specialist) doctorService.getById(user.getId()), note);
                 else
                     throw new ForbiddenException(user.getId(), "Chỉ có bác sĩ chuyên khoa mới có thể tư vấn khám bệnh");
             } else {
                 if (user.getRole() == Role.DIETITIAN)
-                    record = new DietRecord(inquiry, prescription, note, dietitianRepository.findById(user.getId()));
+                    record = new DietRecord(inquiry, prescription, note, (Dietitian) doctorService.getById(user.getId()));
                 else
                     throw new ForbiddenException(user.getId(), "Chỉ có bác sĩ dinh dưỡng mới có thể tư vấn dinh dưỡng");
             }
             inquiry.setStatus(PayloadStatus.PROCESSED);
-            save(inquiry);
-            save(record);
+            inquiryService.save(inquiry);
+            record = recordService.save(record);
             notificationService.makeNotification(user, NotificationFactory.getMessage(MessageType.ADVICE, inquiry.getPatient().getPractitioner(), record));
-            return new ResponseEntity(HttpStatus.CREATED);
-        } else throw new BadRequestException(user.getId(), "Mã ID của yêu cầu tư vấn không tồn tại");
+            return new ResponseEntity<>(record, HttpStatus.CREATED);
+        } catch (NotFoundException e) {
+            throw new BadRequestException(user.getId(), "Mã ID của yêu cầu tư vấn không tồn tại");
+        }
     }
 
     @PutMapping("/records")
@@ -116,23 +124,23 @@ public class RecordResourceController extends BaseController {
             @ApiResponse(code = 400, message = "Mã ID của tư vấn không tồn tại"),
             @ApiResponse(code = 403, message = "Bác sĩ không phụ trách bệnh nhân này")
     })
-    public ResponseEntity editRecord(@ApiIgnore @RequestAttribute("User") User user,
+    public ResponseEntity<? extends Record> editRecord(@ApiIgnore @RequestAttribute("User") User user,
                                      @RequestParam("record-id") long recordId,
                                      @RequestParam("diagnose") @Nullable String diagnose,
                                      @RequestParam("note") String note,
                                      @RequestParam("prescription") String prescription) {
         try {
-            Record record = recordService.getRecord(recordId);
+            Record record = recordService.getById(recordId);
             if (record.getInquiry().of(user)) {
                 record.setNote(note);
                 if (record.getRecordType() == RecordType.MEDICAL.getValue())
                     ((MedicalRecord) record).setDiagnose(diagnose);
                 record.setPrescription(prescription);
                 record.setStatus(PayloadStatus.PROCESSED);
-                save(record);
+                record = recordService.save(record);
             } else throw new ForbiddenException(user.getId(), "Bác sĩ không phụ trách bệnh nhân này");
-            return new ResponseEntity(HttpStatus.OK);
-        } catch (NoSuchAttributeException e) {
+            return new ResponseEntity<>(record, HttpStatus.OK);
+        } catch (NotFoundException e) {
             throw new BadRequestException(user.getId(), "Mã ID của tư vấn không tồn tại");
         }
     }
@@ -159,26 +167,24 @@ public class RecordResourceController extends BaseController {
                                         @RequestParam("page") int page,
                                         @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Optional op = Optional.empty();
+        Page result = null;
         switch (user.getRole()) {
             case PRACTITIONER:
             case PATIENT:
                 if (type == RecordType.MEDICAL.getValue())
-                    op = recordService.getMedicalRecordsByUser(user, pageable);
+                    result = recordService.getMedicalRecordsByUser(user, pageable);
                 else if (type == RecordType.DIET.getValue())
-                    op = recordService.getDietitianRecordsByUser(user, pageable);
-                else throw new BadRequestException(user.getId(), "Kiểu chỉ có thể là 0 hoặc 1");
+                    result = recordService.getDietitianRecordsByUser(user, pageable);
+                else throw new BadRequestException(user.getId(), "Kiểu chỉ có thể là Khám bệnh hoặc Dinh dưỡng");
                 break;
             case SPECIALIST:
-                op = recordService.getMedicalRecordsByUser(user, pageable);
+                result = recordService.getMedicalRecordsByUser(user, pageable);
                 break;
             case DIETITIAN:
-                op = recordService.getDietitianRecordsByUser(user, pageable);
+                result = recordService.getDietitianRecordsByUser(user, pageable);
                 break;
         }
-        if (op.isPresent())
-            return new ResponseEntity(op.get(), HttpStatus.OK);
-        else throw new NotFoundException(user.getId());
+        return new ResponseEntity(result, HttpStatus.OK);
     }
 
     @GetMapping("/records/{id}")
@@ -198,13 +204,9 @@ public class RecordResourceController extends BaseController {
     @JsonView(Views.Private.class)
     public ResponseEntity getRecordDetail(@ApiIgnore @RequestAttribute("User") User user,
                                           @PathVariable long id) {
-        try {
-            Record record = recordService.getRecord(id);
-            if (record.getInquiry().of(user))
-                return new ResponseEntity(record, HttpStatus.OK);
-            else throw new ForbiddenException(user.getId(), "Bạn không có quyền truy cập vào tư vấn này");
-        } catch (NoSuchAttributeException e) {
-            throw new NotFoundException(user.getId());
-        }
+        Record record = recordService.getById(id);
+        if (record.getInquiry().of(user))
+            return new ResponseEntity(record, HttpStatus.OK);
+        else throw new ForbiddenException(user.getId(), "Bạn không có quyền truy cập vào tư vấn này");
     }
 }

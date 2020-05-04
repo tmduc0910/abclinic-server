@@ -32,7 +32,7 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
         response.addHeader("Cache-Control", "private");
 
         try {
-            if (!requestUri.startsWith("/api/auth")) {
+            if (!requestUri.contains("/api/auth/login")) {
                 String uid = request.getHeader("Authorization");
                 if (uid == null)
                     throw new UnauthorizedActionException(-1, "Thông tin xác thực rỗng");

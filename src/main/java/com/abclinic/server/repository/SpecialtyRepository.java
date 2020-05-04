@@ -4,6 +4,7 @@ import com.abclinic.server.model.entity.Specialty;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author tmduc
@@ -11,5 +12,5 @@ import java.util.List;
  * @created 12/27/2019 4:11 PM
  */
 public interface SpecialtyRepository extends JpaRepository<Specialty, Long> {
-    Specialty findById(long id);
+    Optional<Specialty> findById(long id);
 }

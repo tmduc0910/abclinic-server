@@ -1,6 +1,6 @@
 package com.abclinic.server.controller.deprecated;
 
-        import com.abclinic.server.common.base.BaseController;
+        import com.abclinic.server.common.base.CustomController;
         import io.swagger.annotations.*;
         import org.slf4j.LoggerFactory;
         import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ package com.abclinic.server.controller.deprecated;
 @RestController
 @Api(tags = "Nhân viên phòng khám")
 @RequestMapping("/admin")
-public class DoctorController extends BaseController {
+public class DoctorController extends CustomController {
 
     @Override
     public void init() {

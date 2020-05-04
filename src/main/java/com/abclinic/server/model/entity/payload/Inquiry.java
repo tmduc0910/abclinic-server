@@ -1,10 +1,15 @@
 package com.abclinic.server.model.entity.payload;
 
 import com.abclinic.server.common.base.Views;
+import com.abclinic.server.model.entity.payload.record.DietRecord;
+import com.abclinic.server.model.entity.payload.record.MedicalRecord;
+import com.abclinic.server.model.entity.payload.record.Record;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
+import com.abclinic.server.serializer.ViewSerializer;
 import com.abclinic.server.service.GooglePhotosService;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -19,14 +24,25 @@ public class Inquiry extends Payload {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "patient_id")
     @JsonView(Views.Abridged.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private Patient patient;
 
     @JsonView(Views.Public.class)
     private String albumId;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Reply.class, mappedBy = "inquiry")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Private.class)
     private List<Reply> replies;
+
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = MedicalRecord.class, mappedBy = "inquiry")
+    @JsonView(Views.Private.class)
+    @JsonSerialize(using = ViewSerializer.class)
+    private List<MedicalRecord> medicalRecords;
+
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = DietRecord.class, mappedBy = "inquiry")
+    @JsonView(Views.Private.class)
+    @JsonSerialize(using = ViewSerializer.class)
+    private List<DietRecord> dietRecords;
 
     @JsonView(Views.Abridged.class)
     private String content;
@@ -113,6 +129,22 @@ public class Inquiry extends Payload {
 
     public void setReplies(List<Reply> replies) {
         this.replies = replies;
+    }
+
+    public List<MedicalRecord> getMedicalRecords() {
+        return medicalRecords;
+    }
+
+    public void setMedicalRecords(List<MedicalRecord> medicalRecords) {
+        this.medicalRecords = medicalRecords;
+    }
+
+    public List<DietRecord> getDietRecords() {
+        return dietRecords;
+    }
+
+    public void setDietRecords(List<DietRecord> dietRecords) {
+        this.dietRecords = dietRecords;
     }
 
     public boolean of(User user) {

@@ -2,6 +2,7 @@ package com.abclinic.server.service.entity;
 
 import com.abclinic.server.common.constant.PayloadStatus;
 import com.abclinic.server.exception.ForbiddenException;
+import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.payload.record.DietRecord;
 import com.abclinic.server.model.entity.payload.record.MedicalRecord;
 import com.abclinic.server.model.entity.payload.record.Record;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.naming.directory.NoSuchAttributeException;
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 /**
@@ -22,7 +24,7 @@ import java.util.Optional;
  * @created 2/21/2020 3:19 PM
  */
 @Service
-public class RecordService {
+public class RecordService implements DataMapperService<Record> {
     private MedicalRecordRepository medicalRecordRepository;
     private DietitianRecordRepository dietitianRecordRepository;
 
@@ -32,39 +34,62 @@ public class RecordService {
         this.dietitianRecordRepository = dietitianRecordRepository;
     }
 
-    public <T extends Record> T getRecord(long recordId) throws NoSuchAttributeException {
-        Optional<? extends Record> op = medicalRecordRepository.findById(recordId);
+
+    @Override
+    @Transactional
+    public Record getById(long id) throws NotFoundException {
+        Optional<? extends Record> op = medicalRecordRepository.findById(id);
         if (!op.isPresent()) {
-            op = dietitianRecordRepository.findById(recordId);
+            op = dietitianRecordRepository.findById(id);
             if (!op.isPresent())
-                throw new NoSuchAttributeException();
+                throw new NotFoundException();
         }
-        return (T) op.get();
+        return op.get();
     }
 
-    public Optional<Page<MedicalRecord>> getMedicalRecordsByUser(User user, Pageable pageable) {
+    @Transactional
+    public Page<MedicalRecord> getMedicalRecordsByUser(User user, Pageable pageable) {
+        Optional<Page<MedicalRecord>> op;
         switch (user.getRole()) {
             case PRACTITIONER:
-                return medicalRecordRepository.findByInquiryPatientPractitionerId(user.getId(), pageable);
+                op = medicalRecordRepository.findByInquiryPatientPractitionerId(user.getId(), pageable);
+                break;
             case SPECIALIST:
-                return medicalRecordRepository.findBySpecialistId(user.getId(), pageable);
+                op = medicalRecordRepository.findBySpecialistId(user.getId(), pageable);
+                break;
             case PATIENT:
-                return medicalRecordRepository.findByInquiryPatientIdAndStatus(user.getId(), PayloadStatus.PROCESSED, pageable);
+                op = medicalRecordRepository.findByInquiryPatientIdAndStatus(user.getId(), PayloadStatus.PROCESSED, pageable);
+                break;
             default:
                 throw new ForbiddenException(user.getId(), "Bạn không thể truy cập vào kiểu tư vấn này");
         }
+        return op.orElseThrow(NotFoundException::new);
     }
 
-    public Optional<Page<DietRecord>> getDietitianRecordsByUser(User user, Pageable pageable) {
+    @Transactional
+    public Page<DietRecord> getDietitianRecordsByUser(User user, Pageable pageable) {
+        Optional<Page<DietRecord>> op;
         switch (user.getRole()) {
             case PRACTITIONER:
-                return dietitianRecordRepository.findByInquiryPatientPractitionerId(user.getId(), pageable);
+                op = dietitianRecordRepository.findByInquiryPatientPractitionerId(user.getId(), pageable);
+                break;
             case DIETITIAN:
-                return dietitianRecordRepository.findByDietitianId(user.getId(), pageable);
+                op = dietitianRecordRepository.findByDietitianId(user.getId(), pageable);
+                break;
             case PATIENT:
-                return dietitianRecordRepository.findByInquiryPatientIdAndStatus(user.getId(), PayloadStatus.PROCESSED, pageable);
+                op = dietitianRecordRepository.findByInquiryPatientIdAndStatus(user.getId(), PayloadStatus.PROCESSED, pageable);
+                break;
             default:
                 throw new ForbiddenException(user.getId(), "Bạn không thể truy cập vào kiểu tư vấn này");
         }
+        return op.orElseThrow(NotFoundException::new);
+    }
+
+    @Override
+    public Record save(Record obj) {
+        if (obj instanceof MedicalRecord)
+            return medicalRecordRepository.save((MedicalRecord) obj);
+        else
+            return dietitianRecordRepository.save((DietRecord) obj);
     }
 }

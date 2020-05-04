@@ -1,18 +1,18 @@
 package com.abclinic.server.exception;
 
-import com.abclinic.server.common.base.BaseRuntimeException;
+import com.abclinic.server.common.base.CustomRuntimeException;
 import org.springframework.http.HttpStatus;
 
-public class NotFoundException extends BaseRuntimeException {
+public class NotFoundException extends CustomRuntimeException {
     public NotFoundException() {
-        super("Resource not found", 0, HttpStatus.NOT_FOUND);
+        super("Tài nguyên không tồn tại", 0, HttpStatus.NOT_FOUND);
     }
 
     public NotFoundException(long userId, String message) {
-        super("Resource not found: " + message, userId, HttpStatus.NOT_FOUND);
+        super("Tài nguyên không tồn tại: " + message, userId, HttpStatus.NOT_FOUND);
     }
 
     public NotFoundException(long userId) {
-        super("Resource not found", userId, HttpStatus.NOT_FOUND);
+        super("Tài nguyên không tồn tại", userId, HttpStatus.NOT_FOUND);
     }
 }

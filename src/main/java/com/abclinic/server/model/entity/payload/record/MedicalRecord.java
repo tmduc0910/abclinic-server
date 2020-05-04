@@ -25,10 +25,6 @@ public class MedicalRecord extends Record {
     @JsonView(Views.Abridged.class)
     private Disease disease;
 
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = HealthIndexSchedule.class, mappedBy = "record")
-    @JsonView(Views.Public.class)
-    private List<HealthIndexSchedule<MedicalRecord>> schedules;
-
     @JsonView(Views.Abridged.class)
     private String diagnose;
 
@@ -56,14 +52,6 @@ public class MedicalRecord extends Record {
 
     public void setDisease(Disease disease) {
         this.disease = disease;
-    }
-
-    public List<HealthIndexSchedule<MedicalRecord>> getSchedules() {
-        return schedules;
-    }
-
-    public void setSchedules(List<HealthIndexSchedule<MedicalRecord>> schedules) {
-        this.schedules = schedules;
     }
 
     public String getDiagnose() {

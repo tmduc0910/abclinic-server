@@ -9,7 +9,7 @@ import com.querydsl.core.types.dsl.PathBuilder;
  * @package com.abclinic.server.common.criteria
  * @created 4/23/2020 8:17 PM
  */
-public class DoctorPredicateBuilder extends UserPredicateBuilder<Doctor> {
+public class DoctorPredicateBuilder extends EntityPredicateBuilder<Doctor> {
 
     @Override
     protected void config() {
@@ -17,7 +17,7 @@ public class DoctorPredicateBuilder extends UserPredicateBuilder<Doctor> {
                 .allow(FilterConstant.ROLE)
                 .allow(FilterConstant.SPECIALTY)
                 .allow(FilterConstant.STATUS)
-                .setPredicate(new UserPredicate<Doctor>())
+                .setPredicate(new CustomPredicate<Doctor>())
                 .setPathBuilder(new PathBuilder<>(Doctor.class, "user"));
     }
 }

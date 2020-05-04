@@ -9,5 +9,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
-    Optional<List<Reply>> findByInquiryId(long inquiryId);
+    Optional<Page<Reply>> findByInquiryId(long inquiryId, Pageable pageable);
 }

@@ -1,6 +1,6 @@
 package com.abclinic.server.exception;
 
-import com.abclinic.server.common.base.BaseRuntimeException;
+import com.abclinic.server.common.base.CustomRuntimeException;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
  * @package com.abclinic.server.exception
  * @created 11/29/2019 9:19 AM
  */
-public class BadRequestException extends BaseRuntimeException {
+public class BadRequestException extends CustomRuntimeException {
     public BadRequestException(long userId) {
         super("Bad request", userId, HttpStatus.BAD_REQUEST);
     }

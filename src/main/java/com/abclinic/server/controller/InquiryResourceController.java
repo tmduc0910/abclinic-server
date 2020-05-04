@@ -1,14 +1,13 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
-import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.RecordType;
 import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.common.utils.StatusUtils;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
-import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.*;
@@ -29,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
+import javax.swing.text.View;
 
 /**
  * @author tmduc
@@ -37,7 +36,7 @@ import java.util.Optional;
  * @created 2/4/2020 2:24 PM
  */
 @RestController
-public class InquiryResourceController extends BaseController {
+public class InquiryResourceController extends CustomController {
 
     @Autowired
     private PatientService patientService;
@@ -69,20 +68,24 @@ public class InquiryResourceController extends BaseController {
             @ApiResponse(code = 201, message = "Tạo mới thành công"),
             @ApiResponse(code = 400, message = "Loại yêu cầu không hợp lệ")
     })
-    public ResponseEntity createInquiry(@ApiIgnore @RequestAttribute("User") User user,
-                                        @Nullable @RequestParam("album_id") String albumId,
-                                        @RequestParam("type") int type,
-                                        @RequestParam("content") String content) {
+    @JsonView(Views.Public.class)
+    public ResponseEntity<Inquiry> createInquiry(@ApiIgnore @RequestAttribute("User") User user,
+                                                 @Nullable @RequestParam("album_id") String albumId,
+                                                 @RequestParam("type") int type,
+                                                 @RequestParam("content") String content) {
         Patient patient = patientService.getById(user.getId());
-        if (!StatusUtils.containsStatus(user, UserStatus.NEW) &&
-                !StatusUtils.containsStatus(user, UserStatus.DEACTIVATED)) {
+        if (!StatusUtils.containsStatus(user, UserStatus.DEACTIVATED)) {
+            if (StatusUtils.equalsStatus(user, UserStatus.NEW)) {
+                if (!patient.getInquiries().isEmpty())
+                    throw new ForbiddenException(user.getId(), "Yêu cầu của bạn đang được xử lý");
+            }
             if (type < RecordType.values().length) {
                 Inquiry inquiry = new Inquiry(patient, albumId, content, type);
-                save(inquiry);
+                inquiry = inquiryService.save(inquiry);
 
                 //Send notification
                 notificationService.makeNotification(user, NotificationFactory.getMessages(inquiry));
-                return new ResponseEntity(HttpStatus.CREATED);
+                return new ResponseEntity<>(inquiry, HttpStatus.CREATED);
             } else throw new BadRequestException(user.getId(), "Loại yêu cầu không hợp lệ");
         } else throw new ForbiddenException(user.getId(), "Trạng thái người dùng không hợp lệ");
     }

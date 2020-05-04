@@ -3,18 +3,21 @@ package com.abclinic.server.controller;
 import com.abclinic.server.annotation.authorized.Restricted;
 import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.common.criteria.PatientPredicateBuilder;
-import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.MessageType;
 import com.abclinic.server.common.constant.RecordType;
 import com.abclinic.server.common.utils.StatusUtils;
 import com.abclinic.server.exception.BadRequestException;
+import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.entity.notification.Notification;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
+import com.abclinic.server.service.entity.DoctorService;
+import com.abclinic.server.service.entity.InquiryService;
 import com.abclinic.server.service.entity.PatientService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
@@ -34,13 +37,19 @@ import springfox.documentation.annotations.ApiIgnore;
  * @created 1/11/2020 2:42 PM
  */
 @RestController
-public class PatientResourceController extends BaseController {
+public class PatientResourceController extends CustomController {
 
     @Autowired
     private NotificationService notificationService;
 
     @Autowired
     private PatientService patientService;
+
+    @Autowired
+    private InquiryService inquiryService;
+
+    @Autowired
+    private DoctorService doctorService;
 
     @Override
     public void init() {
@@ -108,41 +117,43 @@ public class PatientResourceController extends BaseController {
                                            @PathVariable("id") long id,
                                            @RequestParam("doctor-id") long doctorId,
                                            @RequestParam("inquiry-id") long inquiryId) {
-        Inquiry inquiry = inquiryRepository.findById(inquiryId).get();
-        UserStatus newStatus = null;
-        Patient patient = patientService.getById((int) id);
-        NotificationMessage message = NotificationFactory.getMessage(MessageType.ASSIGN, null, inquiry);
-        switch (user.getRole()) {
-            case COORDINATOR:
-                Practitioner practitioner = practitionerRepository.findById(doctorId);
-                message.setTargetUser(practitioner);
+        try {
+            Inquiry inquiry = inquiryService.getById(inquiryId);
+            UserStatus newStatus = null;
+            Patient patient = patientService.getById(id);
+            NotificationMessage message = NotificationFactory.getMessage(MessageType.ASSIGN, null, inquiry);
+            switch (user.getRole()) {
+                case COORDINATOR:
+                    Practitioner practitioner = (Practitioner) doctorService.getById(doctorId);
+                    message.setTargetUser(practitioner);
 
-                //Gán bệnh nhân cho bác sĩ
-                patient.setPractitioner(practitioner);
-                newStatus = UserStatus.ASSIGN_L1;
-                break;
-            case PRACTITIONER:
-                Doctor subDoc;
-                if (inquiry.getType() == RecordType.MEDICAL.getValue()) {
-                    subDoc = specialistRepository.findById(doctorId);
-                    patient.addSpecialist((Specialist) subDoc);
-                    newStatus = UserStatus.ASSIGN_L2;
-                }
-                else {
-                    subDoc = dietitianRepository.findById(doctorId);
-                    patient.addDietitian((Dietitian) subDoc);
-                    newStatus = UserStatus.ASSIGN_L3;
-                }
-                message.setTargetUser(subDoc);
-                break;
+                    //Gán bệnh nhân cho bác sĩ
+                    patient.setPractitioner(practitioner);
+                    newStatus = UserStatus.ASSIGN_L1;
+                    break;
+                case PRACTITIONER:
+                    Doctor subDoc;
+                    if (inquiry.getType() == RecordType.MEDICAL.getValue()) {
+                        subDoc = (Specialist) doctorService.getById(doctorId);
+                        patient.addSpecialist((Specialist) subDoc);
+                        newStatus = UserStatus.ASSIGN_L2;
+                    }
+                    else {
+                        subDoc = (Dietitian) doctorService.getById(doctorId);
+                        patient.addDietitian((Dietitian) subDoc);
+                        newStatus = UserStatus.ASSIGN_L3;
+                    }
+                    message.setTargetUser(subDoc);
+                    break;
+            }
+            patient = StatusUtils.update(patient, newStatus);
+
+            if (message.getTargetUser() != null)
+                notificationService.makeNotification(user, message);
+            return new ResponseEntity(HttpStatus.CREATED);
+        } catch (NotFoundException e) {
+            throw new BadRequestException(user.getId(), "ID không tồn tại");
         }
-        patient = StatusUtils.update(patient, newStatus);
-        save(patient);
-        if (message.getTargetUser() != null)
-            notificationService.makeNotification(user, message);
-
-        else throw new BadRequestException(user.getId(), "ID bác sĩ không tồn tại");
-        return new ResponseEntity(HttpStatus.CREATED);
     }
 
     //TODO: Optimize
@@ -165,26 +176,34 @@ public class PatientResourceController extends BaseController {
                                             @RequestParam("notification-id") long notificationId,
                                             @RequestParam("is-accepted") boolean isAccepted,
                                             @PathVariable("id") long id) {
-        Patient patient = patientService.getById(id);
-        Notification notification = notificationRepository.findById(notificationId);
-        if (notification.getType() == MessageType.ASSIGN.getValue()) {
-            Inquiry inquiry = inquiryRepository.findById(notification.getPayloadId()).get();
-            if (!isAccepted) {
-                switch (user.getRole()) {
-                    case PRACTITIONER:
-                        patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L1);
-                        break;
-                    case SPECIALIST:
-                        patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L2);
-                        break;
-                    case DIETITIAN:
-                        patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L3);
-                        break;
+        try {
+            Patient patient = patientService.getById(id);
+            try {
+                Notification notification = notificationService.getById(notificationId);
+                if (notification.getType() == MessageType.ASSIGN.getValue()) {
+                    Inquiry inquiry = inquiryService.getById(notification.getPayloadId());
+                    if (!isAccepted) {
+                        switch (user.getRole()) {
+                            case PRACTITIONER:
+                                patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L1);
+                                break;
+                            case SPECIALIST:
+                                patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L2);
+                                break;
+                            case DIETITIAN:
+                                patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L3);
+                                break;
+                        }
+                        patientService.save(patient);
+                    }
+                    notificationService.makeNotification(user, NotificationFactory.getMessage(isAccepted ? MessageType.ACCEPT_ASSIGN : MessageType.DENY_ASSIGN, notification.getSender(), inquiry));
                 }
-                save(patient);
+                return new ResponseEntity(HttpStatus.OK);
+            } catch (NotFoundException e) {
+                throw new BadRequestException(user.getId(), "Mã ID thông báo không tồn tại");
             }
-            notificationService.makeNotification(user, NotificationFactory.getMessage(isAccepted ? MessageType.ACCEPT_ASSIGN : MessageType.DENY_ASSIGN, notification.getSender(), inquiry));
+        } catch (NotFoundException e) {
+            throw new BadRequestException(user.getId(), "Mã ID bệnh nhân không tồn tại");
         }
-        return new ResponseEntity(HttpStatus.OK);
     }
 }

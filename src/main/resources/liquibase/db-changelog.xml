@@ -5,5 +5,5 @@
     <include file="liquibase/init_db.xml"/>
     <include file="liquibase/unique_changeset.xml"/>
     <include file="liquibase/create_index_changeset.xml"/>
-
+    <include file="liquibase/record_changeset.xml"/>
 </databaseChangeLog>

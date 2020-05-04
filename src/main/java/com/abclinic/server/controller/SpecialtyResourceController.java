@@ -1,14 +1,15 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
-import com.abclinic.server.common.base.BaseController;
-import com.abclinic.server.exception.NotFoundException;
+import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.model.entity.Specialty;
 import com.abclinic.server.model.entity.user.Coordinator;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
+import com.abclinic.server.service.entity.SpecialtyService;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,10 @@ import java.util.List;
  * @created 2/7/2020 2:49 PM
  */
 @RestController
-public class SpecialtyResourceController extends BaseController {
+public class SpecialtyResourceController extends CustomController {
+
+    @Autowired
+    private SpecialtyService specialtyService;
 
     @Override
     public void init() {
@@ -37,7 +41,7 @@ public class SpecialtyResourceController extends BaseController {
             tags = "Nhân viên phòng khám"
     )
     public ResponseEntity<List<Specialty>> getSpecialties(@ApiIgnore @RequestAttribute("User") User user) {
-        return new ResponseEntity<>(specialtyRepository.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(specialtyService.getAll(), HttpStatus.OK);
     }
 
     @PostMapping("/specialties")
@@ -52,9 +56,9 @@ public class SpecialtyResourceController extends BaseController {
     })
     @Restricted(included = Coordinator.class)
     public ResponseEntity<Specialty> addSpecialty(@RequestParam("name") String name,
-                                       @RequestParam("detail") String detail) {
+                                                  @RequestParam("detail") String detail) {
         Specialty specialty = new Specialty(name, detail);
-        save(specialty);
+        specialty = specialtyService.save(specialty);
         return new ResponseEntity<>(specialty, HttpStatus.CREATED);
     }
 
@@ -78,12 +82,10 @@ public class SpecialtyResourceController extends BaseController {
                                         @RequestParam("id") long id,
                                         @RequestParam("name") String name,
                                         @RequestParam("detail") String detail) {
-        Specialty specialty = specialtyRepository.findById(id);
-        if (specialty != null) {
-            specialty.setName(name);
-            specialty.setDetail(detail);
-            save(specialty);
-            return new ResponseEntity(HttpStatus.OK);
-        } else throw new NotFoundException(user.getId());
+        Specialty specialty = specialtyService.getById(id);
+        specialty.setName(name);
+        specialty.setDetail(detail);
+        specialtyService.save(specialty);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

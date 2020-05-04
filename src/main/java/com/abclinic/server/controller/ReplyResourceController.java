@@ -1,7 +1,7 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
-import com.abclinic.server.common.base.BaseController;
+import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
@@ -12,18 +12,20 @@ import com.abclinic.server.model.entity.payload.Reply;
 import com.abclinic.server.model.entity.user.Coordinator;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.service.NotificationService;
+import com.abclinic.server.service.entity.InquiryService;
+import com.abclinic.server.service.entity.ReplyService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * @author tmduc
@@ -31,7 +33,13 @@ import java.util.Optional;
  * @created 2/25/2020 2:19 PM
  */
 @RestController
-public class ReplyResourceController extends BaseController {
+public class ReplyResourceController extends CustomController {
+    @Autowired
+    private InquiryService inquiryService;
+
+    @Autowired
+    private ReplyService replyService;
+
     @Autowired
     private NotificationService notificationService;
 
@@ -56,19 +64,20 @@ public class ReplyResourceController extends BaseController {
             @ApiResponse(code = 400, message = "Mã ID của yêu cầu tư vấn không tồn tại"),
             @ApiResponse(code = 403, message = "Bạn không có quyền tạo câu trả lời cho tư vấn này")
     })
-    public ResponseEntity createReply(@ApiIgnore @RequestAttribute("User") User user,
-                                      @RequestParam("inquiry-id") long inquiryId,
-                                      @RequestParam("reply") String reply) {
-        Optional<Inquiry> op = inquiryRepository.findById(inquiryId);
-        if (op.isPresent()) {
-            Inquiry inquiry = op.get();
+    public ResponseEntity<Reply> createReply(@ApiIgnore @RequestAttribute("User") User user,
+                                             @RequestParam("inquiry-id") long inquiryId,
+                                             @RequestParam("reply") String reply) {
+        try {
+            Inquiry inquiry = inquiryService.getById(inquiryId);
             if (inquiry.of(user)) {
                 Reply r = new Reply(inquiry, user, reply);
+                r = replyService.save(r);
                 notificationService.makeNotification(user, NotificationFactory.getMessages(inquiry));
-                save(r);
-                return new ResponseEntity(HttpStatus.CREATED);
+                return new ResponseEntity<>(r, HttpStatus.CREATED);
             } else throw new ForbiddenException(user.getId(), "Bạn không có quyền tạo câu trả lời cho tư vấn này");
-        } else throw new BadRequestException(user.getId(), "Mã ID của yêu cầu tư vấn không tồn tại");
+        } catch (NotFoundException e) {
+            throw new BadRequestException(user.getId(), "Mã ID của tư vấn không tồn tại");
+        }
     }
 
     @GetMapping("/replies")
@@ -79,18 +88,20 @@ public class ReplyResourceController extends BaseController {
             tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng", "Bệnh nhân"}
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "inquiry-id", value = "Mã ID của yêu cầu tư vấn", required = true, dataType = "long", example = "1")
+            @ApiImplicitParam(name = "inquiry-id", value = "Mã ID của yêu cầu tư vấn", required = true, dataType = "long", example = "1"),
+            @ApiImplicitParam(name = "page", value = "Số thứ tự trang", required = true, paramType = "query", allowableValues = "range[1, infinity]", example = "1"),
+            @ApiImplicitParam(name = "size", value = "Kích thước trang", required = true, paramType = "query", example = "4")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Danh sách trả lời theo yêu cầu"),
             @ApiResponse(code = 404, message = "Không có câu trả lời nào theo yêu cầu")
     })
     @JsonView(Views.Abridged.class)
-    public ResponseEntity<List<Reply>> getReplyList(@ApiIgnore @RequestAttribute("User") User user,
-                                                    @RequestParam("inquiry-id") long inquiryId) {
-        Optional<List<Reply>> op = replyRepository.findByInquiryId(inquiryId);
-        if (op.isPresent())
-            return new ResponseEntity<>(op.get(), HttpStatus.OK);
-        else throw new NotFoundException(user.getId());
+    public ResponseEntity<Page<Reply>> getReplyList(@ApiIgnore @RequestAttribute("User") User user,
+                                                    @RequestParam("inquiry-id") long inquiryId,
+                                                    @RequestParam("page") int page,
+                                                    @RequestParam("size") int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("id").descending());
+        return new ResponseEntity<>(replyService.getList(inquiryId, pageable), HttpStatus.OK);
     }
 }

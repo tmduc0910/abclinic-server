@@ -46,4 +46,8 @@ public class StatusUtils {
     public static boolean containsStatus(User user, UserStatus status) {
         return BinaryUtils.and(user.getStatus(), status.getValue()) != 0;
     }
+
+    public static boolean equalsStatus(User user, UserStatus status) {
+        return user.getStatus() == status.getValue();
+    }
 }

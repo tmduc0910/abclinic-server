@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
  * @package com.abclinic.server.common
  * @created 4/22/2020 2:49 PM
  */
-public abstract class UserPredicateBuilder<T extends User> {
+public abstract class EntityPredicateBuilder<T extends User> {
     private List<SearchCriteria> params;
     private Set<String> allowedFilters = new HashSet<>();
-    private UserPredicate<T> predicate;
+    private CustomPredicate<T> predicate;
 
-    UserPredicateBuilder() {
+    EntityPredicateBuilder() {
         params = new ArrayList<>();
         allowedFilters.add(FilterConstant.PRACTITIONER.getValue());
         allowedFilters.add(FilterConstant.DIETITIAN.getValue());
@@ -33,7 +33,7 @@ public abstract class UserPredicateBuilder<T extends User> {
 
     protected abstract void config();
 
-    public UserPredicateBuilder init(String search) {
+    public EntityPredicateBuilder init(String search) {
         if (!StringUtils.endsWith(search, ","))
             search += ",";
 
@@ -47,22 +47,22 @@ public abstract class UserPredicateBuilder<T extends User> {
         return this;
     }
 
-    UserPredicateBuilder allow(FilterConstant filter) {
+    EntityPredicateBuilder allow(FilterConstant filter) {
         allowedFilters.add(filter.getValue());
         return this;
     }
 
-    UserPredicateBuilder setPredicate(UserPredicate<T> predicate) {
+    EntityPredicateBuilder setPredicate(CustomPredicate<T> predicate) {
         this.predicate = predicate;
         return this;
     }
 
-    UserPredicateBuilder setPathBuilder(PathBuilder<T> pathBuilder) {
+    EntityPredicateBuilder setPathBuilder(PathBuilder<T> pathBuilder) {
         this.predicate.setEntityPath(pathBuilder);
         return this;
     }
 
-    public UserPredicateBuilder with(String key, String operation, Object value) {
+    public EntityPredicateBuilder with(String key, String operation, Object value) {
         params.add(new SearchCriteria(key, operation, value));
         return this;
     }

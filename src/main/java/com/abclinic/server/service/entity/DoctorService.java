@@ -3,9 +3,12 @@ package com.abclinic.server.service.entity;
 import com.abclinic.server.common.constant.FilterConstant;
 import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.criteria.DoctorPredicateBuilder;
-import com.abclinic.server.common.criteria.UserPredicateBuilder;
+import com.abclinic.server.common.criteria.EntityPredicateBuilder;
 import com.abclinic.server.common.utils.StringUtils;
 import com.abclinic.server.exception.NotFoundException;
+import com.abclinic.server.model.entity.user.Dietitian;
+import com.abclinic.server.model.entity.user.Practitioner;
+import com.abclinic.server.model.entity.user.Specialist;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.DietitianRepository;
 import com.abclinic.server.repository.PractitionerRepository;
@@ -39,9 +42,9 @@ public class DoctorService implements DataMapperService<User> {
         this.userRepository = userRepository;
     }
 
-    @Transactional
     @Override
-    public Page<User> getList(User user, String search, UserPredicateBuilder builder, Pageable pageable) {
+    @Transactional
+    public Page<User> getList(User user, String search, EntityPredicateBuilder builder, Pageable pageable) {
         DoctorPredicateBuilder predBuilder = (DoctorPredicateBuilder) builder.init(search);
         if (!StringUtils.contains(search, FilterConstant.ROLE.getValue())) {
             predBuilder.with(FilterConstant.ROLE.getValue(), "!", Role.COORDINATOR.getValue())
@@ -55,7 +58,19 @@ public class DoctorService implements DataMapperService<User> {
     }
 
     @Override
+    @Transactional
     public User getById(long id) {
         return userRepository.findById(id).orElseThrow(NotFoundException::new);
+    }
+
+    @Override
+    public User save(User obj) {
+        if (obj instanceof Practitioner)
+            return practitionerRepository.save((Practitioner) obj);
+        else if (obj instanceof Dietitian)
+            return dietitianRepository.save((Dietitian) obj);
+        else if (obj instanceof Specialist)
+            return specialistRepository.save((Specialist) obj);
+        else throw new IllegalArgumentException();
     }
 }

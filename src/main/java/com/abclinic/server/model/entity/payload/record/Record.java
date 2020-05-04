@@ -16,9 +16,8 @@ import java.time.LocalDateTime;
  * @package com.abclinic.server.model.entity
  * @created 12/30/2019 3:21 PM
  */
-@Entity
-@Table(name = "record")
-@Inheritance(strategy = InheritanceType.JOINED)
+@MappedSuperclass
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Record extends Payload {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "inquiry_id")
