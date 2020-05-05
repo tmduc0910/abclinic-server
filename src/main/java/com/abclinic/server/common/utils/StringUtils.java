@@ -14,6 +14,12 @@ public class StringUtils {
         return Integer.toBinaryString(i);
     }
 
+    public static boolean equalsIgnoreCase(String s1, String s2) {
+        return !isNull(s1) &&
+                !isNull(s2) &&
+                s1.equalsIgnoreCase(s2);
+    }
+
     public static boolean startsWith(String s, String c) {
         if (isNull(s))
             return false;

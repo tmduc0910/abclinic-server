@@ -2,6 +2,7 @@ package com.abclinic.server.common.criteria;
 
 import com.abclinic.server.common.constant.Constant;
 import com.abclinic.server.common.constant.FilterConstant;
+import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.common.utils.StringUtils;
 import com.abclinic.server.model.entity.user.User;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -34,16 +35,16 @@ public abstract class EntityPredicateBuilder<T extends User> {
     protected abstract void config();
 
     public EntityPredicateBuilder init(String search) {
-        if (!StringUtils.endsWith(search, ","))
-            search += ",";
-
         if (!StringUtils.isNull(search)) {
+            if (!StringUtils.endsWith(search, ","))
+                search += ",";
+
             Pattern pattern = Pattern.compile(Constant.FILTER_REGEX, Pattern.UNICODE_CHARACTER_CLASS);
             Matcher matcher = pattern.matcher(search + ",");
             while (matcher.find()) {
                 this.with(matcher.group(1), matcher.group(2), matcher.group(3));
             }
-        }
+        } else this.with(FilterConstant.STATUS.getValue(), "=", UserStatus.NEW.getValue());
         return this;
     }
 
@@ -63,6 +64,8 @@ public abstract class EntityPredicateBuilder<T extends User> {
     }
 
     public EntityPredicateBuilder with(String key, String operation, Object value) {
+        if (StringUtils.equalsIgnoreCase(key, FilterConstant.STATUS.getValue()))
+            operation = Constant.AND_SBL;
         params.add(new SearchCriteria(key, operation, value));
         return this;
     }

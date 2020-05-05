@@ -75,8 +75,8 @@ public class AuthController extends CustomController {
             @ApiResponse(code = 404, message = "Đăng nhập thất bại")
     })
     @JsonView(Views.Private.class)
-    public ResponseEntity<String> processLoginByEmail(@RequestParam(name = "account") String username,
-                                                      @RequestParam(name = "password") String password) {
+    public ResponseEntity<String> processLogin(@RequestParam(name = "account") String username,
+                                               @RequestParam(name = "password") String password) {
         return userService.findByUsernamePassword(username, password).map(u -> {
             u.setUid(UUID.randomUUID().toString());
             userService.save(u);

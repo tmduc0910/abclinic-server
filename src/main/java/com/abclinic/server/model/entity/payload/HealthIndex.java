@@ -13,7 +13,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "health_index")
-public class HealthIndex extends Payload {
+public class HealthIndex extends IPayloadIpml {
 
     @JsonView(Views.Abridged.class)
     private String name;

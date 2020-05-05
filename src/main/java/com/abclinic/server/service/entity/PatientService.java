@@ -71,6 +71,12 @@ public class PatientService implements DataMapperService<Patient> {
         return patientRepository.findAll(pageable);
     }
 
+    public boolean isPatientOf(Patient patient, User doctor) {
+        return patient.getPractitioner().equals(doctor) ||
+                patient.getSpecialists().contains(doctor) ||
+                patient.getDietitians().contains(doctor);
+    }
+
     @Override
     @Transactional
     public Patient getById(long id) throws NotFoundException {

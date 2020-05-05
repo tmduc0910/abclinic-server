@@ -3,7 +3,7 @@ package com.abclinic.server.model.entity.payload.record;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.PayloadStatus;
 import com.abclinic.server.model.entity.payload.Inquiry;
-import com.abclinic.server.model.entity.payload.Payload;
+import com.abclinic.server.model.entity.payload.IPayloadIpml;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
  */
 @MappedSuperclass
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Record extends Payload {
+public class Record extends IPayloadIpml {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "inquiry_id")
     @JsonView(Views.Abridged.class)

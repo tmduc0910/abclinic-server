@@ -1,7 +1,9 @@
 package com.abclinic.server.model.entity.user;
 
 import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.RoleValue;
+import com.abclinic.server.model.entity.payload.IPayload;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.serializer.ViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -11,10 +13,11 @@ import org.hibernate.annotations.WhereJoinTable;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "patient")
-public class Patient extends User {
+public class Patient extends User implements IPayload {
     @JsonView(Views.Private.class)
     private String address;
 
@@ -30,7 +33,6 @@ public class Patient extends User {
     private Practitioner practitioner;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @WhereJoinTable(clause = "type = 0")
     @JoinTable(
             name = "doctor_patient",
             joinColumns = @JoinColumn(name = "patient_id"),
@@ -38,18 +40,7 @@ public class Patient extends User {
     )
     @JsonView(Views.Confidential.class)
     @JsonSerialize(using = ViewSerializer.class)
-    private List<Specialist> specialists;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @WhereJoinTable(clause = "type = 1")
-    @JoinTable(
-            name = "doctor_patient",
-            joinColumns = @JoinColumn(name = "patient_id"),
-            inverseJoinColumns = @JoinColumn(name = "doctor_id")
-    )
-    @JsonView(Views.Confidential.class)
-    @JsonSerialize(using = ViewSerializer.class)
-    private List<Dietitian> dietitians;
+    private List<User> subDoctors;
 
     public Patient() {
     }
@@ -88,34 +79,24 @@ public class Patient extends User {
     }
 
     public List<Specialist> getSpecialists() {
-        return specialists;
-    }
-
-    public void setSpecialists(List<Specialist> specialists) {
-        this.specialists = specialists;
-    }
-
-    public void addSpecialist(Specialist specialist) {
-        this.specialists.add(specialist);
-    }
-
-    public void removeSpecialist(Specialist specialist) {
-        this.specialists.remove(specialist);
+        return subDoctors.stream()
+                .filter(u -> u.getRole().equals(Role.SPECIALIST))
+                .map(u -> (Specialist) u)
+                .collect(Collectors.toList());
     }
 
     public List<Dietitian> getDietitians() {
-        return dietitians;
+        return subDoctors.stream()
+                .filter(u -> u.getRole().equals(Role.DIETITIAN))
+                .map(u -> (Dietitian) u)
+                .collect(Collectors.toList());
     }
 
-    public void setDietitians(List<Dietitian> dietitians) {
-        this.dietitians = dietitians;
+    public void addSubDoc(User doctor) {
+        this.subDoctors.add(doctor);
     }
 
-    public void addDietitian(Dietitian dietitian) {
-        this.dietitians.add(dietitian);
-    }
-
-    public void removeDietitian(Dietitian dietitian) {
-        this.dietitians.remove(dietitian);
+    public boolean removeSubDoc(User doctor) {
+        return this.subDoctors.remove(doctor);
     }
 }

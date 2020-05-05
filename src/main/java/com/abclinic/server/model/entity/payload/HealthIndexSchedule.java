@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "health_index_schedule")
-public class HealthIndexSchedule<T extends Record> extends Payload {
+public class HealthIndexSchedule<T extends Record> extends IPayloadIpml {
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Patient.class)
     @JoinColumn(name = "patient_id")

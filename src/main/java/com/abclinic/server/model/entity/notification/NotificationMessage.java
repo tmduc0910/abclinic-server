@@ -1,7 +1,7 @@
 package com.abclinic.server.model.entity.notification;
 
 import com.abclinic.server.common.constant.MessageType;
-import com.abclinic.server.model.entity.payload.Payload;
+import com.abclinic.server.model.entity.payload.IPayload;
 import com.abclinic.server.model.entity.user.User;
 
 /**
@@ -12,17 +12,12 @@ import com.abclinic.server.model.entity.user.User;
 public class NotificationMessage {
     private final MessageType messageType;
     private User targetUser;
-    private Payload payload;
+    private IPayload payload;
 
-    public NotificationMessage(MessageType messageType, Payload payload) {
-        this.messageType = messageType;
-        this.payload = payload;
-    }
-
-    public NotificationMessage(MessageType messageType, User targetUser, Payload payload) {
+    public NotificationMessage(MessageType messageType, User targetUser, IPayload payloadIpml) {
         this.messageType = messageType;
         this.targetUser = targetUser;
-        this.payload = payload;
+        this.payload = payloadIpml;
     }
 
     public MessageType getMessageType() {
@@ -37,11 +32,11 @@ public class NotificationMessage {
         this.targetUser = targetUser;
     }
 
-    public Payload getPayload() {
+    public IPayload getPayload() {
         return payload;
     }
 
-    public void setPayload(Payload payload) {
+    public void setPayload(IPayload payload) {
         this.payload = payload;
     }
 }

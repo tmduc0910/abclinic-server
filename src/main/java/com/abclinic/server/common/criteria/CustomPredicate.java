@@ -1,11 +1,9 @@
 package com.abclinic.server.common.criteria;
 
+import com.abclinic.server.common.constant.Constant;
 import com.abclinic.server.common.utils.StringUtils;
 import com.abclinic.server.model.entity.user.User;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.NumberPath;
-import com.querydsl.core.types.dsl.PathBuilder;
-import com.querydsl.core.types.dsl.StringPath;
+import com.querydsl.core.types.dsl.*;
 
 /**
  * @author tmduc
@@ -41,18 +39,21 @@ public class CustomPredicate<T extends User> {
             final NumberPath<Integer> path = entityPath.getNumber(criteria.getKey(), Integer.class);
             final int value = Integer.parseInt(criteria.getValue().toString());
             switch (criteria.getOperation()) {
-                case "=":
+                case Constant.EQUAL_SBL:
                     return path.eq(value);
-                case ">":
+                case Constant.GTE_SBL:
                     return path.goe(value);
-                case "<":
+                case Constant.LTE_SBL:
                     return path.loe(value);
-                case "!":
+                case Constant.NOT_SBL:
                     return path.ne(value);
+                case Constant.AND_SBL:
+                    return Expressions.numberTemplate(Integer.class, "function('bitand', {0}, {1})", path, value)
+                            .gt(0);
             }
         } else {
             final StringPath path = entityPath.getString(criteria.getKey());
-            if (criteria.getOperation().equalsIgnoreCase("=")) {
+            if (criteria.getOperation().equalsIgnoreCase(Constant.EQUAL_SBL)) {
                 return path.containsIgnoreCase(criteria.getValue().toString());
             }
         }

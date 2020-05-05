@@ -6,10 +6,7 @@ import com.abclinic.server.common.criteria.DoctorPredicateBuilder;
 import com.abclinic.server.common.criteria.EntityPredicateBuilder;
 import com.abclinic.server.common.utils.StringUtils;
 import com.abclinic.server.exception.NotFoundException;
-import com.abclinic.server.model.entity.user.Dietitian;
-import com.abclinic.server.model.entity.user.Practitioner;
-import com.abclinic.server.model.entity.user.Specialist;
-import com.abclinic.server.model.entity.user.User;
+import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.DietitianRepository;
 import com.abclinic.server.repository.PractitionerRepository;
 import com.abclinic.server.repository.SpecialistRepository;
@@ -21,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 /**
  * @author tmduc

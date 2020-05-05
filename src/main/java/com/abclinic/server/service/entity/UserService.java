@@ -45,6 +45,16 @@ public class UserService implements DataMapperService<User> {
         return userRepository.findAll();
     }
 
+    @Transactional
+    public Optional<User> findByUID(String uid) {
+        return userRepository.findByUid(uid);
+    }
+
+    @Transactional
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByEmailOrPhoneNumber(username, username);
+    }
+
     @Override
     @Transactional
     public User getById(long id) throws NotFoundException {

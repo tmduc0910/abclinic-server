@@ -3,7 +3,6 @@ package com.abclinic.server.model.entity.payload;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.model.entity.payload.record.DietRecord;
 import com.abclinic.server.model.entity.payload.record.MedicalRecord;
-import com.abclinic.server.model.entity.payload.record.Record;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.serializer.ViewSerializer;
@@ -19,7 +18,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "inquiry")
-public class Inquiry extends Payload {
+public class Inquiry extends IPayloadIpml {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "patient_id")

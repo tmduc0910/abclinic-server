@@ -3,8 +3,9 @@ package com.abclinic.server.factory;
 import com.abclinic.server.common.constant.MessageType;
 import com.abclinic.server.common.constant.PayloadStatus;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
+import com.abclinic.server.model.entity.payload.IPayload;
 import com.abclinic.server.model.entity.payload.Inquiry;
-import com.abclinic.server.model.entity.payload.Payload;
+import com.abclinic.server.model.entity.payload.IPayloadIpml;
 import com.abclinic.server.model.entity.user.User;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
  */
 
 public class NotificationFactory {
-    public static <T extends Payload> NotificationMessage getMessage(MessageType messageType, User target, T payload) {
+    public static <T extends IPayload> NotificationMessage getMessage(MessageType messageType, User target, T payload) {
         return new NotificationMessage(messageType, target, payload);
     }
 

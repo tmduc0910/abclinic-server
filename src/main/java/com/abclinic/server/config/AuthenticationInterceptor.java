@@ -5,6 +5,7 @@ import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.UnauthorizedActionException;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.UserRepository;
+import com.abclinic.server.service.entity.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -13,8 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
+
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -36,7 +38,7 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
                 String uid = request.getHeader("Authorization");
                 if (uid == null)
                     throw new UnauthorizedActionException(-1, "Thông tin xác thực rỗng");
-                Optional<User> op = userRepository.findByUid(uid);
+                Optional<User> op = userService.findByUID(uid);
                 if (!op.isPresent())
                     throw new UnauthorizedActionException(-1, "Thông tin xác thực không tồn tại");
                 User user = op.get();
@@ -49,7 +51,7 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
                 request.setAttribute("User", user);
             } else {
                 String req = request.getParameterMap().entrySet().iterator().next().getValue()[0];
-                Optional<User> user = userRepository.findByEmailOrPhoneNumber(req, req);
+                Optional<User> user = userService.findByUsername(req);
 //                if (user.isPresent()) {
 //                    if (user.get().getUid() != null)
 //                        throw new ForbiddenException(user.get().getId(), "Bạn chưa đăng xuất");

@@ -12,6 +12,7 @@ import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
+import com.abclinic.server.model.dto.DoctorListDto;
 import com.abclinic.server.model.entity.notification.Notification;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
 import com.abclinic.server.model.entity.payload.Inquiry;
@@ -107,6 +108,28 @@ public class PatientResourceController extends CustomController {
         throw new ForbiddenException(user.getId(), "Bệnh nhân không thuộc quyền quản lý");
     }
 
+    @GetMapping("/patients/{id}/doctor")
+    @Restricted(excluded = {Coordinator.class, Patient.class})
+    @ApiOperation(
+            value = "Lấy danh sách bác sĩ đang phụ trách bệnh nhân",
+            notes = "Trả về 200 OK hoặc 403 FORBIDDEN",
+            tags = {"Chuyên khoa", "Đa khoa", "Dinh dưỡng"}
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "Mã ID của bệnh nhân", required = true, paramType = "path", dataType = "int", example = "1"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Danh sách bệnh nhân"),
+            @ApiResponse(code = 403, message = "Bệnh nhân không thuộc quyền quản lý")
+    })
+    public ResponseEntity<DoctorListDto> getPatientDoctorList(@ApiIgnore @RequestAttribute("User") User user,
+                                                              @PathVariable("id") long id) {
+        Patient patient = patientService.getById(id);
+        if (patientService.isPatientOf(patient, user)) {
+            return new ResponseEntity<>(new DoctorListDto(patient), HttpStatus.OK);
+        } else throw new ForbiddenException(user.getId(), "Bệnh nhân không thuộc quyền quản lý");
+    }
+
     //TODO: Optimize using State pattern or Command pattern
     @PostMapping("/patients/{id}/doctor")
     @Restricted(included = {Coordinator.class, Practitioner.class})
@@ -132,6 +155,9 @@ public class PatientResourceController extends CustomController {
             Inquiry inquiry = inquiryService.getById(inquiryId);
             UserStatus newStatus = null;
             Patient patient = patientService.getById(id);
+            if (patientService.isPatientOf(patient, doctorService.getById(doctorId)))
+                throw new BadRequestException(user.getId(), "Bác sĩ này đã được gán cho bệnh nhân này");
+
             NotificationMessage message = NotificationFactory.getMessage(MessageType.ASSIGN, null, inquiry);
             switch (user.getRole()) {
                 case COORDINATOR:
@@ -143,26 +169,28 @@ public class PatientResourceController extends CustomController {
                     newStatus = UserStatus.ASSIGN_L1;
                     break;
                 case PRACTITIONER:
-                    Doctor subDoc;
+                    User subDoc;
                     if (inquiry.getType() == RecordType.MEDICAL.getValue()) {
-                        subDoc = (Specialist) doctorService.getById(doctorId);
-                        patient.addSpecialist((Specialist) subDoc);
                         newStatus = UserStatus.ASSIGN_L2;
                     } else {
-                        subDoc = (Dietitian) doctorService.getById(doctorId);
-                        patient.addDietitian((Dietitian) subDoc);
                         newStatus = UserStatus.ASSIGN_L3;
                     }
+                    subDoc = doctorService.getById(doctorId);
+                    patient.addSubDoc(subDoc);
                     message.setTargetUser(subDoc);
                     break;
             }
+            patient = StatusUtils.remove(patient, UserStatus.NEW);
             patient = StatusUtils.update(patient, newStatus);
+            patientService.save(patient);
 
             if (message.getTargetUser() != null)
                 notificationService.makeNotification(user, message);
             return new ResponseEntity(HttpStatus.CREATED);
         } catch (NotFoundException e) {
             throw new BadRequestException(user.getId(), "ID không tồn tại");
+        } catch (ClassCastException e) {
+            throw new BadRequestException(user.getId(), "Không thể gán yêu cầu khám bệnh cho bác sĩ dinh dưỡng và ngược lại");
         }
     }
 
@@ -196,12 +224,15 @@ public class PatientResourceController extends CustomController {
                         switch (user.getRole()) {
                             case PRACTITIONER:
                                 patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L1);
+                                patient.setPractitioner(null);
                                 break;
                             case SPECIALIST:
                                 patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L2);
+                                patient.removeSubDoc(user);
                                 break;
                             case DIETITIAN:
                                 patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L3);
+                                patient.removeSubDoc(user);
                                 break;
                         }
                         patientService.save(patient);
@@ -215,5 +246,43 @@ public class PatientResourceController extends CustomController {
         } catch (NotFoundException e) {
             throw new BadRequestException(user.getId(), "Mã ID bệnh nhân không tồn tại");
         }
+    }
+
+    @DeleteMapping("/patients/{id}/doctor")
+    @Restricted(excluded = {Coordinator.class, Patient.class})
+    @ApiOperation(
+            value = "Xóa bệnh nhân khỏi quyền quản lý của mình",
+            notes = "Trả về 200 OK hoặc 403 FORBIDDEN",
+            tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "Mã ID của bệnh nhân", required = true, paramType = "path", dataType = "int", example = "1"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Xóa thành công"),
+            @ApiResponse(code = 403, message = "Bệnh nhân không thuộc quyền quản lý")
+    })
+    public ResponseEntity deletePatientDoctor(@ApiIgnore @RequestAttribute("User") User user,
+                                              @PathVariable long id) {
+        Patient patient = patientService.getById(id);
+        if (patientService.isPatientOf(patient, user)) {
+            switch (user.getRole()) {
+                case PRACTITIONER:
+                    patient.setPractitioner(null);
+                    break;
+                case DIETITIAN:
+                case SPECIALIST:
+                    patient.removeSubDoc(user);
+                    notificationService.makeNotification(user,
+                            NotificationFactory.getMessage(
+                                    MessageType.REMOVE_ASSIGN,
+                                    patient.getPractitioner(),
+                                    patient));
+                    break;
+            }
+            patientService.save(patient);
+            return new ResponseEntity(HttpStatus.OK);
+        }
+        throw new BadRequestException(user.getId(), "Bệnh nhân không thuộc quyền quản lý");
     }
 }
