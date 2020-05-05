@@ -78,6 +78,10 @@ public class Patient extends User implements IPayload {
         this.practitioner = practitioner;
     }
 
+    public List<User> getSubDoctors() {
+        return subDoctors;
+    }
+
     public List<Specialist> getSpecialists() {
         return subDoctors.stream()
                 .filter(u -> u.getRole().equals(Role.SPECIALIST))

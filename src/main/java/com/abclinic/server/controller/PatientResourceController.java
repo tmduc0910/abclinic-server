@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,6 +33,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.List;
 
 /**
  * @author tmduc
@@ -75,12 +78,13 @@ public class PatientResourceController extends CustomController {
     })
     @JsonView(Views.Abridged.class)
     @Restricted(excluded = Patient.class)
-    public ResponseEntity getPatients(@ApiIgnore @RequestAttribute("User") User user,
+    public ResponseEntity<Page<Patient>> getPatients(@ApiIgnore @RequestAttribute("User") User user,
                                       @RequestParam(value = "search", defaultValue = "") String search,
                                       @RequestParam("page") int page,
                                       @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("name").ascending());
-        return new ResponseEntity(patientService.getList(user, search, new PatientPredicateBuilder(), pageable), HttpStatus.OK);
+        Page<Patient> list = patientService.getList(user, search, new PatientPredicateBuilder(), pageable);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/patients/{id}")

@@ -1,7 +1,5 @@
 package com.abclinic.server.repository;
 
-import com.abclinic.server.model.entity.user.Patient;
-import com.abclinic.server.model.entity.user.QPatient;
 import com.abclinic.server.model.entity.user.QUser;
 import com.abclinic.server.model.entity.user.User;
 import com.querydsl.core.types.dsl.StringExpression;
@@ -14,7 +12,6 @@ import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.querydsl.binding.SingleValueBinding;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long>,

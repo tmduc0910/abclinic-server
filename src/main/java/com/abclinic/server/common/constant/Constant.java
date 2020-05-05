@@ -13,4 +13,5 @@ public class Constant {
     public static final String LTE_SBL = "<";
     public static final String AND_SBL = "&";
     public static final String NOT_SBL = "!";
+    public static final String CONTAIN_SBL = "ct";
 }

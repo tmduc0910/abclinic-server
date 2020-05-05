@@ -15,7 +15,7 @@ public class SearchCriteria {
     }
 
     public SearchCriteria(String key, String operation, Object value) {
-        this.key = key.toLowerCase();
+        this.key = key;
         this.operation = operation;
         this.value = value;
     }
