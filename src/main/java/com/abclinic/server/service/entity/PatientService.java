@@ -2,6 +2,7 @@ package com.abclinic.server.service.entity;
 
 import com.abclinic.server.common.constant.Constant;
 import com.abclinic.server.common.constant.FilterConstant;
+import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.common.criteria.PatientPredicateBuilder;
 import com.abclinic.server.common.criteria.EntityPredicateBuilder;
 import com.abclinic.server.exception.NotFoundException;
@@ -59,12 +60,18 @@ public class PatientService implements DataMapperService<Patient> {
         switch (user.getRole()) {
             case PRACTITIONER:
                 predBuilder.with(FilterConstant.PRACTITIONER.getValue(), Constant.EQUAL_SBL, doctorDAO.getPractitioner((Doctor) user).getId());
+                if (!predBuilder.hasCriteria(FilterConstant.STATUS.getValue()))
+                    predBuilder.with(FilterConstant.STATUS.getValue(), Constant.EQUAL_SBL, UserStatus.ASSIGN_L1.getValue());
                 break;
             case SPECIALIST:
                 predBuilder.with(FilterConstant.SPECIALIST.getValue(), Constant.CONTAIN_SBL, doctorDAO.getSpecialist((Doctor) user));
+                if (!predBuilder.hasCriteria(FilterConstant.STATUS.getValue()))
+                    predBuilder.with(FilterConstant.STATUS.getValue(), Constant.EQUAL_SBL, UserStatus.ASSIGN_L2.getValue());
                 break;
             case DIETITIAN:
                 predBuilder.with(FilterConstant.DIETITIAN.getValue(), Constant.CONTAIN_SBL, doctorDAO.getDietitian((Doctor) user));
+                if (!predBuilder.hasCriteria(FilterConstant.STATUS.getValue()))
+                    predBuilder.with(FilterConstant.STATUS.getValue(), Constant.EQUAL_SBL, UserStatus.ASSIGN_L3.getValue());
                 break;
         }
         BooleanExpression expression = predBuilder.build();

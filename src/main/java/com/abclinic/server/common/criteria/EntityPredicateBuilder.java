@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * @created 4/22/2020 2:49 PM
  */
 public abstract class EntityPredicateBuilder<T extends User> {
-    private List<SearchCriteria> params;
+    protected List<SearchCriteria> params;
     private Set<String> allowedFilters = new HashSet<>();
     private CustomPredicate<T> predicate;
 
@@ -44,7 +44,7 @@ public abstract class EntityPredicateBuilder<T extends User> {
             while (matcher.find()) {
                 this.with(matcher.group(1), matcher.group(2), matcher.group(3));
             }
-        } else this.with(FilterConstant.STATUS.getValue(), "=", UserStatus.NEW.getValue());
+        }
         return this;
     }
 

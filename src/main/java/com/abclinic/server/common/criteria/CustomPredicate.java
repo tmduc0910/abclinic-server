@@ -2,15 +2,9 @@ package com.abclinic.server.common.criteria;
 
 import com.abclinic.server.common.constant.Constant;
 import com.abclinic.server.common.utils.StringUtils;
-import com.abclinic.server.model.entity.user.Dietitian;
 import com.abclinic.server.model.entity.user.QPatient;
-import com.abclinic.server.model.entity.user.Specialist;
 import com.abclinic.server.model.entity.user.User;
 import com.querydsl.core.types.dsl.*;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
-
-import java.util.List;
 
 /**
  * @author tmduc
@@ -60,10 +54,7 @@ public class CustomPredicate<T extends User> {
             }
         } else if (criteria.getOperation().equalsIgnoreCase(Constant.CONTAIN_SBL)) {
             QPatient qPatient = QPatient.patient;
-            if (criteria.getValue() instanceof Dietitian)
-                return qPatient.subDoctors.contains((Dietitian) criteria.getValue());
-            else if (criteria.getValue() instanceof Specialist)
-                return qPatient.subDoctors.contains((Specialist) criteria.getValue());
+            return qPatient.subDoctors.contains((User) criteria.getValue());
         } else {
             final StringPath path = entityPath.getString(criteria.getKey());
             if (criteria.getOperation().equalsIgnoreCase(Constant.EQUAL_SBL)) {

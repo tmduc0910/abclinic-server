@@ -20,4 +20,9 @@ public class PatientPredicateBuilder extends EntityPredicateBuilder<Patient> {
                 .setPredicate(new CustomPredicate<Patient>())
                 .setPathBuilder(new PathBuilder<>(Patient.class, "patient"));
     }
+
+    public boolean hasCriteria(String key) {
+        return params.stream()
+                .anyMatch(p -> p.getKey().equalsIgnoreCase(key));
+    }
 }
