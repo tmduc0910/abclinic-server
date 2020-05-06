@@ -231,12 +231,14 @@ public class PatientResourceController extends CustomController {
                                 patient.setPractitioner(null);
                                 break;
                             case SPECIALIST:
-                                patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L2);
                                 patient.removeSubDoc(user);
+                                if (patient.getSpecialists().isEmpty())
+                                    patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L2);
                                 break;
                             case DIETITIAN:
-                                patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L3);
                                 patient.removeSubDoc(user);
+                                if (patient.getDietitians().isEmpty())
+                                    patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L3);
                                 break;
                         }
                         patientService.save(patient);

@@ -5,10 +5,15 @@ spring:
 #    username: root
 #    password: 12345678
 
-    ##    REMOTE MYSQL
-      url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
-      username: LQmSwtESHO
-      password: f1QxHX2z0J
+    ##  DB Heroku
+  #    url: jdbc:mysql://ugkmvsroqz0755hy:broce8lbgjo1w8qm@tviw6wn55xwxejwj.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/qjeyy6ui39xn2z0l
+  #    username: ugkmvsroqz0755hy
+  #    password: broce8lbgjo1w8qm
+
+  ##    REMOTE MYSQL
+        url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
+        username: LQmSwtESHO
+        password: f1QxHX2z0J
 
   ##    HELIO HOST
   #      url: jdbc:mysql://abclinic.heliohost.org:3306/abclinic_db
