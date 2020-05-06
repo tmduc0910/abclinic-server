@@ -1,9 +1,6 @@
 package com.abclinic.server.model.dao;
 
-import com.abclinic.server.model.entity.user.Dietitian;
-import com.abclinic.server.model.entity.user.Doctor;
-import com.abclinic.server.model.entity.user.Practitioner;
-import com.abclinic.server.model.entity.user.Specialist;
+import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.DietitianRepository;
 import com.abclinic.server.repository.PractitionerRepository;
 import com.abclinic.server.repository.SpecialistRepository;

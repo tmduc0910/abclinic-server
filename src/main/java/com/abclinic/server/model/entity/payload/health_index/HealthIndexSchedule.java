@@ -1,6 +1,7 @@
-package com.abclinic.server.model.entity.payload;
+package com.abclinic.server.model.entity.payload.health_index;
 
 import com.abclinic.server.common.base.Views;
+import com.abclinic.server.model.entity.payload.IPayloadIpml;
 import com.abclinic.server.model.entity.payload.record.Record;
 import com.abclinic.server.model.entity.user.Doctor;
 import com.abclinic.server.model.entity.user.Patient;
