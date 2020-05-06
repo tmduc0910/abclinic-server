@@ -85,7 +85,6 @@ public class AuthController extends CustomController {
     }
 
     @PostMapping(value = "/sign_up")
-    @Restricted(included = Coordinator.class)
     @ApiOperation(value = "Đăng kí tài khoản", notes = "Trả về 201 CREATED hoặc 409 CONFLICT")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "role", value = "Kiểu người dùng (đa khoa, chuyên khoa, dinh dưỡng, điều phối, bệnh nhân)", required = true, allowableValues = "0, 1, 2, 3, 4", dataType = "int", example = "0"),

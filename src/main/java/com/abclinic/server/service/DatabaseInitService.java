@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
+
 /**
  * @author tmduc
  * @package com.abclinic.server.service
@@ -30,9 +32,6 @@ public class DatabaseInitService implements CommandLineRunner {
 
     @Autowired
     private DiseaseRepository diseaseRepository;
-
-    @Autowired
-    private MedicalRecordRepository medicalRecordRepository;
 
     private Logger logger = LoggerFactory.getLogger(DatabaseInitService.class);
 
