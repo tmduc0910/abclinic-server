@@ -16,7 +16,6 @@ public enum UserStatus {
     ASSIGN_L2(4),
     ASSIGN_L3(8),
     SCHEDULED(16),
-
     DEACTIVATED(1024);
 
     private int value;
