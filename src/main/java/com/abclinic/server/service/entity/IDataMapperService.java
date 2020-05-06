@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
  * @package com.abclinic.server.service.entity
  * @created 4/30/2020 9:10 AM
  */
-public interface DataMapperService<T> {
+public interface IDataMapperService<T> {
     T getById(long id) throws NotFoundException;
 
     default Page<T> getList(User user, String search, EntityPredicateBuilder builder, Pageable pageable) {

@@ -14,7 +14,7 @@ import javax.transaction.Transactional;
  * @created 5/4/2020 10:27 AM
  */
 @Service
-public class ImageService implements DataMapperService<Image> {
+public class ImageService implements IDataMapperService<Image> {
     private ImageRepository imageRepository;
 
     @Autowired

@@ -19,7 +19,7 @@ import java.util.Optional;
  * @created 4/22/2020 10:33 AM
  */
 @Service
-public class InquiryService implements DataMapperService<Inquiry> {
+public class InquiryService implements IDataMapperService<Inquiry> {
     private InquiryRepository inquiryRepository;
     private PatientService patientService;
     private DoctorService doctorService;

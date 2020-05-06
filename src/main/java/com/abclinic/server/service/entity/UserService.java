@@ -1,7 +1,6 @@
 package com.abclinic.server.service.entity;
 
 import com.abclinic.server.exception.NotFoundException;
-import com.abclinic.server.exception.WrongCredentialException;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,7 @@ import java.util.Optional;
  * @created 5/3/2020 10:15 AM
  */
 @Service
-public class UserService implements DataMapperService<User> {
+public class UserService implements IDataMapperService<User> {
     private UserRepository userRepository;
 
     @Autowired

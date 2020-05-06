@@ -1,7 +1,6 @@
 package com.abclinic.server.service.entity;
 
 import com.abclinic.server.exception.NotFoundException;
-import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.payload.Reply;
 import com.abclinic.server.repository.ReplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,7 @@ import javax.transaction.Transactional;
  * @created 5/4/2020 9:57 AM
  */
 @Service
-public class ReplyService implements DataMapperService<Reply> {
+public class ReplyService implements IDataMapperService<Reply> {
     private ReplyRepository replyRepository;
 
     @Autowired

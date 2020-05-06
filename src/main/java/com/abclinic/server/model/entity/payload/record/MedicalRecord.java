@@ -3,13 +3,11 @@ package com.abclinic.server.model.entity.payload.record;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.RecordType;
 import com.abclinic.server.model.entity.Disease;
-import com.abclinic.server.model.entity.payload.HealthIndexSchedule;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.Specialist;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "medical_record")

@@ -21,15 +21,6 @@ import java.util.Arrays;
 @Aspect
 @Component
 public class AuthAspect {
-
-    @Autowired
-    private AuthorizationImpl authorization;
-
-//    @Autowired
-//    public AuthAspect(AuthorizationImpl authorization) {
-//        this.authorization = authorization;
-//    }
-
     @Around("execution(* *.*(..)) && @annotation(annotation)")
     public Object execute(ProceedingJoinPoint joinPoint, Restricted annotation) throws Throwable {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();

@@ -5,7 +5,7 @@ import com.abclinic.server.model.entity.notification.Notification;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.NotificationRepository;
-import com.abclinic.server.service.entity.DataMapperService;
+import com.abclinic.server.service.entity.IDataMapperService;
 import com.abclinic.server.websocket.WebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  */
 
 @Service
-public class NotificationService implements DataMapperService<Notification> {
+public class NotificationService implements IDataMapperService<Notification> {
     private NotificationRepository notificationRepository;
     private WebSocketService webSocketService;
 

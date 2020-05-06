@@ -23,7 +23,7 @@ import javax.transaction.Transactional;
  * @created 4/7/2020 8:19 PM
  */
 @Service
-public class PatientService implements DataMapperService<Patient> {
+public class PatientService implements IDataMapperService<Patient> {
     private PatientRepository patientRepository;
     private DoctorDAO doctorDAO;
 

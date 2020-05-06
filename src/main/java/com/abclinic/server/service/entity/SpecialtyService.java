@@ -15,7 +15,7 @@ import java.util.List;
  * @created 5/4/2020 10:40 AM
  */
 @Service
-public class SpecialtyService implements DataMapperService<Specialty> {
+public class SpecialtyService implements IDataMapperService<Specialty> {
     private SpecialtyRepository specialtyRepository;
 
     @Autowired

@@ -18,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 /**
  * @author tmduc
@@ -26,7 +25,7 @@ import java.util.List;
  * @created 4/23/2020 8:41 PM
  */
 @Service
-public class DoctorService implements DataMapperService<User> {
+public class DoctorService implements IDataMapperService<User> {
     private PractitionerRepository practitionerRepository;
     private SpecialistRepository specialistRepository;
     private DietitianRepository dietitianRepository;

@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.naming.directory.NoSuchAttributeException;
 import javax.transaction.Transactional;
 import java.util.Optional;
 
@@ -24,7 +23,7 @@ import java.util.Optional;
  * @created 2/21/2020 3:19 PM
  */
 @Service
-public class RecordService implements DataMapperService<Record> {
+public class RecordService implements IDataMapperService<Record> {
     private MedicalRecordRepository medicalRecordRepository;
     private DietitianRecordRepository dietitianRecordRepository;
 

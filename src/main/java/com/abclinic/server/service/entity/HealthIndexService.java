@@ -2,7 +2,7 @@ package com.abclinic.server.service.entity;
 
 import com.abclinic.server.common.criteria.EntityPredicateBuilder;
 import com.abclinic.server.exception.NotFoundException;
-import com.abclinic.server.model.entity.payload.HealthIndex;
+import com.abclinic.server.model.entity.payload.health_index.HealthIndex;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.HealthIndexRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import javax.transaction.Transactional;
  * @package com.abclinic.server.service.entity
  * @created 5/4/2020 2:08 PM
  */
-public class HealthIndexService implements DataMapperService<HealthIndex> {
+public class HealthIndexService implements IDataMapperService<HealthIndex> {
     private HealthIndexRepository healthIndexRepository;
 
     @Autowired
