@@ -22,7 +22,7 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:/liquibase/db-changelog.xml
-    drop-first: false
+    drop-first: true
   servlet:
     ## MULTIPART (MultipartProperties)
     multipart:
