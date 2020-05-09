@@ -105,9 +105,7 @@ public class PatientResourceController extends CustomController {
     public ResponseEntity<Patient> getPatient(@ApiIgnore @RequestAttribute("User") User user,
                                               @PathVariable("id") long id) {
         Patient patient = patientService.getById(id);
-        if (patient.getPractitioner().equals(user) ||
-                patient.getDietitians().contains(user) ||
-                patient.getSpecialists().contains(user))
+        if (patientService.isPatientOf(patient, user))
             return new ResponseEntity<>(patient, HttpStatus.OK);
         throw new ForbiddenException(user.getId(), "Bệnh nhân không thuộc quyền quản lý");
     }

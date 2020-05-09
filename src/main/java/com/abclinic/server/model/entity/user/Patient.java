@@ -6,8 +6,10 @@ import com.abclinic.server.common.constant.RoleValue;
 import com.abclinic.server.model.entity.payload.IPayload;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.serializer.ViewSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -27,9 +29,9 @@ public class Patient extends User implements IPayload {
     @JsonSerialize(using = ViewSerializer.class)
     private List<Inquiry> inquiries;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "practitioner_id")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     @JsonSerialize(using = ViewSerializer.class)
     private Practitioner practitioner;
 
@@ -109,6 +111,7 @@ public class Patient extends User implements IPayload {
         return this.subDoctors.remove(doctor);
     }
 
+    @JsonIgnore
     public List<Doctor> getDoctors() {
         List<Doctor> list = new ArrayList<>();
         list.add(practitioner);

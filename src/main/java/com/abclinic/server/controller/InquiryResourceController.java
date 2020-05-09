@@ -105,7 +105,7 @@ public class InquiryResourceController extends CustomController {
             @ApiResponse(code = 200, message = "Danh sách yêu cầu tư vấn"),
             @ApiResponse(code = 404, message = "Không tìm thấy yêu cầu hợp lệ")
     })
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Private.class)
     public ResponseEntity<Page<Inquiry>> getInquiryList(@ApiIgnore @RequestAttribute("User") User user,
                                                         @RequestParam(value = "assigned", defaultValue = "false") boolean assigned,
                                                         @RequestParam("page") int page,
