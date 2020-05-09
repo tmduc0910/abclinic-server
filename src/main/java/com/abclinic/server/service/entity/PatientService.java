@@ -81,9 +81,9 @@ public class PatientService implements IDataMapperService<Patient> {
     }
 
     public boolean isPatientOf(Patient patient, User doctor) {
-        return patient.getPractitioner().equals(doctor) ||
-                patient.getSpecialists().contains(doctor) ||
-                patient.getDietitians().contains(doctor);
+        return (patient.getPractitioner() != null && patient.getPractitioner().equals(doctor)) ||
+                (patient.getSpecialists() != null && patient.getSpecialists().contains(doctor)) ||
+                (patient.getDietitians() != null && patient.getDietitians().contains(doctor));
     }
 
     @Override
