@@ -29,8 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class GooglePhotosService {
-    //TODO: Adjust the path according to yours
-    private static final String CREDENTIAL_PATH = "C:\\Users\\ADMIN\\Desktop\\google-photos\\client_secret.json";
+    private static final String CREDENTIAL_PATH = "src\\main\\resources\\client_secret.json";
     private static final List<String> REQUIRED_SCOPES =
             ImmutableList.of(
                     "https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata",
