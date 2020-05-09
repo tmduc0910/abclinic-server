@@ -2,6 +2,7 @@ package com.abclinic.server.service.entity.health_index.component;
 
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexField;
+import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
 import com.abclinic.server.model.entity.payload.health_index.PatientHealthIndexField;
 import com.abclinic.server.model.entity.user.Doctor;
 import com.abclinic.server.model.entity.user.Patient;
@@ -11,6 +12,7 @@ import com.abclinic.server.service.entity.IDataMapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 
@@ -19,6 +21,7 @@ import javax.transaction.Transactional;
  * @package com.abclinic.server.service.entity.health_index.component
  * @created 5/6/2020 2:41 PM
  */
+@Component
 public class PatientHealthIndexFieldComponentService implements IDataMapperService<PatientHealthIndexField> {
     private PatientHealthIndexFieldRepository patientHealthIndexFieldRepository;
 
@@ -53,6 +56,12 @@ public class PatientHealthIndexFieldComponentService implements IDataMapperServi
     @Transactional
     public Page<PatientHealthIndexField> getList(HealthIndexField field, Pageable pageable) {
         return patientHealthIndexFieldRepository.findByField(field, pageable)
+                .orElseThrow(NotFoundException::new);
+    }
+
+    @Transactional
+    public Page<PatientHealthIndexField> getList(HealthIndexSchedule schedule, Pageable pageable) {
+        return patientHealthIndexFieldRepository.findBySchedule(schedule, pageable)
                 .orElseThrow(NotFoundException::new);
     }
 

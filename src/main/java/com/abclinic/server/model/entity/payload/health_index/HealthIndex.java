@@ -20,11 +20,11 @@ public class HealthIndex extends IPayloadIpml {
     @JsonView(Views.Abridged.class)
     private String name;
 
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private String description;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = HealthIndexField.class, mappedBy = "healthIndex")
-    @JsonView(Views.Abridged.class)
+    @JsonView(Views.Public.class)
     private List<HealthIndexField> fields;
 
     public HealthIndex() {
@@ -57,5 +57,9 @@ public class HealthIndex extends IPayloadIpml {
 
     public void setFields(List<HealthIndexField> fields) {
         this.fields = fields;
+    }
+
+    public void removeField(HealthIndexField field) {
+        this.fields.remove(field);
     }
 }

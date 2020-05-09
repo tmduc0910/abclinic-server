@@ -159,7 +159,7 @@ public class PatientResourceController extends CustomController {
             Inquiry inquiry = inquiryService.getById(inquiryId);
             UserStatus newStatus = null;
             Patient patient = patientService.getById(id);
-            if (patientService.isPatientOf(patient, doctorService.getById(doctorId)))
+            if (!StatusUtils.containsStatus(patient, UserStatus.NEW) && patientService.isPatientOf(patient, doctorService.getById(doctorId)))
                 throw new BadRequestException(user.getId(), "Bác sĩ này đã được gán cho bệnh nhân này");
 
             NotificationMessage message = NotificationFactory.getMessage(MessageType.ASSIGN, null, inquiry);

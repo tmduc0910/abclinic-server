@@ -7,7 +7,7 @@ package com.abclinic.server.common.utils;
  */
 public class StringUtils {
     public static boolean isNull(String s) {
-        return s.length() == 0 || s.trim().equals("");
+        return s == null || s.length() == 0 || s.trim().equals("");
     }
 
     public static String toBinary(int i) {

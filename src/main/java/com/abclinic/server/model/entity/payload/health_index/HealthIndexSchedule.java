@@ -1,17 +1,20 @@
 package com.abclinic.server.model.entity.payload.health_index;
 
 import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.model.entity.payload.IPayloadIpml;
-import com.abclinic.server.model.entity.payload.record.Record;
 import com.abclinic.server.model.entity.user.Doctor;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
+import com.abclinic.server.serializer.ViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author tmduc
@@ -21,22 +24,30 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "health_index_schedule")
-public class HealthIndexSchedule<T extends Record> extends IPayloadIpml {
+public class HealthIndexSchedule extends IPayloadIpml {
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Patient.class)
     @JoinColumn(name = "patient_id")
     @JsonView(Views.Abridged.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private Patient patient;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
     @JoinColumn(name = "doctor_id")
     @JsonView(Views.Abridged.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private Doctor doctor;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "index_id")
     @JsonView(Views.Abridged.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private HealthIndex index;
+
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = PatientHealthIndexField.class, mappedBy = "schedule")
+    @JsonView(Views.Abridged.class)
+    @JsonSerialize(using = ViewSerializer.class)
+    private List<PatientHealthIndexField> patientValues;
 
     @Column(name = "scheduled")
     @JsonView(Views.Abridged.class)
@@ -63,10 +74,13 @@ public class HealthIndexSchedule<T extends Record> extends IPayloadIpml {
 
     }
 
-    public HealthIndexSchedule(Patient patient, Doctor doctor, HealthIndex index) {
+    public HealthIndexSchedule(Patient patient, Doctor doctor, HealthIndex index, long scheduledTime, LocalDateTime startedAt) {
         this.patient = patient;
         this.doctor = doctor;
         this.index = index;
+        this.scheduledTime = scheduledTime;
+        this.startedAt = startedAt;
+        this.endedAt = DateTimeUtils.plusSeconds(startedAt, scheduledTime);
     }
 
     public Patient getPatient() {
@@ -91,6 +105,14 @@ public class HealthIndexSchedule<T extends Record> extends IPayloadIpml {
 
     public void setIndex(HealthIndex index) {
         this.index = index;
+    }
+
+    public List<PatientHealthIndexField> getPatientValues() {
+        return patientValues;
+    }
+
+    public void setPatientValues(List<PatientHealthIndexField> patientValues) {
+        this.patientValues = patientValues;
     }
 
     public long getScheduledTime() {

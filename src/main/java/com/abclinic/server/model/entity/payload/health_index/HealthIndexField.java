@@ -60,4 +60,17 @@ public class HealthIndexField {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof HealthIndexField) {
+            return this.getId() == ((HealthIndexField) obj).getId();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) this.getId();
+    }
 }

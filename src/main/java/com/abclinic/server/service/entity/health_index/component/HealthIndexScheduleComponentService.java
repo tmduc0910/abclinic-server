@@ -1,6 +1,8 @@
 package com.abclinic.server.service.entity.health_index.component;
 
 import com.abclinic.server.common.constant.Role;
+import com.abclinic.server.common.criteria.EntityPredicateBuilder;
+import com.abclinic.server.common.criteria.HealthIndexSchedulePredicateBuilder;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
 import com.abclinic.server.model.entity.user.Doctor;
@@ -8,9 +10,11 @@ import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.HealthIndexScheduleRepository;
 import com.abclinic.server.service.entity.IDataMapperService;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 
@@ -19,6 +23,7 @@ import javax.transaction.Transactional;
  * @package com.abclinic.server.service.entity.health_index.component
  * @created 5/6/2020 2:28 PM
  */
+@Component
 public class HealthIndexScheduleComponentService implements IDataMapperService<HealthIndexSchedule> {
     private HealthIndexScheduleRepository healthIndexScheduleRepository;
 
@@ -50,6 +55,16 @@ public class HealthIndexScheduleComponentService implements IDataMapperService<H
             default:
                 return null;
         }
+    }
+
+    @Override
+    @Transactional
+    public Page<HealthIndexSchedule> getList(User user, String search, EntityPredicateBuilder builder, Pageable pageable) {
+        HealthIndexSchedulePredicateBuilder predBuilder = (HealthIndexSchedulePredicateBuilder) builder.init(search);
+        BooleanExpression expression = predBuilder.build();
+        if (expression != null)
+            return healthIndexScheduleRepository.findAll(expression, pageable);
+        return healthIndexScheduleRepository.findAll(pageable);
     }
 
     @Override

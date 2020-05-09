@@ -7,6 +7,7 @@ import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.serializer.ViewSerializer;
 import com.abclinic.server.service.GooglePhotosService;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.CreationTimestamp;
@@ -26,7 +27,7 @@ public class Inquiry extends IPayloadIpml {
     @JsonSerialize(using = ViewSerializer.class)
     private Patient patient;
 
-    @JsonView(Views.Public.class)
+    @JsonIgnore
     private String albumId;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Reply.class, mappedBy = "inquiry")

@@ -15,7 +15,9 @@ public enum FilterConstant {
     DIETITIAN("subDoctors"),
     SPECIALTY("specialty"),
     EXPERIENCE("experience"),
-    ROLE("role");
+    ROLE("role"),
+    SCHEDULE_PAT_ID("patient.id"),
+    SCHEDULE_PAT_NAME("patient.name");
 
     private final String value;
 

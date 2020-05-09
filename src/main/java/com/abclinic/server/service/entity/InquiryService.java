@@ -53,7 +53,7 @@ public class InquiryService implements IDataMapperService<Inquiry> {
             case PRACTITIONER:
                 Practitioner practitioner = (Practitioner) doctorService.getById(user.getId());
                 if (!assigned)
-                    inquiries = inquiryRepository.findByPatientPractitionerAndPatientSpecialistsIsNullOrPatientPractitionerAndPatientDietitiansIsNull(practitioner, practitioner, pageable);
+                    inquiries = inquiryRepository.findByPatientPractitionerAndPatientSubDoctorsIsNull(practitioner, pageable);
                 else inquiries = inquiryRepository.findByPatientPractitioner(practitioner, pageable);
                 break;
             case SPECIALIST:

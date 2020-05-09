@@ -16,6 +16,6 @@ public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
     Optional<Page<Inquiry>> findByPatient(Patient patient, Pageable pageable);
     Optional<Page<Inquiry>> findByPatientPractitioner(Practitioner practitioner, Pageable pageable);
     Optional<Page<Inquiry>> findByPatientIn(List<Patient> patients, Pageable pageable);
-    Optional<Page<Inquiry>> findByPatientPractitionerAndPatientSpecialistsIsNullOrPatientPractitionerAndPatientDietitiansIsNull(Practitioner practitioner, Practitioner practitioner1, Pageable pageable);
+    Optional<Page<Inquiry>> findByPatientPractitionerAndPatientSubDoctorsIsNull(Practitioner practitioner, Pageable pageable);
 
 }

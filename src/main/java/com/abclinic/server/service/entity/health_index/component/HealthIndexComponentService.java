@@ -8,6 +8,7 @@ import com.abclinic.server.service.entity.IDataMapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 
@@ -16,6 +17,7 @@ import javax.transaction.Transactional;
  * @package com.abclinic.server.service.entity.health_index.component
  * @created 5/6/2020 2:25 PM
  */
+@Component
 public class HealthIndexComponentService implements IDataMapperService<HealthIndex> {
     private HealthIndexRepository healthIndexRepository;
 
@@ -28,6 +30,10 @@ public class HealthIndexComponentService implements IDataMapperService<HealthInd
     @Transactional
     public HealthIndex getById(long id) throws NotFoundException {
         return healthIndexRepository.findById(id).orElseThrow(NotFoundException::new);
+    }
+
+    public boolean isExist(String name) {
+        return healthIndexRepository.findByNameIgnoreCase(name);
     }
 
     @Override

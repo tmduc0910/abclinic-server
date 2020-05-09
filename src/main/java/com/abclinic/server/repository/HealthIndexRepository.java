@@ -12,4 +12,5 @@ import java.util.Optional;
  */
 public interface HealthIndexRepository extends JpaRepository<HealthIndex, Long> {
     Optional<HealthIndex> findById(long id);
+    boolean findByNameIgnoreCase(String name);
 }

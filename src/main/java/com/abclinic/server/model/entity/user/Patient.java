@@ -8,10 +8,11 @@ import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.serializer.ViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hibernate.annotations.WhereJoinTable;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,6 +83,10 @@ public class Patient extends User implements IPayload {
         return subDoctors;
     }
 
+    public void setSubDoctors(List<User> subDoctors) {
+        this.subDoctors = subDoctors;
+    }
+
     public List<Specialist> getSpecialists() {
         return subDoctors.stream()
                 .filter(u -> u.getRole().equals(Role.SPECIALIST))
@@ -102,5 +107,14 @@ public class Patient extends User implements IPayload {
 
     public boolean removeSubDoc(User doctor) {
         return this.subDoctors.remove(doctor);
+    }
+
+    public List<Doctor> getDoctors() {
+        List<Doctor> list = new ArrayList<>();
+        list.add(practitioner);
+        list.addAll(subDoctors.stream()
+                .map(d -> (Doctor) d)
+                .collect(Collectors.toList()));
+        return list;
     }
 }

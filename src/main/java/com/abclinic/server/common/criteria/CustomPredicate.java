@@ -11,7 +11,7 @@ import com.querydsl.core.types.dsl.*;
  * @package com.abclinic.server.common
  * @created 4/22/2020 2:27 PM
  */
-public class CustomPredicate<T extends User> {
+public class CustomPredicate<T> {
     private SearchCriteria criteria;
     private PathBuilder<T> entityPath;
 

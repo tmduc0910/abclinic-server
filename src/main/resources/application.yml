@@ -13,7 +13,7 @@ spring:
   ##    REMOTE MYSQL
         url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
         username: LQmSwtESHO
-        password: mrVMPtYqrt
+        password: 9fIwFFLJZK
 
   ##    HELIO HOST
   #      url: jdbc:mysql://abclinic.heliohost.org:3306/abclinic_db

@@ -31,6 +31,15 @@ public class PatientHealthIndexField extends IPayloadIpml {
     @JsonView(Views.Abridged.class)
     private String value;
 
+    public PatientHealthIndexField() {
+    }
+
+    public PatientHealthIndexField(HealthIndexSchedule schedule, HealthIndexField field, String value) {
+        this.schedule = schedule;
+        this.field = field;
+        this.value = value;
+    }
+
     public HealthIndexSchedule getSchedule() {
         return schedule;
     }

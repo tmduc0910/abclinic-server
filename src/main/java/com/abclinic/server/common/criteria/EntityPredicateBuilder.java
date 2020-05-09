@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * @package com.abclinic.server.common
  * @created 4/22/2020 2:49 PM
  */
-public abstract class EntityPredicateBuilder<T extends User> {
+public abstract class EntityPredicateBuilder<T> {
     protected List<SearchCriteria> params;
     private Set<String> allowedFilters = new HashSet<>();
     private CustomPredicate<T> predicate;
