@@ -1,6 +1,7 @@
 package com.abclinic.server.config;
 
 import com.abclinic.server.common.constant.UserStatus;
+import com.abclinic.server.common.utils.StringUtils;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.UnauthorizedActionException;
 import com.abclinic.server.model.entity.user.User;
@@ -27,7 +28,9 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
         if (request.getMethod().contains("OPTIONS"))
             return true;
 
-//        response.addHeader("Access-Control-Allow-Origin", "*");
+        if (StringUtils.isNull(response.getHeader("Access-Control-Allow-Origin"))) {
+            response.addHeader("Access-Control-Allow-Origin", "*");
+        }
         response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         response.addHeader("Access-Control-Max-Age", "1000");
         response.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
