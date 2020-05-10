@@ -2,6 +2,7 @@ package com.abclinic.server.service.entity;
 
 import com.abclinic.server.common.constant.MessageType;
 import com.abclinic.server.common.criteria.HealthIndexSchedulePredicateBuilder;
+import com.abclinic.server.common.criteria.PatientHealthIndexFieldPredicateBuilder;
 import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -101,19 +103,25 @@ public class HealthIndexService {
         return patientHealthIndexFieldComponentService.getList(field, pageable);
     }
 
-    public HealthIndexSchedule schedule(Patient patient, Doctor doctor, long scheduleTime, LocalDateTime startTime, HealthIndex index) {
+    public Page<PatientHealthIndexField> getValuesList(User user, String search, Pageable pageable) {
+        return patientHealthIndexFieldComponentService.getList(user, search, new PatientHealthIndexFieldPredicateBuilder(), pageable);
+    }
+
+    public HealthIndexSchedule createSchedule(Patient patient, Doctor doctor, long scheduleTime, LocalDateTime startTime, HealthIndex index) {
         HealthIndexSchedule schedule = new HealthIndexSchedule(patient, doctor, index, scheduleTime, startTime);
         schedule = (HealthIndexSchedule) save(schedule);
         List<Doctor> doctors = patient.getDoctors();
         HealthIndexSchedule finalSchedule = schedule;
         doctors.stream()
                 .filter(d -> !d.equals(doctor))
-                .forEach(d -> {
-                    notificationService.makeNotification(doctor,
-                            NotificationFactory.getMessage(MessageType.SCHEDULE, d, finalSchedule));
-                });
+                .forEach(d -> notificationService.makeNotification(doctor,
+                        NotificationFactory.getMessage(MessageType.SCHEDULE, d, finalSchedule)));
         notificationService.makeNotification(doctor, NotificationFactory.getMessage(MessageType.SCHEDULE, patient, schedule));
         return schedule;
+    }
+
+    public HealthIndexSchedule updateSchedule(HealthIndexSchedule schedule) {
+        return healthIndexScheduleComponentService.updateSchedule(schedule);
     }
 
     public HealthIndex createIndex(String indexName, String description, String[] fieldNames) {
@@ -126,7 +134,18 @@ public class HealthIndexService {
         return getIndex(index.getId());
     }
 
-    public PatientHealthIndexField createResult(HealthIndexSchedule schedule, HealthIndexField field, String value) {
+    public List<PatientHealthIndexField> createResults(HealthIndexSchedule schedule, List<HealthIndexField> fields, List<String> values) {
+        List<PatientHealthIndexField> results = new ArrayList<>();
+        schedule = updateSchedule(schedule);
+        for (int i = 0; i < fields.size(); i++) {
+            PatientHealthIndexField f = createResult(schedule, fields.get(i), values.get(i));
+            f.setSchedule(schedule);
+            results.add(f);
+        }
+        return results;
+    }
+
+    private PatientHealthIndexField createResult(HealthIndexSchedule schedule, HealthIndexField field, String value) {
         if (schedule.getIndex().getFields().contains(field)) {
             PatientHealthIndexField result = new PatientHealthIndexField(schedule, field, value);
             result = (PatientHealthIndexField) save(result);

@@ -47,7 +47,7 @@ public class GooglePhotosService {
     public static Optional<Album> getAlbumByName(String name) {
         InternalPhotosLibraryClient.ListAlbumsPagedResponse response = client.listAlbums();
         return StreamSupport.stream(response.iterateAll().spliterator(), false)
-                .filter(r -> r.getTitle().equals("Avatar"))
+                .filter(r -> r.getTitle().equals(name))
                 .findFirst();
     }
 

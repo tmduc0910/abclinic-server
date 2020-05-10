@@ -1,5 +1,7 @@
 package com.abclinic.server.service.entity.health_index.component;
 
+import com.abclinic.server.common.criteria.EntityPredicateBuilder;
+import com.abclinic.server.common.criteria.PatientHealthIndexFieldPredicateBuilder;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexField;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
@@ -9,6 +11,7 @@ import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.PatientHealthIndexFieldRepository;
 import com.abclinic.server.service.entity.IDataMapperService;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,6 +54,15 @@ public class PatientHealthIndexFieldComponentService implements IDataMapperServi
             default:
                 return null;
         }
+    }
+
+    @Override
+    public Page<PatientHealthIndexField> getList(User user, String search, EntityPredicateBuilder builder, Pageable pageable) {
+        PatientHealthIndexFieldPredicateBuilder predBuilder = (PatientHealthIndexFieldPredicateBuilder) builder.init(search);
+        BooleanExpression expression = predBuilder.build();
+        if (expression != null)
+            return patientHealthIndexFieldRepository.findAll(expression, pageable);
+        return patientHealthIndexFieldRepository.findAll(pageable);
     }
 
     @Transactional

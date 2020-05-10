@@ -3,6 +3,7 @@ package com.abclinic.server.service.entity.health_index.component;
 import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.criteria.EntityPredicateBuilder;
 import com.abclinic.server.common.criteria.HealthIndexSchedulePredicateBuilder;
+import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
 import com.abclinic.server.model.entity.user.Doctor;
@@ -55,6 +56,12 @@ public class HealthIndexScheduleComponentService implements IDataMapperService<H
             default:
                 return null;
         }
+    }
+
+    public HealthIndexSchedule updateSchedule(HealthIndexSchedule schedule) {
+        schedule.setStartedAt(DateTimeUtils.plusSeconds(schedule.getStartedAt(), schedule.getScheduledTime()));
+        schedule.setEndedAt(DateTimeUtils.plusSeconds(schedule.getEndedAt(), schedule.getScheduledTime()));
+        return save(schedule);
     }
 
     @Override

@@ -35,6 +35,11 @@ public class DateTimeUtils {
         return LocalDate.parse(date, formatter);
     }
 
+    public static LocalDateTime parseDateTime(String dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(Constant.DATE_TIME_FORMAT);
+        return LocalDateTime.parse(dateTime, formatter);
+    }
+
     public static int getDistanceByYear(LocalDate from, LocalDate to) {
         return to.getYear() - from.getYear();
     }

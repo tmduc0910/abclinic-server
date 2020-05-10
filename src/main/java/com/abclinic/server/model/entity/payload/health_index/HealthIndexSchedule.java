@@ -80,7 +80,7 @@ public class HealthIndexSchedule extends IPayloadIpml {
         this.index = index;
         this.scheduledTime = scheduledTime;
         this.startedAt = startedAt;
-        this.endedAt = DateTimeUtils.plusSeconds(startedAt, scheduledTime);
+        this.endedAt = DateTimeUtils.plusSeconds(startedAt, scheduledTime - 1);
     }
 
     public Patient getPatient() {
