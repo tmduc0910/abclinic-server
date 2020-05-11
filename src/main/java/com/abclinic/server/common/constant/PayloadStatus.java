@@ -9,4 +9,5 @@ public class PayloadStatus {
     public static final int UNREAD = 0;
     public static final int ON_HOLD = 1;
     public static final int PROCESSED = 2;
+    public static final int DELETED = 10;
 }

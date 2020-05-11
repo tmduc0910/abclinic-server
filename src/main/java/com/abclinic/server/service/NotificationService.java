@@ -1,8 +1,11 @@
 package com.abclinic.server.service;
 
+import com.abclinic.server.common.constant.MessageType;
+import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.notification.Notification;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
+import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.NotificationRepository;
 import com.abclinic.server.service.entity.IDataMapperService;
@@ -12,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -50,13 +54,18 @@ public class NotificationService implements IDataMapperService<Notification> {
         builder.add("đã");
         builder.add(message.getMessageType().getAction());
         builder.add("cho bạn");
-//        if (message.getMessageType() == MessageType.SCHEDULE_REMINDER)
-//            return new StringJoiner(" ")
-//                    .add("Bạn")
-//            .add(message.getMessageType().getAction())
-//            .add("vào")
-//            .add()
 
+        if (message.getMessageType() == MessageType.SCHEDULE_REMINDER) {
+            LocalDateTime now = DateTimeUtils.getCurrent();
+            int time = DateTimeUtils.getDistanceByHour(now, ((HealthIndexSchedule) message.getPayload()).getEndedAt());
+            return new StringJoiner(" ")
+                    .add("Bạn")
+                    .add(message.getMessageType().getAction())
+                    .add("vào")
+                    .add(String.valueOf(time))
+                    .add("tiếng nữa")
+                    .toString();
+        }
         return builder.toString();
     }
 

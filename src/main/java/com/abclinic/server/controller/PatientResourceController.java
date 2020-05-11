@@ -1,6 +1,7 @@
 package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
+import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.common.criteria.PatientPredicateBuilder;
 import com.abclinic.server.common.base.CustomController;
@@ -105,7 +106,7 @@ public class PatientResourceController extends CustomController {
     public ResponseEntity<Patient> getPatient(@ApiIgnore @RequestAttribute("User") User user,
                                               @PathVariable("id") long id) {
         Patient patient = patientService.getById(id);
-        if (patientService.isPatientOf(patient, user))
+        if (patientService.isPatientOf(patient, user) || user.getRole() == Role.COORDINATOR)
             return new ResponseEntity<>(patient, HttpStatus.OK);
         throw new ForbiddenException(user.getId(), "Bệnh nhân không thuộc quyền quản lý");
     }

@@ -15,6 +15,7 @@ import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.querydsl.binding.SingleValueBinding;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -29,6 +30,8 @@ public interface HealthIndexScheduleRepository extends JpaRepository<HealthIndex
     Optional<Page<HealthIndexSchedule>> findByPatient(Patient patient, Pageable pageable);
 
     Optional<Page<HealthIndexSchedule>> findByDoctor(Doctor doctor, Pageable pageable);
+
+    List<HealthIndexSchedule> findByStatus(int status);
 
     @Override
     default void customize(QuerydslBindings querydslBindings, QHealthIndexSchedule qHealthIndexSchedule) {

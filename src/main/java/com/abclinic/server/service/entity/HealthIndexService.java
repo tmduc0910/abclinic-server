@@ -124,6 +124,10 @@ public class HealthIndexService {
         return healthIndexScheduleComponentService.updateSchedule(schedule);
     }
 
+    public List<HealthIndexSchedule> getAvailableSchedules() {
+        return healthIndexScheduleComponentService.getAllAvailableSchedules();
+    }
+
     public HealthIndex createIndex(String indexName, String description, String[] fieldNames) {
         HealthIndex index = new HealthIndex(indexName, description);
         index = (HealthIndex) save(index);

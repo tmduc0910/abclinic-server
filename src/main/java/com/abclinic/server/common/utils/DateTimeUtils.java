@@ -48,6 +48,10 @@ public class DateTimeUtils {
         return getDistanceByYear(from, getCurrentDate());
     }
 
+    public static int getDistanceByHour(LocalDateTime from, LocalDateTime to) {
+        return to.getHour() - from.getHour();
+    }
+
     public static int secondsToHours(long time) {
         return (int) (time / Constant.SEC_OF_MIN / Constant.MIN_OF_HOUR);
     }

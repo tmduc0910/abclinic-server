@@ -16,8 +16,11 @@ public class Constant {
     public static final String NOT_SBL = "!";
     public static final String CONTAIN_SBL = "ct";
 
+    public static final int MIL_OF_SEC = 1000;
     public static final int SEC_OF_MIN = 60;
     public static final int MIN_OF_HOUR = 60;
     public static final int HOUR_OF_DAY = 24;
     public static final int DAY_OF_WEEK = 7;
+    public static final int REMINDER_CYCLE = 4;
+    public static final int REMINDER_LIMIT = 12;
 }

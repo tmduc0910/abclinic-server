@@ -1,5 +1,6 @@
 package com.abclinic.server.service.entity.health_index.component;
 
+import com.abclinic.server.common.constant.PayloadStatus;
 import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.criteria.EntityPredicateBuilder;
 import com.abclinic.server.common.criteria.HealthIndexSchedulePredicateBuilder;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 /**
  * @author tmduc
@@ -62,6 +64,10 @@ public class HealthIndexScheduleComponentService implements IDataMapperService<H
         schedule.setStartedAt(DateTimeUtils.plusSeconds(schedule.getStartedAt(), schedule.getScheduledTime()));
         schedule.setEndedAt(DateTimeUtils.plusSeconds(schedule.getEndedAt(), schedule.getScheduledTime()));
         return save(schedule);
+    }
+
+    public List<HealthIndexSchedule> getAllAvailableSchedules() {
+        return healthIndexScheduleRepository.findByStatus(PayloadStatus.UNREAD);
     }
 
     @Override
