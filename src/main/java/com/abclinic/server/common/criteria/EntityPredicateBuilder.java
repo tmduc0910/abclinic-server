@@ -36,8 +36,8 @@ public abstract class EntityPredicateBuilder<T> {
 
     public EntityPredicateBuilder init(String search) {
         if (!StringUtils.isNull(search)) {
-            if (!StringUtils.endsWith(search, ","))
-                search += ",";
+//            if (!StringUtils.endsWith(search, ","))
+//                search += ",";
 
             Pattern pattern = Pattern.compile(Constant.FILTER_REGEX, Pattern.UNICODE_CHARACTER_CLASS);
             Matcher matcher = pattern.matcher(search + ",");
