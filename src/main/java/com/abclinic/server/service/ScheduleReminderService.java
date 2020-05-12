@@ -28,15 +28,9 @@ public class ScheduleReminderService {
     private HealthIndexService healthIndexService;
 
     @Autowired
-    private PatientService patientService;
-
-    @Autowired
     private NotificationService notificationService;
 
-    @Scheduled(cron = "0 0 0 ? ? ?", fixedDelay = Constant.REMINDER_CYCLE *
-            Constant.MIN_OF_HOUR *
-            Constant.SEC_OF_MIN *
-            Constant.MIL_OF_SEC)
+    @Scheduled(cron = "0 0 */4 ? * *")
     public void remind() {
         List<HealthIndexSchedule> schedules = healthIndexService.getAvailableSchedules();
         LocalDateTime now = DateTimeUtils.getCurrent();
