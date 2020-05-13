@@ -1,7 +1,8 @@
 package com.abclinic.server.service.entity;
 
+import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.exception.NotFoundException;
-import com.abclinic.server.model.entity.user.User;
+import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,32 @@ public class UserService implements IDataMapperService<User> {
     @Transactional
     public Optional<User> findByUsername(String username) {
         return userRepository.findByEmailOrPhoneNumber(username, username);
+    }
+
+    public void deactivateUser(User user) {
+        user.setStatus(UserStatus.DEACTIVATED.getValue());
+        switch (user.getRole()) {
+            case PATIENT:
+                Patient p = (Patient) user;
+                p.setPractitioner(null);
+                p.setSubDoctors(null);
+                break;
+            case PRACTITIONER:
+                Practitioner pr = (Practitioner) user;
+                pr.setPatients(null);
+                break;
+            case DIETITIAN:
+                Dietitian d = (Dietitian) user;
+                d.setPatients(null);
+                break;
+            case SPECIALIST:
+                Specialist s = (Specialist) user;
+                s.setPatients(null);
+                break;
+            default:
+                return;
+        }
+        save(user);
     }
 
     @Override

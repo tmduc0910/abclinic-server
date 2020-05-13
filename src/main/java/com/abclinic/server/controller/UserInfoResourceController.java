@@ -3,6 +3,7 @@ package com.abclinic.server.controller;
 import com.abclinic.server.annotation.authorized.Restricted;
 import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.entity.DoctorService;
@@ -54,9 +55,9 @@ public class UserInfoResourceController extends CustomController {
             value = "Xem thông tin cá nhân",
             notes = "Trả về chi tiết thông tin cá nhân"
     )
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Public.class)
     public ResponseEntity getUserInfo(@ApiIgnore @RequestAttribute("User") User user) {
-        return new ResponseEntity(user, HttpStatus.OK);
+        return new ResponseEntity(userService.getById(user.getId()), HttpStatus.OK);
     }
 
     @PutMapping("/user")
@@ -69,6 +70,9 @@ public class UserInfoResourceController extends CustomController {
             @ApiImplicitParam(name = "phone", value = "SĐT của người dùng", required = true, dataType = "string"),
             @ApiImplicitParam(name = "address", value = "Địa chỉ cư trú của bệnh nhân", required = true, dataType = "string"),
             @ApiImplicitParam(name = "description", value = "Mô tả lí lịch của bác sĩ", required = true, dataType = "string")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Chỉnh sửa thành công")
     })
     public ResponseEntity<? extends User> editUserInfo(@ApiIgnore @RequestAttribute("User") User user,
                                        @Nullable @RequestParam("email") String email,
@@ -102,10 +106,31 @@ public class UserInfoResourceController extends CustomController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    @DeleteMapping("/user")
+    @Restricted(included = Coordinator.class)
+    @ApiOperation(
+            value = "Hủy kích hoạt tài khoản",
+            notes = "Trả về 200 OK",
+            tags = "Điều phối viên"
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "ID của người dùng cần hủy", required = true, dataType = "long", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Hủy thành công")
+    })
+    public ResponseEntity deleteUser(@ApiIgnore @RequestAttribute("User") User user,
+                                     @RequestParam("id") long userId) {
+        User u = userService.getById(userId);
+        userService.deactivateUser(u);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
     @PutMapping("/user/specialties")
     @ApiOperation(
             value = "Sửa chuyên môn của bác sĩ",
-            notes = "Trả về 200 OK hoặc 400 BAD REQUEST"
+            notes = "Trả về 200 OK hoặc 400 BAD REQUEST",
+            tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "specialties", required = true, value = "Danh sách Mã ID của chuyên môn", dataType = "array")

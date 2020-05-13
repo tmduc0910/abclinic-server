@@ -16,7 +16,7 @@ public class Disease {
     @JsonView(Views.Abridged.class)
     private String name;
 
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     private String description;
 
     public Disease() {

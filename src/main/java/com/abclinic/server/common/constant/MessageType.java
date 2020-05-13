@@ -15,7 +15,8 @@ public enum MessageType {
     REMOVE_ASSIGN(6, "hủy quyền quản lý bệnh nhân"),
     SCHEDULE(7, "đặt lịch gửi chỉ số sức khỏe"),
     SEND_INDEX(8, "gửi chỉ số sức khỏe"),
-    SCHEDULE_REMINDER(9, "có lịch gửi chỉ số sức khỏe phải nộp");
+    SCHEDULE_REMINDER(9, "có lịch gửi chỉ số sức khỏe phải nộp"),
+    DEACTIVATED(10, "đã được xóa");
 
     private int value;
     private String action;

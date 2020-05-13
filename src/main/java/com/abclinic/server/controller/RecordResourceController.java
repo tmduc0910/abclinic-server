@@ -92,8 +92,10 @@ public class RecordResourceController extends CustomController {
                 else
                     throw new ForbiddenException(user.getId(), "Chỉ có bác sĩ chuyên khoa mới có thể tư vấn khám bệnh");
             } else {
-                if (user.getRole() == Role.DIETITIAN)
+                if (user.getRole() == Role.DIETITIAN) {
                     record = new DietRecord(inquiry, prescription, note, (Dietitian) doctorService.getById(user.getId()));
+                    record.setStatus(PayloadStatus.PROCESSED);
+                }
                 else
                     throw new ForbiddenException(user.getId(), "Chỉ có bác sĩ dinh dưỡng mới có thể tư vấn dinh dưỡng");
             }
@@ -111,7 +113,8 @@ public class RecordResourceController extends CustomController {
     @Restricted(included = Practitioner.class)
     @ApiOperation(
             value = "Chỉnh sửa tư vấn",
-            notes = "Trả về 200 OK hoặc 400 BAD REQUEST hoặc 403 FORBIDDEN"
+            notes = "Trả về 200 OK hoặc 400 BAD REQUEST hoặc 403 FORBIDDEN",
+            tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "record-id", value = "Mã ID của tư vấn", required = true, dataType = "long", example = "1"),
@@ -136,7 +139,8 @@ public class RecordResourceController extends CustomController {
                 if (record.getRecordType() == RecordType.MEDICAL.getValue())
                     ((MedicalRecord) record).setDiagnose(diagnose);
                 record.setPrescription(prescription);
-                record.setStatus(PayloadStatus.PROCESSED);
+                if (user.getRole() == Role.PRACTITIONER)
+                    record.setStatus(PayloadStatus.PROCESSED);
                 record = recordService.save(record);
             } else throw new ForbiddenException(user.getId(), "Bác sĩ không phụ trách bệnh nhân này");
             return new ResponseEntity<>(record, HttpStatus.OK);

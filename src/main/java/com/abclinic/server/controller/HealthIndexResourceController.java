@@ -107,8 +107,8 @@ public class HealthIndexResourceController extends CustomController {
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "Mã ID của chỉ số", required = true, dataType = "long", example = "1"),
-            @ApiImplicitParam(name = "name", value = "Tên mới", dataType = "string", example = "Mỡ máu"),
-            @ApiImplicitParam(name = "description", value = "Mô tả mới", dataType = "string", example = "Mô tả")
+            @ApiImplicitParam(name = "name", value = "Tên mới", required = true, dataType = "string", example = "Mỡ máu"),
+            @ApiImplicitParam(name = "description", value = "Mô tả mới", required = true, dataType = "string", example = "Mô tả")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Chỉnh sửa thành công"),
@@ -117,15 +117,11 @@ public class HealthIndexResourceController extends CustomController {
     @JsonView(Views.Public.class)
     public ResponseEntity<HealthIndex> editIndex(@ApiIgnore @RequestAttribute("User") User user,
                                                  @RequestParam("id") long indexId,
-                                                 @RequestParam("name") @Nullable String name,
-                                                 @RequestParam("description") @Nullable String description) {
+                                                 @RequestParam("name") String name,
+                                                 @RequestParam("description") String description) {
         HealthIndex index = healthIndexService.getIndex(indexId);
-        if (!StringUtils.isNull(name)) {
-            index.setName(name);
-        }
-        if (!StringUtils.isNull(description)) {
-            index.setDescription(description);
-        }
+        index.setName(name);
+        index.setDescription(description);
         return new ResponseEntity<>((HealthIndex) healthIndexService.save(index), HttpStatus.OK);
     }
 
@@ -282,8 +278,8 @@ public class HealthIndexResourceController extends CustomController {
             tags = "Bệnh nhân"
     )
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "schedule-id", value = "Mã ID của lịch", required = true, dataType = "long", example = "1"),
-        @ApiImplicitParam(name = "result", value = "Danh sách kết quả (fieldId, value)", required = true, dataType = "array")
+            @ApiImplicitParam(name = "schedule-id", value = "Mã ID của lịch", required = true, dataType = "long", example = "1"),
+            @ApiImplicitParam(name = "result", value = "Danh sách kết quả (fieldId, value)", required = true, dataType = "array")
     })
     @ApiResponses({
             @ApiResponse(code = 201, message = "Tạo kết quả thành công"),

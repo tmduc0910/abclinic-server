@@ -1,5 +1,6 @@
 package com.abclinic.server.service.entity;
 
+import com.abclinic.server.common.constant.PayloadStatus;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.*;
@@ -66,7 +67,9 @@ public class InquiryService implements IDataMapperService<Inquiry> {
                 break;
             case PATIENT:
                 Patient patient = patientService.getById(user.getId());
-                inquiries = inquiryRepository.findByPatient(patient, pageable);
+                if (!assigned)
+                    inquiries = inquiryRepository.findByPatientAndStatus(patient, PayloadStatus.UNREAD, pageable);
+                else inquiries = inquiryRepository.findByPatient(patient, pageable);
                 break;
         }
         return inquiries.orElseThrow(NotFoundException::new);

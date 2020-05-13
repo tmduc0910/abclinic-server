@@ -34,7 +34,7 @@ public abstract class EntityPredicateBuilder<T> {
 
     protected abstract void config();
 
-    public EntityPredicateBuilder init(String search) {
+    public EntityPredicateBuilder<T> init(String search) {
         if (!StringUtils.isNull(search)) {
 //            if (!StringUtils.endsWith(search, ","))
 //                search += ",";
@@ -48,22 +48,22 @@ public abstract class EntityPredicateBuilder<T> {
         return this;
     }
 
-    EntityPredicateBuilder allow(FilterConstant filter) {
+    EntityPredicateBuilder<T> allow(FilterConstant filter) {
         allowedFilters.add(filter.getValue());
         return this;
     }
 
-    EntityPredicateBuilder setPredicate(CustomPredicate<T> predicate) {
+    EntityPredicateBuilder<T> setPredicate(CustomPredicate<T> predicate) {
         this.predicate = predicate;
         return this;
     }
 
-    EntityPredicateBuilder setPathBuilder(PathBuilder<T> pathBuilder) {
+    EntityPredicateBuilder<T> setPathBuilder(PathBuilder<T> pathBuilder) {
         this.predicate.setEntityPath(pathBuilder);
         return this;
     }
 
-    public EntityPredicateBuilder with(String key, String operation, Object value) {
+    public EntityPredicateBuilder<T> with(String key, String operation, Object value) {
         if (StringUtils.equalsIgnoreCase(key, FilterConstant.STATUS.getValue()))
             operation = Constant.AND_SBL;
         params.add(new SearchCriteria(key, operation, value));
