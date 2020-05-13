@@ -71,7 +71,8 @@ public class Image {
     }
 
     public String getPath() {
-        return GooglePhotosService.getImage(path);
+//        return GooglePhotosService.getImage(path);
+        return path;
     }
 
     public void setPath(String path) {

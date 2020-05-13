@@ -10,6 +10,7 @@ import com.abclinic.server.model.entity.Image;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
+import com.abclinic.server.service.CloudinaryService;
 import com.abclinic.server.service.GooglePhotosService;
 import com.abclinic.server.service.entity.ImageService;
 import com.abclinic.server.service.entity.InquiryService;
@@ -28,10 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -56,7 +55,7 @@ public class ImageController extends CustomController {
     private PatientService patientService;
 
     @Value("${file.upload-dir}")
-    private String uploadDirectory;
+    public static String uploadDirectory;
 
     @Override
     public void init() {
@@ -75,19 +74,23 @@ public class ImageController extends CustomController {
         Patient patient = patientService.getById(user.getId());
         if (files.length == 0)
             throw new BadRequestException(patient.getId(), "phải ít nhất upload lên 1 ảnh");
-        Album album = GooglePhotosService.makeAlbum();
-//        ImageAlbum imageAlbum = new ImageAlbum(album.getId(), patient, content, type);
-//        save(imageAlbum);
+//        Album album = GooglePhotosService.makeAlbum();
 
         try {
-            List<Image> images = new ArrayList<>();
-            for (MultipartFile file : files) {
-                images.add(upload(file, album));
-            }
-            AlbumDto albumDto = new AlbumDto(album.getId(), images.stream()
+            CloudinaryService service = CloudinaryService.getInstance(uploadDirectory);
+//            List<Image> images = new ArrayList<>();
+//            for (MultipartFile file : files) {
+//                images.add(upload(file, album));
+//            }
+//            AlbumDto albumDto = new AlbumDto(album.getId(), images.stream()
+            String albumId = service.getTag(false);
+            List<Image> images = service.uploadImages(files, albumId);
+            AlbumDto albumDto = new AlbumDto(albumId, images.stream()
                     .map(i -> i = imageService.save(i))
                     .map(Image::getPath)
                     .collect(Collectors.toList()));
+            service.getImages(albumId);
+
             return new ResponseEntity<>(albumDto, HttpStatus.CREATED);
         } catch (Exception e) {
             throw new BadRequestException(patient.getId());
@@ -107,14 +110,16 @@ public class ImageController extends CustomController {
     @JsonView(Views.Public.class)
     public ResponseEntity<String> processUploadAvatar(@ApiIgnore @RequestAttribute("User") User user,
                                                       @RequestParam("file") MultipartFile file) {
-        Album album;
-        Optional<Album> op = GooglePhotosService.getAlbumByName("Avatar");
-        album = op.orElseGet(() -> GooglePhotosService.makeAlbum("Avatar"));
+//        Album album;
+//        Optional<Album> op = GooglePhotosService.getAlbumByName("Avatar");
+//        album = op.orElseGet(() -> GooglePhotosService.makeAlbum("Avatar"));
         try {
-            Image avatar = upload(file, album);
+//            Image avatar = upload(file, album);
+            CloudinaryService service = CloudinaryService.getInstance(uploadDirectory);
+            Image avatar = service.uploadAvatar(file);
             user.setAvatar(avatar.getPath());
             userService.save(user);
-            return new ResponseEntity<>(GooglePhotosService.getImage(avatar.getPath()), HttpStatus.CREATED);
+            return new ResponseEntity<>(avatar.getPath(), HttpStatus.CREATED);
         } catch (Exception e) {
             throw new BadRequestException(user.getId());
         }
@@ -129,38 +134,38 @@ public class ImageController extends CustomController {
         return new Image(imageId, fileName, fileType);
     }
 
-    @GetMapping(value = "/albums")
-    @ApiOperation(value = "Lấy tất cả album ảnh của cá nhân", notes = "Trả về danh sách album ảnh hoặc 404 NOT FOUND")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "Lấy danh sách album thành công"),
-            @ApiResponse(code = 400, message = "Người dùng không có ảnh nào")
-    })
-    @ResponseStatus(HttpStatus.OK)
-    @JsonView(Views.Public.class)
-    public ResponseEntity<List<Inquiry>> processGetAllAlbums(@ApiIgnore @RequestAttribute("User") User user) {
-        Patient patient = patientService.getById(user.getId());
-        return new ResponseEntity<>(inquiryService.getByPatient(patient), HttpStatus.OK);
-    }
+//    @GetMapping(value = "/albums")
+//    @ApiOperation(value = "Lấy tất cả album ảnh của cá nhân", notes = "Trả về danh sách album ảnh hoặc 404 NOT FOUND")
+//    @ApiResponses({
+//            @ApiResponse(code = 200, message = "Lấy danh sách album thành công"),
+//            @ApiResponse(code = 400, message = "Người dùng không có ảnh nào")
+//    })
+//    @ResponseStatus(HttpStatus.OK)
+//    @JsonView(Views.Public.class)
+//    public ResponseEntity<List<Inquiry>> processGetAllAlbums(@ApiIgnore @RequestAttribute("User") User user) {
+//        Patient patient = patientService.getById(user.getId());
+//        return new ResponseEntity<>(inquiryService.getByPatient(patient), HttpStatus.OK);
+//    }
 
-    @GetMapping(value = "/albums/{album-id}")
-    @ApiOperation(value = "Lấy tất cả ảnh của một album", notes = "Trả về danh sách link ảnh hoặc 404 NOT FOUND")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "album-id", value = "Mã ID của album", required = true, dataType = "long", paramType = "path", example = "1")
-    })
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "Lấy danh sách ảnh thành công"),
-            @ApiResponse(code = 400, message = "Album không có ảnh nào hoặc không tồn tại"),
-            @ApiResponse(code = 404, message = "Người dùng không được xem ảnh trong album của người khác")
-    })
-    @ResponseStatus(HttpStatus.OK)
-    @JsonView(Views.Public.class)
-    public ResponseEntity<List<String>> processGetAlbum(@ApiIgnore @RequestAttribute("User") User user,
-                                                        @PathVariable("album-id") long albumId) {
-        Patient patient = patientService.getById(user.getId());
-        Inquiry inquiry = inquiryService.getById(albumId);
-        if (inquiry.getPatient().equals(patient)) {
-//                List<String> images = GooglePhotosService.getAlbumImages(opt.get().getAlbum());
-            return new ResponseEntity<>(inquiry.getAlbum(), HttpStatus.OK);
-        } else throw new ForbiddenException(patient.getId());
-    }
+//    @GetMapping(value = "/albums/{album-id}")
+//    @ApiOperation(value = "Lấy tất cả ảnh của một album", notes = "Trả về danh sách link ảnh hoặc 404 NOT FOUND")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "album-id", value = "Mã ID của album", required = true, dataType = "long", paramType = "path", example = "1")
+//    })
+//    @ApiResponses({
+//            @ApiResponse(code = 200, message = "Lấy danh sách ảnh thành công"),
+//            @ApiResponse(code = 400, message = "Album không có ảnh nào hoặc không tồn tại"),
+//            @ApiResponse(code = 404, message = "Người dùng không được xem ảnh trong album của người khác")
+//    })
+//    @ResponseStatus(HttpStatus.OK)
+//    @JsonView(Views.Public.class)
+//    public ResponseEntity<List<String>> processGetAlbum(@ApiIgnore @RequestAttribute("User") User user,
+//                                                        @PathVariable("album-id") long albumId) {
+//        Patient patient = patientService.getById(user.getId());
+//        Inquiry inquiry = inquiryService.getById(albumId);
+//        if (inquiry.getPatient().equals(patient)) {
+////                List<String> images = GooglePhotosService.getAlbumImages(opt.get().getAlbum());
+//            return new ResponseEntity<>(inquiry.getAlbum(), HttpStatus.OK);
+//        } else throw new ForbiddenException(patient.getId());
+//    }
 }

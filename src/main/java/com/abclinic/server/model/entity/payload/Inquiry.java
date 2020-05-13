@@ -1,11 +1,13 @@
 package com.abclinic.server.model.entity.payload;
 
 import com.abclinic.server.common.base.Views;
+import com.abclinic.server.controller.ImageController;
 import com.abclinic.server.model.entity.payload.record.DietRecord;
 import com.abclinic.server.model.entity.payload.record.MedicalRecord;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.serializer.ViewSerializer;
+import com.abclinic.server.service.CloudinaryService;
 import com.abclinic.server.service.GooglePhotosService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -79,8 +81,10 @@ public class Inquiry extends IPayloadIpml {
         this.patient = patient;
     }
 
-    public List<String> getAlbum() {
-        return albumId == null ? null : GooglePhotosService.getAlbumImages(albumId);
+    public List<String> getAlbum() throws Exception {
+        return albumId == null ? null
+                : CloudinaryService.getInstance(ImageController.uploadDirectory)
+                .getImages(albumId);
     }
 
     public int getType() {
