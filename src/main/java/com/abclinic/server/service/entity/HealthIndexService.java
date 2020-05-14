@@ -140,14 +140,20 @@ public class HealthIndexService {
 
     public List<PatientHealthIndexField> createResults(HealthIndexSchedule schedule, List<HealthIndexField> fields, List<String> values) {
         List<PatientHealthIndexField> results = new ArrayList<>();
+        Patient patient = schedule.getPatient();
         schedule = updateSchedule(schedule);
         for (int i = 0; i < fields.size(); i++) {
             PatientHealthIndexField f = createResult(schedule, fields.get(i), values.get(i));
+            f.setSchedule(schedule);
             if (i >= 1) {
                 f.setId(fields.get(0).getId());
-                save(f);
+                f = (PatientHealthIndexField) save(f);
             }
-            f.setSchedule(schedule);
+            PatientHealthIndexField finalF = f;
+            patient.getDoctors().forEach(d -> {
+                notificationService.makeNotification(patient,
+                        NotificationFactory.getMessage(MessageType.SEND_INDEX, d, finalF));
+            });
             results.add(f);
         }
         return results;
@@ -156,14 +162,7 @@ public class HealthIndexService {
     private PatientHealthIndexField createResult(HealthIndexSchedule schedule, HealthIndexField field, String value) {
         if (schedule.getIndex().getFields().contains(field)) {
             PatientHealthIndexField result = new PatientHealthIndexField(schedule, field, value);
-            result = (PatientHealthIndexField) save(result);
-            Patient patient = schedule.getPatient();
-            PatientHealthIndexField finalResult = result;
-            patient.getDoctors().forEach(d -> {
-                notificationService.makeNotification(patient,
-                        NotificationFactory.getMessage(MessageType.SEND_INDEX, d, finalResult));
-            });
-            return finalResult;
+            return (PatientHealthIndexField) save(result);
         } else throw new IllegalArgumentException();
     }
 

@@ -22,6 +22,7 @@ import com.abclinic.server.service.NotificationService;
 import com.abclinic.server.service.entity.DoctorService;
 import com.abclinic.server.service.entity.InquiryService;
 import com.abclinic.server.service.entity.PatientService;
+import com.abclinic.server.service.entity.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,6 +58,9 @@ public class PatientResourceController extends CustomController {
 
     @Autowired
     private DoctorService doctorService;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public void init() {
@@ -270,30 +275,31 @@ public class PatientResourceController extends CustomController {
     public ResponseEntity deletePatientDoctor(@ApiIgnore @RequestAttribute("User") User user,
                                               @PathVariable long id) {
         Patient patient = patientService.getById(id);
-        User target = null;
+        List<User> targets = new ArrayList<>();
         if (patientService.isPatientOf(patient, user)) {
             switch (user.getRole()) {
                 case PRACTITIONER:
                     patient.setPractitioner(null);
                     patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L1);
-                    target = patient;
+                    targets = userService.findAllCoordinators();
                     break;
                 case DIETITIAN:
                     patient.removeSubDoc(user);
                     patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L3);
-                    target = patient.getPractitioner();
+                    targets.add(patient.getPractitioner());
                     break;
                 case SPECIALIST:
                     patient.removeSubDoc(user);
                     patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L2);
-                    target = patient.getPractitioner();
+                    targets.add(patient.getPractitioner());
                     break;
             }
-            notificationService.makeNotification(user,
+            Patient finalPatient = patient;
+            targets.forEach(t -> notificationService.makeNotification(user,
                     NotificationFactory.getMessage(
                             MessageType.REMOVE_ASSIGN,
-                            target,
-                            patient));
+                            t,
+                            finalPatient)));
             patientService.save(patient);
             return new ResponseEntity(HttpStatus.OK);
         }

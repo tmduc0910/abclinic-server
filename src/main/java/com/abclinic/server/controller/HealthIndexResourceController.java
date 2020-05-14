@@ -6,6 +6,7 @@ import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.common.utils.StringUtils;
 import com.abclinic.server.exception.BadRequestException;
+import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.model.dto.IndexResultRequestDto;
 import com.abclinic.server.model.dto.IndexResultResponseDto;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndex;
@@ -179,11 +180,11 @@ public class HealthIndexResourceController extends CustomController {
     }
 
     @GetMapping("/schedule")
-    @Restricted(excluded = Coordinator.class)
+    @Restricted(excluded = { Coordinator.class, Practitioner.class })
     @ApiOperation(
             value = "Lấy danh sách lịch gửi chỉ số sức khỏe",
             notes = "Trả về 200 OK hoặc 404 NOT FOUND",
-            tags = {"Bệnh nhân", "Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
+            tags = {"Bệnh nhân", "Chuyên khoa", "Dinh dưỡng"}
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "search", value = "Filter lọc lịch (ID bệnh nhân, tên bệnh nhân, status)", paramType = "query", example = "status=1,name=admin,"),
@@ -205,6 +206,29 @@ public class HealthIndexResourceController extends CustomController {
         } else {
             return new ResponseEntity<>(healthIndexService.getScheduleList(user, search, pageable), HttpStatus.OK);
         }
+    }
+
+    @GetMapping("/schedule/{id}")
+    @Restricted(excluded = {Coordinator.class, Practitioner.class})
+    @ApiOperation(
+            value = "Lấy thông tin chi tiết lịch nhắc nhở",
+            notes = "Trả về 200 OK hoặc 403 FORBIDDEN",
+            tags = {"Bệnh nhân", "Chuyên khoa", "Dinh dưỡng"}
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "Mã ID của lịch", required = true, paramType = "path", dataType = "long", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Thông tin lịch nhắc nhở"),
+            @ApiResponse(code = 403, message = "Không có quyền truy cập vào lịch này")
+    })
+    @JsonView(Views.Public.class)
+    public ResponseEntity<HealthIndexSchedule> getScheduleDetail(@ApiIgnore @RequestAttribute("User") User user,
+                                                                 @PathVariable("id") long id) {
+        HealthIndexSchedule schedule = healthIndexService.getSchedule(id);
+        if (schedule.getPatient().equals(user) || schedule.getDoctor().equals(user))
+            return new ResponseEntity<>(schedule, HttpStatus.OK);
+        else throw new ForbiddenException(user.getId(), "Không có quyền truy cập vào lịch này");
     }
 
     @PostMapping("/schedule")
@@ -242,11 +266,11 @@ public class HealthIndexResourceController extends CustomController {
     }
 
     @GetMapping("/result")
-    @Restricted(excluded = Coordinator.class)
+    @Restricted(excluded = {Coordinator.class, Practitioner.class})
     @ApiOperation(
             value = "Lấy danh sách kết quả chỉ số sức khỏe",
             notes = "Trả về 200 OK hoặc 404 NOT FOUND",
-            tags = {"Bệnh nhân", "Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
+            tags = {"Bệnh nhân", "Chuyên khoa", "Dinh dưỡng"}
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "search", value = "Filter lọc kết quả (ID bệnh nhân, tên bệnh nhân, ID lịch, ID chỉ số)", paramType = "query", example = "status=1,name=admin,"),

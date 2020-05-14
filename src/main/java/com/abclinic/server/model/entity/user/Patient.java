@@ -113,11 +113,7 @@ public class Patient extends User implements IPayload {
 
     @JsonIgnore
     public List<Doctor> getDoctors() {
-        List<Doctor> list = new ArrayList<>();
-        list.add(practitioner);
-        list.addAll(subDoctors.stream()
-                .map(d -> (Doctor) d)
-                .collect(Collectors.toList()));
-        return list;
+        return subDoctors.stream()
+                .map(d -> (Doctor) d).collect(Collectors.toList());
     }
 }
