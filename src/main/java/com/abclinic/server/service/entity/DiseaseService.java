@@ -33,7 +33,7 @@ public class DiseaseService implements IDataMapperService<Disease> {
     }
 
     public boolean isExist(String name) {
-        return diseaseRepository.findByName(name);
+        return diseaseRepository.findByName(name) != null;
     }
 
     @Override

@@ -33,7 +33,7 @@ public class HealthIndexComponentService implements IDataMapperService<HealthInd
     }
 
     public boolean isExist(String name) {
-        return healthIndexRepository.findByNameIgnoreCase(name);
+        return healthIndexRepository.findByNameIgnoreCase(name).isEmpty();
     }
 
     @Override

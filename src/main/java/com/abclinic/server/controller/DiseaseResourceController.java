@@ -23,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.annotation.Nullable;
+
 /**
  * @author tmduc
  * @package com.abclinic.server.controller
@@ -57,7 +59,7 @@ public class DiseaseResourceController extends CustomController {
     })
     @JsonView(Views.Abridged.class)
     public ResponseEntity<Page<Disease>> getDiseaseList(@ApiIgnore @RequestAttribute("User") User user,
-                                                        @RequestParam("search") String search,
+                                                        @RequestParam("search") @Nullable String search,
                                                         @RequestParam("page") int page,
                                                         @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());

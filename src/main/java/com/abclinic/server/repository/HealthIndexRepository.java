@@ -3,6 +3,7 @@ package com.abclinic.server.repository;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndex;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,5 +13,5 @@ import java.util.Optional;
  */
 public interface HealthIndexRepository extends JpaRepository<HealthIndex, Long> {
     Optional<HealthIndex> findById(long id);
-    boolean findByNameIgnoreCase(String name);
+    List<HealthIndex> findByNameIgnoreCase(String name);
 }
