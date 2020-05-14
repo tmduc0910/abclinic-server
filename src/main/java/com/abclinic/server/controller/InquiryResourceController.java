@@ -3,6 +3,7 @@ package com.abclinic.server.controller;
 import com.abclinic.server.annotation.authorized.Restricted;
 import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.MessageType;
 import com.abclinic.server.common.constant.RecordType;
 import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.common.utils.StatusUtils;
@@ -14,6 +15,7 @@ import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
 import com.abclinic.server.service.entity.InquiryService;
 import com.abclinic.server.service.entity.PatientService;
+import com.abclinic.server.service.entity.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Nullable;
 import javax.swing.text.View;
+import java.util.List;
 
 /**
  * @author tmduc
@@ -43,6 +46,9 @@ public class InquiryResourceController extends CustomController {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private InquiryService inquiryService;
@@ -84,7 +90,14 @@ public class InquiryResourceController extends CustomController {
                 inquiry = inquiryService.save(inquiry);
 
                 //Send notification
-                notificationService.makeNotification(user, NotificationFactory.getMessages(inquiry));
+                if (!StatusUtils.containsStatus(patient, UserStatus.NEW))
+                    notificationService.makeNotification(user, NotificationFactory.getMessages(inquiry));
+                else {
+                    List<User> coordinators = userService.findAllCoordinators();
+                    Inquiry finalInquiry = inquiry;
+                    coordinators.forEach(c -> notificationService.makeNotification(user,
+                            NotificationFactory.getMessage(MessageType.INQUIRE, c, finalInquiry)));
+                }
                 return new ResponseEntity<>(inquiry, HttpStatus.CREATED);
             } else throw new BadRequestException(user.getId(), "Loại yêu cầu không hợp lệ");
         } else throw new ForbiddenException(user.getId(), "Trạng thái người dùng không hợp lệ");

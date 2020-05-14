@@ -143,6 +143,10 @@ public class HealthIndexService {
         schedule = updateSchedule(schedule);
         for (int i = 0; i < fields.size(); i++) {
             PatientHealthIndexField f = createResult(schedule, fields.get(i), values.get(i));
+            if (i >= 1) {
+                f.setId(fields.get(0).getId());
+                save(f);
+            }
             f.setSchedule(schedule);
             results.add(f);
         }

@@ -1,5 +1,6 @@
 package com.abclinic.server.service.entity;
 
+import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.user.*;
@@ -43,6 +44,11 @@ public class UserService implements IDataMapperService<User> {
     @Transactional
     public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+    @Transactional
+    public List<User> findAllCoordinators() {
+        return userRepository.findByRoleAndStatus(Role.COORDINATOR.getValue(), UserStatus.NEW.getValue());
     }
 
     @Transactional

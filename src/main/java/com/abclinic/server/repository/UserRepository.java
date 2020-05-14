@@ -12,6 +12,7 @@ import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.querydsl.binding.SingleValueBinding;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long>,
@@ -35,6 +36,8 @@ public interface UserRepository extends JpaRepository<User, Long>,
     Optional<Page<User>> findAllByRoleIsLessThanAndStatus(int role, int status, Pageable pageable);
 
     Optional<Page<User>> findByRoleAndStatus(int role, int status, Pageable pageable);
+
+    List<User> findByRoleAndStatus(int role, int status);
 
     Optional<Page<User>> findByStatus(int status, Pageable pageable);
 

@@ -270,21 +270,30 @@ public class PatientResourceController extends CustomController {
     public ResponseEntity deletePatientDoctor(@ApiIgnore @RequestAttribute("User") User user,
                                               @PathVariable long id) {
         Patient patient = patientService.getById(id);
+        User target = null;
         if (patientService.isPatientOf(patient, user)) {
             switch (user.getRole()) {
                 case PRACTITIONER:
                     patient.setPractitioner(null);
+                    patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L1);
+                    target = patient;
                     break;
                 case DIETITIAN:
+                    patient.removeSubDoc(user);
+                    patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L3);
+                    target = patient.getPractitioner();
+                    break;
                 case SPECIALIST:
                     patient.removeSubDoc(user);
-                    notificationService.makeNotification(user,
-                            NotificationFactory.getMessage(
-                                    MessageType.REMOVE_ASSIGN,
-                                    patient.getPractitioner(),
-                                    patient));
+                    patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L2);
+                    target = patient.getPractitioner();
                     break;
             }
+            notificationService.makeNotification(user,
+                    NotificationFactory.getMessage(
+                            MessageType.REMOVE_ASSIGN,
+                            target,
+                            patient));
             patientService.save(patient);
             return new ResponseEntity(HttpStatus.OK);
         }
