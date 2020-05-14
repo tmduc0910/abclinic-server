@@ -62,7 +62,7 @@ public class DiseaseResourceController extends CustomController {
                                                         @RequestParam("search") @Nullable String search,
                                                         @RequestParam("page") int page,
                                                         @RequestParam("size") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("name").ascending());
         return new ResponseEntity<>(diseaseService.getList(user, search, new DiseasePredicateBuilder(), pageable), HttpStatus.OK);
     }
 
