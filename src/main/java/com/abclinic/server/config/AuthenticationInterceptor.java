@@ -54,9 +54,8 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
 //                    throw new UnauthorizedActionException(user.getId(), "Bạn chưa đăng nhập");
                 request.setAttribute("User", user);
             } else {
-//                String req = request.getParameterMap().entrySet().iterator().next().getValue()[0];
-                String req = request.getReader().lines().collect(Collectors.joining());
-                RequestLoginDto requestLoginDto = new RequestLoginDto(req);
+//                String req = request.getReader().lines().collect(Collectors.joining());
+//                RequestLoginDto requestLoginDto = new RequestLoginDto(req);
 //                Optional<User> user = userService.findByUsername(req);
 //                if (user.isPresent()) {
 //                    if (user.get().getUid() != null)
