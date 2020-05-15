@@ -1,11 +1,14 @@
 package com.abclinic.server.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * @author tmduc
  * @package com.abclinic.server.model.dto
  * @created 5/10/2020 2:58 PM
  */
 public class IndexResultRequestDto {
+    @JsonProperty("field_id")
     private long fieldId;
     private String value;
 

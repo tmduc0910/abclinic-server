@@ -35,8 +35,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.annotation.Nullable;
-
 /**
  * @author tmduc
  * @package com.abclinic.server.controller
@@ -124,7 +122,7 @@ public class RecordResourceController extends CustomController {
     public ResponseEntity<? extends Record> editRecord(@ApiIgnore @RequestAttribute("User") User user,
                                                        @RequestBody RequestUpdateRecordDto requestUpdateRecordDto) {
         try {
-            Record record = recordService.getById(requestUpdateRecordDto.getRecordId());
+            Record record = recordService.getById(requestUpdateRecordDto.getId());
             if (record.getInquiry().of(user)) {
                 record.setNote(requestUpdateRecordDto.getNote());
                 if (record.getRecordType() == RecordType.MEDICAL.getValue())

@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * @created 5/8/2020 2:35 PM
  */
 @RestController
-@RequestMapping("/health_index")
+@RequestMapping("/health_indexes")
 public class HealthIndexResourceController extends CustomController {
     @Autowired
     private HealthIndexService healthIndexService;
@@ -252,6 +252,15 @@ public class HealthIndexResourceController extends CustomController {
 
     @DeleteMapping("/schedule")
     @Restricted(included = {Specialist.class, Dietitian.class})
+    @ApiOperation(
+            value = "Xóa lịch hẹn chỉ số sức khỏe",
+            notes = "Trả về 200 OK hoặc 403 FORBIDDEN",
+            tags = {"Chuyên khoa", "Dinh dưỡng"}
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Xóa thành công"),
+            @ApiResponse(code = 403, message = "Không có quyền truy cập vào lịch này")
+    })
     public ResponseEntity deleteSchedule(@ApiIgnore @RequestAttribute("User") User user,
                                          @RequestBody RequestDeleteDto requestDeleteDto) {
         HealthIndexSchedule schedule = healthIndexService.getSchedule(requestDeleteDto.getId());

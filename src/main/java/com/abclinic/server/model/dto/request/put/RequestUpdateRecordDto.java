@@ -8,18 +8,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @created 5/15/2020 9:12 AM
  */
 public class RequestUpdateRecordDto {
-    @JsonProperty("record_id")
-    private long recordId;
+    @JsonProperty("id")
+    private long id;
     private String diagnose = null;
     private String note;
     private String prescription;
 
-    public long getRecordId() {
-        return recordId;
+    public long getId() {
+        return id;
     }
 
-    public void setRecordId(long recordId) {
-        this.recordId = recordId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getDiagnose() {

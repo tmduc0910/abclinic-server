@@ -7,6 +7,7 @@ import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
+import com.abclinic.server.model.dto.request.post.RequestCreateReplyDto;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.payload.Reply;
 import com.abclinic.server.model.entity.user.Coordinator;
@@ -61,12 +62,11 @@ public class ReplyResourceController extends CustomController {
             @ApiResponse(code = 403, message = "Bạn không có quyền tạo câu trả lời cho tư vấn này")
     })
     public ResponseEntity<Reply> createReply(@ApiIgnore @RequestAttribute("User") User user,
-                                             @RequestParam("inquiry-id") long inquiryId,
-                                             @RequestParam("reply") String reply) {
+                                             @RequestBody RequestCreateReplyDto requestCreateReplyDto) {
         try {
-            Inquiry inquiry = inquiryService.getById(inquiryId);
+            Inquiry inquiry = inquiryService.getById(requestCreateReplyDto.getInquiryId());
             if (inquiry.of(user)) {
-                Reply r = new Reply(inquiry, user, reply);
+                Reply r = new Reply(inquiry, user, requestCreateReplyDto.getReply());
                 r = replyService.save(r);
                 notificationService.makeNotification(user, NotificationFactory.getMessages(inquiry));
                 return new ResponseEntity<>(r, HttpStatus.CREATED);

@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  * @created 5/13/2020 3:29 PM
  */
 @RestController
-@RequestMapping("/disease")
+@RequestMapping("/diseases")
 public class DiseaseResourceController extends CustomController {
     @Autowired
     private DiseaseService diseaseService;
@@ -88,7 +88,7 @@ public class DiseaseResourceController extends CustomController {
         } else throw new BadRequestException(user.getId(), "Bệnh này đã tồn tại");
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("")
     @Restricted(included = Coordinator.class)
     @ApiOperation(
             value = "Sửa đổi thông tin bệnh",
@@ -103,9 +103,8 @@ public class DiseaseResourceController extends CustomController {
             @ApiResponse(code = 200, message = "Chỉnh sửa thành công"),
     })
     public ResponseEntity<Disease> editDisease(@ApiIgnore @RequestAttribute("User") User user,
-                                               @RequestBody RequestUpdateDiseaseDto requestUpdateDiseaseDto,
-                                               @PathVariable("id") long id) {
-        Disease disease = diseaseService.getById(id);
+                                               @RequestBody RequestUpdateDiseaseDto requestUpdateDiseaseDto) {
+        Disease disease = diseaseService.getById(requestUpdateDiseaseDto.getId());
         disease.setName(requestUpdateDiseaseDto.getName());
         disease.setDescription(requestUpdateDiseaseDto.getDescription());
         return new ResponseEntity<>(diseaseService.save(disease), HttpStatus.OK);
