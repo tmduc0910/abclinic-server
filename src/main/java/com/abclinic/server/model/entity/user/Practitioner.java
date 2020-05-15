@@ -16,8 +16,6 @@ import java.util.Set;
 @Entity
 @Table(name = "Practitioner")
 public class Practitioner extends Doctor {
-
-    @Transient
     @ManyToMany
     @JoinTable(
             name = "practitioner_specialty",

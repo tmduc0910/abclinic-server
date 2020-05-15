@@ -73,6 +73,10 @@ public class UserInfoResourceController extends CustomController {
     })
     public ResponseEntity<? extends User> editUserInfo(@ApiIgnore @RequestAttribute("User") User user,
                                                        @RequestBody RequestUpdateUserInfoDto requestUpdateUserInfoDto) {
+        user.setEmail(requestUpdateUserInfoDto.getEmail());
+        user.setPhoneNumber(requestUpdateUserInfoDto.getPhone());
+        user = userService.save(user);
+
         switch (user.getRole()) {
             case PATIENT:
                 Patient patient = patientService.getById(user.getId());
@@ -95,9 +99,6 @@ public class UserInfoResourceController extends CustomController {
                 doctorService.save(dietitian);
                 break;
         }
-        user.setEmail(requestUpdateUserInfoDto.getEmail());
-        user.setPhoneNumber(requestUpdateUserInfoDto.getPhone());
-        user = userService.save(user);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
