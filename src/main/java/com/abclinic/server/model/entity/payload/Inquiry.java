@@ -29,7 +29,7 @@ public class Inquiry extends IPayloadIpml {
     @JsonSerialize(using = ViewSerializer.class)
     private Patient patient;
 
-    @JsonIgnore
+    @JsonView(Views.Private.class)
     private String albumId;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Reply.class, mappedBy = "inquiry")
@@ -79,12 +79,6 @@ public class Inquiry extends IPayloadIpml {
 
     public void setPatient(Patient patient) {
         this.patient = patient;
-    }
-
-    public List<String> getAlbum() throws Exception {
-        return albumId == null ? null
-                : CloudinaryService.getInstance(ImageController.uploadDirectory)
-                .getImages(albumId);
     }
 
     public int getType() {
@@ -149,6 +143,14 @@ public class Inquiry extends IPayloadIpml {
 
     public void setDietRecords(List<DietRecord> dietRecords) {
         this.dietRecords = dietRecords;
+    }
+
+    public String getAlbumId() {
+        return albumId;
+    }
+
+    public void setAlbumId(String albumId) {
+        this.albumId = albumId;
     }
 
     public boolean of(User user) {

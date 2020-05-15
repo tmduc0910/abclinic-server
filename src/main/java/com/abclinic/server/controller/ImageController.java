@@ -1,18 +1,22 @@
 package com.abclinic.server.controller;
 
+import com.abclinic.server.annotation.authorized.Restricted;
 import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.utils.FileUtils;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
+import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.dto.AlbumDto;
 import com.abclinic.server.model.dto.request.post.RequestCreateAvatarDto;
 import com.abclinic.server.model.dto.request.post.RequestCreateImageDto;
 import com.abclinic.server.model.entity.Image;
 import com.abclinic.server.model.entity.payload.Inquiry;
+import com.abclinic.server.model.entity.user.Coordinator;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.service.CloudinaryService;
+import com.abclinic.server.service.FileService;
 import com.abclinic.server.service.GooglePhotosService;
 import com.abclinic.server.service.entity.ImageService;
 import com.abclinic.server.service.entity.InquiryService;
@@ -56,8 +60,8 @@ public class ImageController extends CustomController {
     @Autowired
     private PatientService patientService;
 
-    @Value("${file.upload-dir}")
-    public static String uploadDirectory;
+    @Autowired
+    private FileService fileService;
 
     @Override
     public void init() {
@@ -70,23 +74,22 @@ public class ImageController extends CustomController {
             @ApiResponse(code = 201, message = "Upload ảnh thành công"),
             @ApiResponse(code = 400, message = "File không hợp lệ")
     })
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<AlbumDto> processUpload(@ApiIgnore @RequestAttribute("User") User user,
-                                                  @RequestBody RequestCreateImageDto requestCreateImageDto) {
+                                                  @RequestAttribute("files") MultipartFile[] files) {
         Patient patient = patientService.getById(user.getId());
-        if (requestCreateImageDto.getFiles().length == 0)
+        if (files.length == 0)
             throw new BadRequestException(patient.getId(), "phải ít nhất upload lên 1 ảnh");
 //        Album album = GooglePhotosService.makeAlbum();
 
         try {
-            CloudinaryService service = CloudinaryService.getInstance(uploadDirectory);
+            CloudinaryService service = CloudinaryService.getInstance(fileService.getUploadDirectory());
 //            List<Image> images = new ArrayList<>();
 //            for (MultipartFile file : files) {
 //                images.add(upload(file, album));
 //            }
 //            AlbumDto albumDto = new AlbumDto(album.getId(), images.stream()
             String albumId = service.getTag(false);
-            List<Image> images = service.uploadImages(requestCreateImageDto.getFiles(), albumId);
+            List<Image> images = service.uploadImages(files, albumId);
             AlbumDto albumDto = new AlbumDto(albumId, images.stream()
                     .map(i -> i = imageService.save(i))
                     .map(Image::getPath)
@@ -105,17 +108,16 @@ public class ImageController extends CustomController {
             @ApiResponse(code = 201, message = "Upload ảnh avatar thành công"),
             @ApiResponse(code = 400, message = "File không hợp lệ")
     })
-    @ResponseStatus(HttpStatus.CREATED)
     @JsonView(Views.Public.class)
     public ResponseEntity<String> processUploadAvatar(@ApiIgnore @RequestAttribute("User") User user,
-                                                      @RequestBody RequestCreateAvatarDto requestCreateAvatarDto) {
+                                                      @RequestAttribute("file") MultipartFile file) {
 //        Album album;
 //        Optional<Album> op = GooglePhotosService.getAlbumByName("Avatar");
 //        album = op.orElseGet(() -> GooglePhotosService.makeAlbum("Avatar"));
         try {
 //            Image avatar = upload(file, album);
-            CloudinaryService service = CloudinaryService.getInstance(uploadDirectory);
-            Image avatar = service.uploadAvatar(requestCreateAvatarDto.getFile());
+            CloudinaryService service = CloudinaryService.getInstance(fileService.getUploadDirectory());
+            Image avatar = service.uploadAvatar(file);
             user.setAvatar(avatar.getPath());
             userService.save(user);
             return new ResponseEntity<>(avatar.getPath(), HttpStatus.CREATED);
@@ -127,10 +129,21 @@ public class ImageController extends CustomController {
     private Image upload(MultipartFile file, Album album) throws Exception {
         String fileName = Objects.requireNonNull(file.getOriginalFilename()).substring(0, file.getOriginalFilename().lastIndexOf('.'));
         String fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
-        File f = FileUtils.toFile(fileName, fileType, file.getBytes(), uploadDirectory);
+        File f = FileUtils.toFile(fileName, fileType, file.getBytes(), fileService.getUploadDirectory());
         String token = GooglePhotosService.getToken(fileName, f.getPath());
         String imageId = GooglePhotosService.createItem(token, album.getId(), f.getName());
         return new Image(imageId, fileName, fileType);
+    }
+
+    @GetMapping("")
+    @Restricted(excluded = Coordinator.class)
+    public ResponseEntity<List<String>> getImages(@RequestParam("album_id") String albumId) {
+        CloudinaryService service = CloudinaryService.getInstance(fileService.getUploadDirectory());
+        try {
+            return new ResponseEntity<>(service.getImages(albumId), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
     }
 
 //    @GetMapping(value = "/albums")

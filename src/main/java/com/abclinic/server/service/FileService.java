@@ -71,4 +71,8 @@ public class FileService {
         LocalDate oldDate = LocalDate.now().minusDays(7);
         return fileDate.isBefore(oldDate);
     }
+
+    public String getUploadDirectory() {
+        return uploadDirectory;
+    }
 }

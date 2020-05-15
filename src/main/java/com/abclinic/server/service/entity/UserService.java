@@ -94,6 +94,7 @@ public class UserService implements IDataMapperService<User> {
     }
 
     @Override
+    @Transactional
     public User save(User obj) {
         return userRepository.save(obj);
     }

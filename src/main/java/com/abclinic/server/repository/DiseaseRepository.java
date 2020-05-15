@@ -23,7 +23,7 @@ import java.util.List;
 public interface DiseaseRepository extends JpaRepository<Disease, Long>,
         QuerydslPredicateExecutor<Disease>, QuerydslBinderCustomizer<QDisease> {
     Disease findById(long id);
-    Disease findByName(String name);
+    List<Disease> findByName(String name);
 
     @Override
     default void customize(QuerydslBindings querydslBindings, QDisease qDisease) {

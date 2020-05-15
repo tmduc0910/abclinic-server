@@ -1,4 +1,4 @@
-package com.abclinic.server.service.entity.health_index.component;
+package com.abclinic.server.service.entity.component.health_index;
 
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndex;
@@ -35,7 +35,7 @@ public class HealthIndexFieldComponentService implements IDataMapperService<Heal
     }
 
     public boolean isExist(HealthIndex index, String name) {
-        return healthIndexFieldRepository.findByHealthIndexAndNameIgnoreCase(index, name);
+        return !healthIndexFieldRepository.findByHealthIndexAndNameIgnoreCase(index, name);
     }
 
     @Transactional

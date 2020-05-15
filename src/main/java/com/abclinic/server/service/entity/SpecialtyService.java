@@ -29,7 +29,7 @@ public class SpecialtyService implements IDataMapperService<Specialty> {
     }
 
     public boolean isExist(String name) {
-        return specialtyRepository.findByName(name).isEmpty();
+        return !specialtyRepository.findByName(name).isEmpty();
     }
 
     @Override

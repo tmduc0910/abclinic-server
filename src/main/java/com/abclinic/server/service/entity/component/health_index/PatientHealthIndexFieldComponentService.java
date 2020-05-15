@@ -1,4 +1,4 @@
-package com.abclinic.server.service.entity.health_index.component;
+package com.abclinic.server.service.entity.component.health_index;
 
 import com.abclinic.server.common.criteria.EntityPredicateBuilder;
 import com.abclinic.server.common.criteria.PatientHealthIndexFieldPredicateBuilder;
