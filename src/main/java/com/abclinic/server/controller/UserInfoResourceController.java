@@ -108,9 +108,6 @@ public class UserInfoResourceController extends CustomController {
             notes = "Trả về 200 OK",
             tags = "Điều phối viên"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "ID của người dùng cần hủy", required = true, dataType = "long", example = "1")
-    })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Hủy thành công")
     })
