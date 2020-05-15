@@ -10,6 +10,7 @@ import com.abclinic.server.common.utils.StatusUtils;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.factory.NotificationFactory;
+import com.abclinic.server.model.dto.request.post.RequestCreateInquiryDto;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
@@ -65,28 +66,25 @@ public class InquiryResourceController extends CustomController {
             notes = "Trả về 201 CREATED hoặc 400 BAD REQUEST",
             tags = "Bệnh nhân"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "album_id", value = "Mã ID của album ảnh", type = "string"),
-            @ApiImplicitParam(name = "type", value = "Kiểu yêu cầu tư vấn (0 khám bệnh, 1 dinh dưỡng)", required = true, type = "int", allowableValues = "0, 1", example = "0"),
-            @ApiImplicitParam(name = "content", value = "Mô tả yêu cầu", required = true, type = "string")
-    })
     @ApiResponses({
             @ApiResponse(code = 201, message = "Tạo mới thành công"),
             @ApiResponse(code = 400, message = "Loại yêu cầu không hợp lệ")
     })
     @JsonView(Views.Public.class)
     public ResponseEntity<Inquiry> createInquiry(@ApiIgnore @RequestAttribute("User") User user,
-                                                 @Nullable @RequestParam("album_id") String albumId,
-                                                 @RequestParam("type") int type,
-                                                 @RequestParam("content") String content) {
+                                                 @RequestBody RequestCreateInquiryDto requestCreateInquiryDto) {
         Patient patient = patientService.getById(user.getId());
         if (!StatusUtils.containsStatus(user, UserStatus.DEACTIVATED)) {
             if (StatusUtils.equalsStatus(user, UserStatus.NEW)) {
                 if (!patient.getInquiries().isEmpty())
                     throw new ForbiddenException(user.getId(), "Yêu cầu của bạn đang được xử lý");
             }
-            if (type < RecordType.values().length) {
-                Inquiry inquiry = new Inquiry(patient, albumId, content, type);
+            if (requestCreateInquiryDto.getType() < RecordType.values().length) {
+                Inquiry inquiry = new Inquiry(
+                        patient,
+                        requestCreateInquiryDto.getAlbumId(),
+                        requestCreateInquiryDto.getContent(),
+                        requestCreateInquiryDto.getType());
                 inquiry = inquiryService.save(inquiry);
 
                 //Send notification

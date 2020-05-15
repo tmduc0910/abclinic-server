@@ -2,6 +2,9 @@ package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
 import com.abclinic.server.common.base.CustomController;
+import com.abclinic.server.exception.BadRequestException;
+import com.abclinic.server.model.dto.request.post.RequestCreateSpecialtyDto;
+import com.abclinic.server.model.dto.request.put.RequestUpdateSpecialtyDto;
 import com.abclinic.server.model.entity.Specialty;
 import com.abclinic.server.model.entity.user.Coordinator;
 import com.abclinic.server.model.entity.user.Patient;
@@ -40,6 +43,9 @@ public class SpecialtyResourceController extends CustomController {
             notes = "Trả về danh sách chuyên môn",
             tags = "Nhân viên phòng khám"
     )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Danh sách chuyên môn")
+    })
     public ResponseEntity<List<Specialty>> getSpecialties(@ApiIgnore @RequestAttribute("User") User user) {
         return new ResponseEntity<>(specialtyService.getAll(), HttpStatus.OK);
     }
@@ -50,16 +56,18 @@ public class SpecialtyResourceController extends CustomController {
             notes = "Trả về 201 CREATED",
             tags = "Điều phối viên"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "name", value = "Tên chuyên môn", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "detail", value = "Mô tả chuyên môn", required = true, dataType = "string")
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Tạo mới thành công"),
+            @ApiResponse(code = 400, message = "Chuyên môn đã tồn tại")
     })
     @Restricted(included = Coordinator.class)
-    public ResponseEntity<Specialty> addSpecialty(@RequestParam("name") String name,
-                                                  @RequestParam("detail") String detail) {
-        Specialty specialty = new Specialty(name, detail);
-        specialty = specialtyService.save(specialty);
-        return new ResponseEntity<>(specialty, HttpStatus.CREATED);
+    public ResponseEntity<Specialty> addSpecialty(@ApiIgnore @RequestAttribute("User") User user,
+                                                  @RequestBody RequestCreateSpecialtyDto requestCreateSpecialtyDto) {
+        if (!specialtyService.isExist(requestCreateSpecialtyDto.getName())) {
+            Specialty specialty = new Specialty(requestCreateSpecialtyDto.getName(), requestCreateSpecialtyDto.getDetail());
+            specialty = specialtyService.save(specialty);
+            return new ResponseEntity<>(specialty, HttpStatus.CREATED);
+        } else throw new BadRequestException(user.getId(), "Chuyên môn đã tồn tại");
     }
 
     @PutMapping("/specialties")
@@ -69,22 +77,15 @@ public class SpecialtyResourceController extends CustomController {
             notes = "Trả về 200 OK hoặc 404 NOT FOUND",
             tags = "Điều phối viên"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "Mã ID của chuyên môn", required = true, dataType = "int", example = "1"),
-            @ApiImplicitParam(name = "name", value = "Tên chuyên môn", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "detail", value = "Mô tả chuyên môn", required = true, dataType = "string")
-    })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Sửa thành công"),
             @ApiResponse(code = 404, message = "Không tìm thấy chuyên môn theo yêu cầu")
     })
     public ResponseEntity editSpecialty(@ApiIgnore @RequestAttribute("User") User user,
-                                        @RequestParam("id") long id,
-                                        @RequestParam("name") String name,
-                                        @RequestParam("detail") String detail) {
-        Specialty specialty = specialtyService.getById(id);
-        specialty.setName(name);
-        specialty.setDetail(detail);
+                                        @RequestBody RequestUpdateSpecialtyDto requestUpdateSpecialtyDto) {
+        Specialty specialty = specialtyService.getById(requestUpdateSpecialtyDto.getId());
+        specialty.setName(requestUpdateSpecialtyDto.getName());
+        specialty.setDetail(requestUpdateSpecialtyDto.getDetail());
         specialtyService.save(specialty);
         return new ResponseEntity(HttpStatus.OK);
     }

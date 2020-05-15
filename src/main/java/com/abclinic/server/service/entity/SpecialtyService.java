@@ -28,6 +28,10 @@ public class SpecialtyService implements IDataMapperService<Specialty> {
         return specialtyRepository.findAll();
     }
 
+    public boolean isExist(String name) {
+        return specialtyRepository.findByName(name).isEmpty();
+    }
+
     @Override
     @Transactional
     public Specialty getById(long id) throws NotFoundException {

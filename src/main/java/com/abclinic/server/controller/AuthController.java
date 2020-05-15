@@ -1,12 +1,13 @@
 package com.abclinic.server.controller;
 
-import com.abclinic.server.annotation.authorized.Restricted;
 import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.RoleValue;
 import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.exception.DuplicateValueException;
 import com.abclinic.server.exception.WrongCredentialException;
+import com.abclinic.server.model.dto.request.post.RequestLoginDto;
+import com.abclinic.server.model.dto.request.post.RequestSignUpDto;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.entity.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 /**
@@ -66,18 +66,13 @@ public class AuthController extends CustomController {
     @PostMapping(value = "/login")
     @ApiOperation(value = "Người dùng đăng nhập qua account", notes = "Trả về chuỗi UID hoặc 404 NOT FOUND\n" +
             "Trường UID được trả về sẽ được gán vào header Authorization ở tất cả các API sau đó.")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "account", value = "Username của người dùng (email, số điện thoại)", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string")
-    })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Đăng nhập thành công"),
             @ApiResponse(code = 404, message = "Đăng nhập thất bại")
     })
     @JsonView(Views.Private.class)
-    public ResponseEntity<String> processLogin(@RequestParam(name = "account") String username,
-                                               @RequestParam(name = "password") String password) {
-        return userService.findByUsernamePassword(username, password).map(u -> {
+    public ResponseEntity<String> processLogin(@RequestBody RequestLoginDto requestLoginDto) {
+        return userService.findByUsernamePassword(requestLoginDto.getAccount(), requestLoginDto.getPassword()).map(u -> {
             u.setUid(UUID.randomUUID().toString());
             userService.save(u);
             return new ResponseEntity<>(u.getUid(), HttpStatus.OK);
@@ -86,15 +81,6 @@ public class AuthController extends CustomController {
 
     @PostMapping(value = "/sign_up")
     @ApiOperation(value = "Đăng kí tài khoản", notes = "Trả về 201 CREATED hoặc 409 CONFLICT")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "role", value = "Kiểu người dùng (đa khoa, chuyên khoa, dinh dưỡng, điều phối, bệnh nhân)", required = true, allowableValues = "0, 1, 2, 3, 4", dataType = "int", example = "0"),
-            @ApiImplicitParam(name = "email", value = "Email của người dùng", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "name", value = "Họ tên người dùng", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "gender", value = "Giới tính người dùng (nam, nữ, khác)", allowableValues = "0, 1, 2", required = true, dataType = "int", example = "0"),
-            @ApiImplicitParam(name = "dob", value = "Ngày tháng năm sinh của người dùng (dd/MM/yyyy)", format = "dd/MM/yyyy", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "phone", value = "SĐT của người dùng", required = true, dataType = "string")
-    })
     @ApiResponses({
             @ApiResponse(code = 201, message = "Đăng kí thành công"),
             @ApiResponse(code = 400, message = "Chỉ có điều phối viên mới được đăng ký cho bệnh nhân"),
@@ -102,31 +88,51 @@ public class AuthController extends CustomController {
     })
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity processSignUp(@Nullable @ApiIgnore @RequestAttribute(name = "User") User user,
-                                        @NotNull @RequestParam(name = "role") int role,
-                                        @RequestParam(name = "email") String email,
-                                        @RequestParam(name = "password") String password,
-                                        @RequestParam(name = "name") String name,
-                                        @RequestParam(name = "gender") int gender,
-                                        @RequestParam(name = "dob") String dateOfBirth,
-                                        @RequestParam(name = "phone") String phoneNumber) {
-        if (userService.findByEmail(email).isPresent() || userService.findByPhoneNumber(phoneNumber).isPresent())
+                                        @RequestBody RequestSignUpDto requestSignUpDto) {
+        if (userService.findByEmail(requestSignUpDto.getEmail()).isPresent() ||
+                userService.findByPhoneNumber(requestSignUpDto.getPhone()).isPresent())
             throw new DuplicateValueException();
         User u = null;
-        switch (role) {
+        switch (requestSignUpDto.getRole()) {
             case RoleValue.PRACTITIONER:
-                u = new Practitioner(name, email, gender, DateTimeUtils.parseDate(dateOfBirth), password, phoneNumber);
+                u = new Practitioner(requestSignUpDto.getName(),
+                        requestSignUpDto.getEmail(),
+                        requestSignUpDto.getGender(),
+                        DateTimeUtils.parseDate(requestSignUpDto.getDateOfBirth()),
+                        requestSignUpDto.getPassword(),
+                        requestSignUpDto.getPhone());
                 break;
             case RoleValue.COORDINATOR:
-                u = new Coordinator(name, email, gender, DateTimeUtils.parseDate(dateOfBirth), password, phoneNumber);
+                u = new Coordinator(requestSignUpDto.getName(),
+                        requestSignUpDto.getEmail(),
+                        requestSignUpDto.getGender(),
+                        DateTimeUtils.parseDate(requestSignUpDto.getDateOfBirth()),
+                        requestSignUpDto.getPassword(),
+                        requestSignUpDto.getPhone());
                 break;
             case RoleValue.DIETITIAN:
-                u = new Dietitian(name, email, gender, DateTimeUtils.parseDate(dateOfBirth), password, phoneNumber);
+                u = new Dietitian(requestSignUpDto.getName(),
+                        requestSignUpDto.getEmail(),
+                        requestSignUpDto.getGender(),
+                        DateTimeUtils.parseDate(requestSignUpDto.getDateOfBirth()),
+                        requestSignUpDto.getPassword(),
+                        requestSignUpDto.getPhone());
                 break;
             case RoleValue.SPECIALIST:
-                u = new Specialist(name, email, gender, DateTimeUtils.parseDate(dateOfBirth), password, phoneNumber);
+                u = new Specialist(requestSignUpDto.getName(),
+                        requestSignUpDto.getEmail(),
+                        requestSignUpDto.getGender(),
+                        DateTimeUtils.parseDate(requestSignUpDto.getDateOfBirth()),
+                        requestSignUpDto.getPassword(),
+                        requestSignUpDto.getPhone());
                 break;
             case RoleValue.PATIENT:
-                u = new Patient(name, email, gender, DateTimeUtils.parseDate(dateOfBirth), password, phoneNumber);
+                u = new Patient(requestSignUpDto.getName(),
+                        requestSignUpDto.getEmail(),
+                        requestSignUpDto.getGender(),
+                        DateTimeUtils.parseDate(requestSignUpDto.getDateOfBirth()),
+                        requestSignUpDto.getPassword(),
+                        requestSignUpDto.getPhone());
                 break;
         }
         userService.save(u);

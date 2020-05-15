@@ -83,6 +83,17 @@ public class User {
         this.status = UserStatus.NEW.getValue();
     }
 
+    public User(String name, String email, int gender, LocalDate dateOfBirth, String password, String phoneNumber) {
+        this.name = name;
+        this.email = email;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.age = DateTimeUtils.getDistanceByYear(dateOfBirth);
+        this.status = UserStatus.NEW.getValue();
+    }
+
     public long getId() {
         return id;
     }
@@ -97,6 +108,10 @@ public class User {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
     }
 
     public Role getRole() {

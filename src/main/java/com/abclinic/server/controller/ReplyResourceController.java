@@ -55,10 +55,6 @@ public class ReplyResourceController extends CustomController {
             notes = "Trả về 201 CREATED hoặc 400 BAD REQUEST hoặc 403 FORBIDDEN",
             tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng", "Bệnh nhân"}
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "inquiry-id", value = "Mã ID của yêu cầu tư vấn", required = true, dataType = "long", example = "1"),
-            @ApiImplicitParam(name = "reply", value = "Câu trả lời", required = true, dataType = "string", example = "thắc mắc")
-    })
     @ApiResponses({
             @ApiResponse(code = 201, message = "Tạo câu trả lời thành công"),
             @ApiResponse(code = 400, message = "Mã ID của yêu cầu tư vấn không tồn tại"),

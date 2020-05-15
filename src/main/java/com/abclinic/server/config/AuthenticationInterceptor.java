@@ -4,8 +4,8 @@ import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.common.utils.StringUtils;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.UnauthorizedActionException;
+import com.abclinic.server.model.dto.request.post.RequestLoginDto;
 import com.abclinic.server.model.entity.user.User;
-import com.abclinic.server.repository.UserRepository;
 import com.abclinic.server.service.entity.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -13,6 +13,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
 
@@ -53,8 +54,10 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
 //                    throw new UnauthorizedActionException(user.getId(), "Bạn chưa đăng nhập");
                 request.setAttribute("User", user);
             } else {
-                String req = request.getParameterMap().entrySet().iterator().next().getValue()[0];
-                Optional<User> user = userService.findByUsername(req);
+//                String req = request.getParameterMap().entrySet().iterator().next().getValue()[0];
+                String req = request.getReader().lines().collect(Collectors.joining());
+                RequestLoginDto requestLoginDto = new RequestLoginDto(req);
+//                Optional<User> user = userService.findByUsername(req);
 //                if (user.isPresent()) {
 //                    if (user.get().getUid() != null)
 //                        throw new ForbiddenException(user.get().getId(), "Bạn chưa đăng xuất");

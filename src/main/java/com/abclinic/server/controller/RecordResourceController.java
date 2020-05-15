@@ -11,6 +11,8 @@ import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
+import com.abclinic.server.model.dto.request.post.RequestCreateRecordDto;
+import com.abclinic.server.model.dto.request.put.RequestUpdateRecordDto;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.payload.record.DietRecord;
 import com.abclinic.server.model.entity.payload.record.MedicalRecord;
@@ -67,33 +69,31 @@ public class RecordResourceController extends CustomController {
             notes = "Trả về 201 CREATED hoặc 400 BAD REQUEST hoặc 403 FORBIDDEN",
             tags = {"Chuyên khoa", "Dinh dưỡng"}
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "inquiry-id", value = "Mã ID của yêu cầu tư vấn", required = true, dataType = "int", example = "1"),
-            @ApiImplicitParam(name = "diagnose", value = "Chẩn đoán", dataType = "string", example = "Chẩn đoán"),
-            @ApiImplicitParam(name = "note", value = "Ghi chú", required = true, dataType = "string", example = "Ghi chú"),
-            @ApiImplicitParam(name = "prescription", value = "Kê đơn", required = true, dataType = "string", example = "Kê đơn")
-    })
     @ApiResponses({
             @ApiResponse(code = 201, message = "Tạo tư vấn thành công"),
             @ApiResponse(code = 400, message = "Mã ID của yêu cầu tư vấn không tồn tại"),
             @ApiResponse(code = 403, message = "Chỉ có bác sĩ... mới có thể tư vấn...")
     })
     public ResponseEntity<? extends Record> createRecord(@ApiIgnore @RequestAttribute("User") User user,
-                                       @RequestParam("inquiry-id") long inquiryId,
-                                       @RequestParam("diagnose") @Nullable String diagnose,
-                                       @RequestParam("note") String note,
-                                       @RequestParam("prescription") String prescription) {
+                                                         @RequestBody RequestCreateRecordDto requestCreateRecordDto) {
         try {
-            Inquiry inquiry = inquiryService.getById(inquiryId);
+            Inquiry inquiry = inquiryService.getById(requestCreateRecordDto.getInquiryId());
             Record record;
             if (inquiry.getType() == RecordType.MEDICAL.getValue()) {
                 if (user.getRole() == Role.SPECIALIST)
-                    record = new MedicalRecord(inquiry, diagnose, prescription, (Specialist) doctorService.getById(user.getId()), note);
+                    record = new MedicalRecord(inquiry,
+                            requestCreateRecordDto.getDiagnose(),
+                            requestCreateRecordDto.getPrescription(),
+                            (Specialist) doctorService.getById(user.getId()),
+                            requestCreateRecordDto.getNote());
                 else
                     throw new ForbiddenException(user.getId(), "Chỉ có bác sĩ chuyên khoa mới có thể tư vấn khám bệnh");
             } else {
                 if (user.getRole() == Role.DIETITIAN) {
-                    record = new DietRecord(inquiry, prescription, note, (Dietitian) doctorService.getById(user.getId()));
+                    record = new DietRecord(inquiry,
+                            requestCreateRecordDto.getPrescription(),
+                            requestCreateRecordDto.getNote(),
+                            (Dietitian) doctorService.getById(user.getId()));
                     record.setStatus(PayloadStatus.PROCESSED);
                 }
                 else
@@ -116,29 +116,20 @@ public class RecordResourceController extends CustomController {
             notes = "Trả về 200 OK hoặc 400 BAD REQUEST hoặc 403 FORBIDDEN",
             tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "record-id", value = "Mã ID của tư vấn", required = true, dataType = "long", example = "1"),
-            @ApiImplicitParam(name = "diagnose", value = "Chẩn đoán", dataType = "string", example = "Chẩn đoán"),
-            @ApiImplicitParam(name = "note", value = "Ghi chú", required = true, dataType = "string", example = "Ghi chú"),
-            @ApiImplicitParam(name = "prescription", value = "Kê đơn", required = true, dataType = "string", example = "Kê đơn")
-    })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Chỉnh sửa thành công"),
             @ApiResponse(code = 400, message = "Mã ID của tư vấn không tồn tại"),
             @ApiResponse(code = 403, message = "Bác sĩ không phụ trách bệnh nhân này")
     })
     public ResponseEntity<? extends Record> editRecord(@ApiIgnore @RequestAttribute("User") User user,
-                                     @RequestParam("record-id") long recordId,
-                                     @RequestParam("diagnose") @Nullable String diagnose,
-                                     @RequestParam("note") String note,
-                                     @RequestParam("prescription") String prescription) {
+                                                       @RequestBody RequestUpdateRecordDto requestUpdateRecordDto) {
         try {
-            Record record = recordService.getById(recordId);
+            Record record = recordService.getById(requestUpdateRecordDto.getRecordId());
             if (record.getInquiry().of(user)) {
-                record.setNote(note);
+                record.setNote(requestUpdateRecordDto.getNote());
                 if (record.getRecordType() == RecordType.MEDICAL.getValue())
-                    ((MedicalRecord) record).setDiagnose(diagnose);
-                record.setPrescription(prescription);
+                    ((MedicalRecord) record).setDiagnose(requestUpdateRecordDto.getDiagnose());
+                record.setPrescription(requestUpdateRecordDto.getPrescription());
                 if (user.getRole() == Role.PRACTITIONER)
                     record.setStatus(PayloadStatus.PROCESSED);
                 record = recordService.save(record);

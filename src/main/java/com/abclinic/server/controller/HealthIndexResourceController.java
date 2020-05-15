@@ -3,12 +3,19 @@ package com.abclinic.server.controller;
 import com.abclinic.server.annotation.authorized.Restricted;
 import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.PayloadStatus;
 import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.common.utils.StringUtils;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.model.dto.IndexResultRequestDto;
 import com.abclinic.server.model.dto.IndexResultResponseDto;
+import com.abclinic.server.model.dto.request.delete.RequestDeleteDto;
+import com.abclinic.server.model.dto.request.post.RequestCreateHealthIndexDto;
+import com.abclinic.server.model.dto.request.post.RequestCreateHealthIndexFieldDto;
+import com.abclinic.server.model.dto.request.post.RequestCreateHealthIndexResultDto;
+import com.abclinic.server.model.dto.request.post.RequestCreateHealthIndexScheduleDto;
+import com.abclinic.server.model.dto.request.put.RequestUpdateHealthIndexDto;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndex;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexField;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
@@ -84,18 +91,14 @@ public class HealthIndexResourceController extends CustomController {
             notes = "Trả về 201 CREATED hoặc 400 BAD REQUEST",
             tags = "Nhân viên phòng khám"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "name", value = "Tên chỉ số", required = true, dataType = "string", example = "Huyết áp"),
-            @ApiImplicitParam(name = "description", value = "Mô tả chỉ số", required = true, dataType = "string", example = "Mô tả huyết áp"),
-            @ApiImplicitParam(name = "fields", value = "Các trường của chỉ số", dataType = "array")
-    })
     @JsonView(Views.Public.class)
     public ResponseEntity<HealthIndex> createIndex(@ApiIgnore @RequestAttribute("User") User user,
-                                                   @RequestParam("name") String indexName,
-                                                   @RequestParam("description") String indexDescription,
-                                                   @RequestParam("fields") String[] fields) {
-        if (!healthIndexService.isIndexExist(indexName)) {
-            return new ResponseEntity<>(healthIndexService.createIndex(indexName, indexDescription, fields), HttpStatus.CREATED);
+                                                   @RequestBody RequestCreateHealthIndexDto requestCreateHealthIndexDto) {
+        if (!healthIndexService.isIndexExist(requestCreateHealthIndexDto.getName())) {
+            return new ResponseEntity<>(healthIndexService.createIndex(
+                    requestCreateHealthIndexDto.getName(),
+                    requestCreateHealthIndexDto.getDescription(),
+                    requestCreateHealthIndexDto.getFields()), HttpStatus.CREATED);
         } else throw new BadRequestException(user.getId(), "Chỉ số sức khỏe này đã tồn tại");
     }
 
@@ -106,23 +109,16 @@ public class HealthIndexResourceController extends CustomController {
             notes = "Trả về 200 OK hoặc 404 NOT FOUND",
             tags = "Nhân viên phòng khám"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "Mã ID của chỉ số", required = true, dataType = "long", example = "1"),
-            @ApiImplicitParam(name = "name", value = "Tên mới", required = true, dataType = "string", example = "Mỡ máu"),
-            @ApiImplicitParam(name = "description", value = "Mô tả mới", required = true, dataType = "string", example = "Mô tả")
-    })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Chỉnh sửa thành công"),
             @ApiResponse(code = 404, message = "Mã ID không tồn tại")
     })
     @JsonView(Views.Public.class)
     public ResponseEntity<HealthIndex> editIndex(@ApiIgnore @RequestAttribute("User") User user,
-                                                 @RequestParam("id") long indexId,
-                                                 @RequestParam("name") String name,
-                                                 @RequestParam("description") String description) {
-        HealthIndex index = healthIndexService.getIndex(indexId);
-        index.setName(name);
-        index.setDescription(description);
+                                                 @RequestBody RequestUpdateHealthIndexDto requestUpdateHealthIndexDto) {
+        HealthIndex index = healthIndexService.getIndex(requestUpdateHealthIndexDto.getId());
+        index.setName(requestUpdateHealthIndexDto.getName());
+        index.setDescription(requestUpdateHealthIndexDto.getDescription());
         return new ResponseEntity<>((HealthIndex) healthIndexService.save(index), HttpStatus.OK);
     }
 
@@ -135,7 +131,6 @@ public class HealthIndexResourceController extends CustomController {
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "Mã ID của chỉ số", required = true, dataType = "long", paramType = "path", example = "1"),
-            @ApiImplicitParam(name = "field", value = "Tên trường", required = true, dataType = "string", example = "Cân nặng")
     })
     @ApiResponses({
             @ApiResponse(code = 201, message = "Thêm thành công"),
@@ -144,11 +139,11 @@ public class HealthIndexResourceController extends CustomController {
     })
     @JsonView(Views.Public.class)
     public ResponseEntity<HealthIndex> addField(@ApiIgnore @RequestAttribute("User") User user,
-                                                @RequestParam("field") @Nullable String field,
+                                                @RequestBody RequestCreateHealthIndexFieldDto requestCreateHealthIndexFieldDto,
                                                 @PathVariable("id") long indexId) {
         HealthIndex index = healthIndexService.getIndex(indexId);
-        if (!healthIndexService.isFieldExist(index, field)) {
-            HealthIndexField f = new HealthIndexField(index, field);
+        if (!healthIndexService.isFieldExist(index, requestCreateHealthIndexFieldDto.getField())) {
+            HealthIndexField f = new HealthIndexField(index, requestCreateHealthIndexFieldDto.getField());
             healthIndexService.save(f);
             return new ResponseEntity<>(healthIndexService.getIndex(index.getId()), HttpStatus.CREATED);
         } else throw new BadRequestException(user.getId(), "Trường này đã tồn tại");
@@ -163,7 +158,6 @@ public class HealthIndexResourceController extends CustomController {
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "Mã ID của chỉ số", required = true, dataType = "long", paramType = "path", example = "1"),
-            @ApiImplicitParam(name = "field-id", value = "Mã ID của trường", required = true, dataType = "long", example = "1")
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Xóa thành công"),
@@ -172,9 +166,9 @@ public class HealthIndexResourceController extends CustomController {
     @JsonView(Views.Public.class)
     public ResponseEntity<HealthIndex> deleteField(@ApiIgnore @RequestAttribute("User") User user,
                                                    @PathVariable("id") long indexId,
-                                                   @RequestParam("field-id") long fieldId) {
+                                                   @RequestBody RequestDeleteDto requestDeleteDto) {
         HealthIndex index = healthIndexService.getIndex(indexId);
-        HealthIndexField field = healthIndexService.getField(fieldId);
+        HealthIndexField field = healthIndexService.getField(requestDeleteDto.getId());
         index.removeField(field);
         return new ResponseEntity<>((HealthIndex) healthIndexService.save(index), HttpStatus.OK);
     }
@@ -238,12 +232,6 @@ public class HealthIndexResourceController extends CustomController {
             notes = "Trả về 201 CREATED hoặc 400 BAD REQUEST",
             tags = {"Chuyên khoa", "Dinh dưỡng"}
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "patient-id", value = "Mã ID của bệnh nhân", required = true, dataType = "long", example = "5"),
-            @ApiImplicitParam(name = "index-id", value = "Mã ID của chỉ số", required = true, dataType = "long", example = "1"),
-            @ApiImplicitParam(name = "start", value = "Thời gian bắt đầu lập lịch (dd/MM/yyyy HH:mm:ss)", required = true, dataType = "string", example = "01/06/2020 12:30:00"),
-            @ApiImplicitParam(name = "scheduled", value = "Chu kỳ của lịch, tính bằng giây", required = true, dataType = "long", example = "86400")
-    })
     @ApiResponses({
             @ApiResponse(code = 201, message = "Tạo lịch thành công"),
             @ApiResponse(code = 400, message = "Format thời gian không hợp lệ"),
@@ -251,18 +239,29 @@ public class HealthIndexResourceController extends CustomController {
     })
     @JsonView(Views.Private.class)
     public ResponseEntity<HealthIndexSchedule> createSchedule(@ApiIgnore @RequestAttribute("User") User user,
-                                                              @RequestParam("patient-id") long patientId,
-                                                              @RequestParam("index-id") long indexId,
-                                                              @RequestParam("start") String start,
-                                                              @RequestParam("scheduled") long scheduledTime) {
+                                                              @RequestBody RequestCreateHealthIndexScheduleDto requestCreateHealthIndexScheduleDto) {
         try {
-            LocalDateTime startedAt = DateTimeUtils.parseDateTime(start);
-            Patient patient = patientService.getById(patientId);
-            HealthIndex index = healthIndexService.getIndex(indexId);
-            return new ResponseEntity<>(healthIndexService.createSchedule(patient, (Doctor) user, scheduledTime, startedAt, index), HttpStatus.CREATED);
+            LocalDateTime startedAt = DateTimeUtils.parseDateTime(requestCreateHealthIndexScheduleDto.getStart());
+            Patient patient = patientService.getById(requestCreateHealthIndexScheduleDto.getPatientId());
+            HealthIndex index = healthIndexService.getIndex(requestCreateHealthIndexScheduleDto.getIndexId());
+            return new ResponseEntity<>(healthIndexService.createSchedule(patient, (Doctor) user, requestCreateHealthIndexScheduleDto.getScheduledTime(), startedAt, index), HttpStatus.CREATED);
         } catch (DateTimeParseException e) {
             throw new BadRequestException(user.getId(), "Format thời gian không hợp lệ");
         }
+    }
+
+    @DeleteMapping("/schedule")
+    @Restricted(included = {Specialist.class, Dietitian.class})
+    public ResponseEntity deleteSchedule(@ApiIgnore @RequestAttribute("User") User user,
+                                         @RequestBody RequestDeleteDto requestDeleteDto) {
+        HealthIndexSchedule schedule = healthIndexService.getSchedule(requestDeleteDto.getId());
+        if (schedule.getDoctor().equals(user)) {
+            schedule.setStatus(PayloadStatus.ON_HOLD);
+            schedule.setStartedAt(null);
+            schedule.setEndedAt(null);
+            healthIndexService.save(schedule);
+            return new ResponseEntity(HttpStatus.OK);
+        } else throw new ForbiddenException(user.getId(), "Không có quyền truy cập vào lịch này");
     }
 
     @GetMapping("/result")
@@ -301,19 +300,15 @@ public class HealthIndexResourceController extends CustomController {
             notes = "Trả về 202 CREATED hoặc 400 BAD REQUEST",
             tags = "Bệnh nhân"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "schedule-id", value = "Mã ID của lịch", required = true, dataType = "long", example = "1"),
-            @ApiImplicitParam(name = "result", value = "Danh sách kết quả (fieldId, value)", required = true, dataType = "array")
-    })
     @ApiResponses({
             @ApiResponse(code = 201, message = "Tạo kết quả thành công"),
             @ApiResponse(code = 400, message = "Số lượng giá trị không hợp lệ")
     })
     @JsonView(Views.Private.class)
     public ResponseEntity<IndexResultResponseDto> createResult(@ApiIgnore @RequestAttribute("User") User user,
-                                                               @RequestParam("schedule-id") long scheduleId,
-                                                               @RequestParam("result") List<IndexResultRequestDto> requestDtos) {
-        HealthIndexSchedule schedule = healthIndexService.getSchedule(scheduleId);
+                                                               @RequestBody RequestCreateHealthIndexResultDto requestCreateHealthIndexResultDto) {
+        HealthIndexSchedule schedule = healthIndexService.getSchedule(requestCreateHealthIndexResultDto.getScheduleId());
+        List<IndexResultRequestDto> requestDtos = requestCreateHealthIndexResultDto.getResults();
         if (schedule.getIndex().getFields().size() == requestDtos.size()) {
             List<PatientHealthIndexField> values =
                     healthIndexService.createResults(schedule,

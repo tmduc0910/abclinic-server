@@ -14,6 +14,8 @@ import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.dto.DoctorListDto;
+import com.abclinic.server.model.dto.request.post.RequestCreatePatientDoctorDto;
+import com.abclinic.server.model.dto.request.put.RequestUpdatePatientDoctorDto;
 import com.abclinic.server.model.entity.notification.Notification;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
 import com.abclinic.server.model.entity.payload.Inquiry;
@@ -146,30 +148,24 @@ public class PatientResourceController extends CustomController {
             notes = "Trả về 200 OK hoặc 400 BAD REQUEST",
             tags = {"Điều phối viên", "Đa khoa"}
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "Mã ID của bệnh nhân", required = true, paramType = "path", dataType = "int", example = "1"),
-            @ApiImplicitParam(name = "doctor-id", value = "Mã ID của bác sĩ muốn gán", required = true, dataType = "int", example = "2"),
-            @ApiImplicitParam(name = "inquiry-id", value = "Mã ID của yêu cầu tư vấn muốn duyệt", required = true, dataType = "int", example = "1")
-    })
     @ApiResponses({
             @ApiResponse(code = 201, message = "Yêu cầu thành công"),
             @ApiResponse(code = 400, message = "ID bác sĩ không tồn tại")
     })
     public ResponseEntity addPatientDoctor(@ApiIgnore @RequestAttribute("User") User user,
                                            @PathVariable("id") long id,
-                                           @RequestParam("doctor-id") long doctorId,
-                                           @RequestParam("inquiry-id") long inquiryId) {
+                                           @RequestBody RequestCreatePatientDoctorDto requestCreatePatientDoctorDto) {
         try {
-            Inquiry inquiry = inquiryService.getById(inquiryId);
+            Inquiry inquiry = inquiryService.getById(requestCreatePatientDoctorDto.getInquiryId());
             UserStatus newStatus = null;
             Patient patient = patientService.getById(id);
-            if (!StatusUtils.containsStatus(patient, UserStatus.NEW) && patientService.isPatientOf(patient, doctorService.getById(doctorId)))
+            if (!StatusUtils.containsStatus(patient, UserStatus.NEW) && patientService.isPatientOf(patient, doctorService.getById(requestCreatePatientDoctorDto.getDoctorId())))
                 throw new BadRequestException(user.getId(), "Bác sĩ này đã được gán cho bệnh nhân này");
 
             NotificationMessage message = NotificationFactory.getMessage(MessageType.ASSIGN, null, inquiry);
             switch (user.getRole()) {
                 case COORDINATOR:
-                    Practitioner practitioner = (Practitioner) doctorService.getById(doctorId);
+                    Practitioner practitioner = (Practitioner) doctorService.getById(requestCreatePatientDoctorDto.getDoctorId());
                     message.setTargetUser(practitioner);
 
                     //Gán bệnh nhân cho bác sĩ
@@ -183,7 +179,7 @@ public class PatientResourceController extends CustomController {
                     } else {
                         newStatus = UserStatus.ASSIGN_L3;
                     }
-                    subDoc = doctorService.getById(doctorId);
+                    subDoc = doctorService.getById(requestCreatePatientDoctorDto.getDoctorId());
                     patient.addSubDoc(subDoc);
                     message.setTargetUser(subDoc);
                     break;
@@ -210,25 +206,19 @@ public class PatientResourceController extends CustomController {
             notes = "Trả về 200 OK",
             tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "Mã ID của bệnh nhân", required = true, paramType = "path", dataType = "int", example = "1"),
-            @ApiImplicitParam(name = "notification-id", value = "Mã ID của thông báo gán bệnh nhân", required = true, dataType = "int", example = "1"),
-            @ApiImplicitParam(name = "is-accepted", value = "Chấp nhận yêu cầu hay không", required = true, dataType = "boolean", allowableValues = "true, false")
-    })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Trả lời thành công"),
     })
     public ResponseEntity editPatientDoctor(@ApiIgnore @RequestAttribute("User") User user,
-                                            @RequestParam("notification-id") long notificationId,
-                                            @RequestParam("is-accepted") boolean isAccepted,
+                                            @RequestBody RequestUpdatePatientDoctorDto requestUpdatePatientDoctorDto,
                                             @PathVariable("id") long id) {
         try {
             Patient patient = patientService.getById(id);
             try {
-                Notification notification = notificationService.getById(notificationId);
+                Notification notification = notificationService.getById(requestUpdatePatientDoctorDto.getNotificationId());
                 if (notification.getType() == MessageType.ASSIGN.getValue()) {
                     Inquiry inquiry = inquiryService.getById(notification.getPayloadId());
-                    if (!isAccepted) {
+                    if (!requestUpdatePatientDoctorDto.isAccepted()) {
                         switch (user.getRole()) {
                             case PRACTITIONER:
                                 patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L1);
@@ -247,7 +237,7 @@ public class PatientResourceController extends CustomController {
                         }
                         patientService.save(patient);
                     }
-                    notificationService.makeNotification(user, NotificationFactory.getMessage(isAccepted ? MessageType.ACCEPT_ASSIGN : MessageType.DENY_ASSIGN, notification.getSender(), inquiry));
+                    notificationService.makeNotification(user, NotificationFactory.getMessage(requestUpdatePatientDoctorDto.isAccepted() ? MessageType.ACCEPT_ASSIGN : MessageType.DENY_ASSIGN, notification.getSender(), inquiry));
                 }
                 return new ResponseEntity(HttpStatus.OK);
             } catch (NotFoundException e) {

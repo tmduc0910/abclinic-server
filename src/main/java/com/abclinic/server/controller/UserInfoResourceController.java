@@ -5,6 +5,9 @@ import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.exception.BadRequestException;
+import com.abclinic.server.model.dto.request.delete.RequestDeleteDto;
+import com.abclinic.server.model.dto.request.put.RequestUpdateDoctorSpecialtyDto;
+import com.abclinic.server.model.dto.request.put.RequestUpdateUserInfoDto;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.entity.DoctorService;
 import com.abclinic.server.service.entity.PatientService;
@@ -65,44 +68,36 @@ public class UserInfoResourceController extends CustomController {
             value = "Sửa thông tin cá nhân",
             notes = "Trả về 200 OK"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "email", value = "Email của người dùng", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "phone", value = "SĐT của người dùng", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "address", value = "Địa chỉ cư trú của bệnh nhân", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "description", value = "Mô tả lí lịch của bác sĩ", required = true, dataType = "string")
-    })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Chỉnh sửa thành công")
     })
     public ResponseEntity<? extends User> editUserInfo(@ApiIgnore @RequestAttribute("User") User user,
-                                       @Nullable @RequestParam("email") String email,
-                                       @Nullable @RequestParam("phone") String phone,
-                                       @Nullable @RequestParam("address") String address,
-                                       @Nullable @RequestParam("description") String description) {
+                                                       @RequestBody RequestUpdateUserInfoDto requestUpdateUserInfoDto) {
         switch (user.getRole()) {
             case PATIENT:
                 Patient patient = patientService.getById(user.getId());
-                patient.setAddress(address);
+                patient.setAddress(requestUpdateUserInfoDto.getAddress());
                 patientService.save(patient);
-            case COORDINATOR:
+                break;
             case SPECIALIST:
                 Specialist specialist = (Specialist) doctorService.getById(user.getId());
-                specialist.setDescription(description);
+                specialist.setDescription(requestUpdateUserInfoDto.getDescription());
                 doctorService.save(specialist);
+                break;
             case PRACTITIONER:
                 Practitioner practitioner = (Practitioner) doctorService.getById(user.getId());
-                practitioner.setDescription(description);
+                practitioner.setDescription(requestUpdateUserInfoDto.getDescription());
                 doctorService.save(practitioner);
+                break;
             case DIETITIAN:
                 Dietitian dietitian = (Dietitian) doctorService.getById(user.getId());
-                dietitian.setDescription(description);
+                dietitian.setDescription(requestUpdateUserInfoDto.getDescription());
                 doctorService.save(dietitian);
-            default:
-                user.setEmail(email);
-                user.setPhoneNumber(phone);
-                user = userService.save(user);
                 break;
         }
+        user.setEmail(requestUpdateUserInfoDto.getEmail());
+        user.setPhoneNumber(requestUpdateUserInfoDto.getPhone());
+        user = userService.save(user);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
@@ -120,8 +115,8 @@ public class UserInfoResourceController extends CustomController {
             @ApiResponse(code = 200, message = "Hủy thành công")
     })
     public ResponseEntity deleteUser(@ApiIgnore @RequestAttribute("User") User user,
-                                     @RequestParam("id") long userId) {
-        User u = userService.getById(userId);
+                                     @RequestBody RequestDeleteDto requestDeleteDto) {
+        User u = userService.getById(requestDeleteDto.getId());
         userService.deactivateUser(u);
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -132,16 +127,14 @@ public class UserInfoResourceController extends CustomController {
             notes = "Trả về 200 OK hoặc 400 BAD REQUEST",
             tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "specialties", required = true, value = "Danh sách Mã ID của chuyên môn", dataType = "array")
-    })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Sửa thành công"),
             @ApiResponse(code = 400, message = "Bác sĩ dinh dưỡng/chuyên khoa chỉ có thể chọn tối đa 1 chuyên môn")
     })
     @Restricted(excluded = {Patient.class, Coordinator.class})
     public ResponseEntity<? extends User> editSpecialties(@ApiIgnore @RequestAttribute("User") User user,
-                                          @RequestParam("specialties") long[] specialtyIds) {
+                                                          @RequestBody RequestUpdateDoctorSpecialtyDto requestUpdateDoctorSpecialtyDto) {
+        long[] specialtyIds = requestUpdateDoctorSpecialtyDto.getSpecialtyIds();
         switch (user.getRole()) {
             case PRACTITIONER:
                 Practitioner practitioner = (Practitioner) doctorService.getById(user.getId());

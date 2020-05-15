@@ -5,6 +5,8 @@ import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.criteria.DiseasePredicateBuilder;
 import com.abclinic.server.exception.BadRequestException;
+import com.abclinic.server.model.dto.request.post.RequestCreateDiseaseDto;
+import com.abclinic.server.model.dto.request.put.RequestUpdateDiseaseDto;
 import com.abclinic.server.model.entity.Disease;
 import com.abclinic.server.model.entity.user.Coordinator;
 import com.abclinic.server.model.entity.user.Patient;
@@ -73,19 +75,16 @@ public class DiseaseResourceController extends CustomController {
             notes = "Trả về 201 CREATED hoặc 400 BAD REQUEST",
             tags = "Điều phối viên"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "name", value = "Tên bệnh", required = true, dataType = "string", example = "Đau thận"),
-            @ApiImplicitParam(name = "description", value = "Mô tả bệnh", required = true, dataType = "string", example = "Bệnh đau thận")
-    })
     @ApiResponses({
             @ApiResponse(code = 201, message = "Tạo mới thành công"),
             @ApiResponse(code = 400, message = "Bệnh này đã tồn tại")
     })
     public ResponseEntity<Disease> createDisease(@ApiIgnore @RequestAttribute("User") User user,
-                                                 @RequestParam("name") String name,
-                                                 @RequestParam("description") String description) {
-        if (!diseaseService.isExist(name)) {
-            return new ResponseEntity<>(diseaseService.save(new Disease(name, description)), HttpStatus.CREATED);
+                                                 @RequestBody RequestCreateDiseaseDto requestCreateDiseaseDto) {
+        if (!diseaseService.isExist(requestCreateDiseaseDto.getName())) {
+            return new ResponseEntity<>(diseaseService.save(new Disease(
+                    requestCreateDiseaseDto.getName(),
+                    requestCreateDiseaseDto.getDescription())), HttpStatus.CREATED);
         } else throw new BadRequestException(user.getId(), "Bệnh này đã tồn tại");
     }
 
@@ -104,12 +103,11 @@ public class DiseaseResourceController extends CustomController {
             @ApiResponse(code = 200, message = "Chỉnh sửa thành công"),
     })
     public ResponseEntity<Disease> editDisease(@ApiIgnore @RequestAttribute("User") User user,
-                                               @RequestParam("name") String name,
-                                               @RequestParam("description") String description,
+                                               @RequestBody RequestUpdateDiseaseDto requestUpdateDiseaseDto,
                                                @PathVariable("id") long id) {
         Disease disease = diseaseService.getById(id);
-        disease.setName(name);
-        disease.setDescription(description);
+        disease.setName(requestUpdateDiseaseDto.getName());
+        disease.setDescription(requestUpdateDiseaseDto.getDescription());
         return new ResponseEntity<>(diseaseService.save(disease), HttpStatus.OK);
     }
 }
