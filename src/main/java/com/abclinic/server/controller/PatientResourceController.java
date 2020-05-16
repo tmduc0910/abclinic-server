@@ -270,17 +270,17 @@ public class PatientResourceController extends CustomController {
             switch (user.getRole()) {
                 case PRACTITIONER:
                     patient.setPractitioner(null);
-                    patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L1);
+                    patient = StatusUtils.remove(patient, UserStatus.ASSIGN_L1);
                     targets = userService.findAllCoordinators();
                     break;
                 case DIETITIAN:
                     patient.removeSubDoc(user);
-                    patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L3);
+                    patient = StatusUtils.remove(patient, UserStatus.ASSIGN_L3);
                     targets.add(patient.getPractitioner());
                     break;
                 case SPECIALIST:
                     patient.removeSubDoc(user);
-                    patient = (Patient) StatusUtils.remove(user, UserStatus.ASSIGN_L2);
+                    patient = StatusUtils.remove(patient, UserStatus.ASSIGN_L2);
                     targets.add(patient.getPractitioner());
                     break;
             }

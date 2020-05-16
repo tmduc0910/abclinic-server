@@ -15,10 +15,10 @@ import java.util.List;
 @Table(name = "dietitian")
 public class Dietitian extends Doctor {
 
-    @Transient
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "specialty_id")
     @JsonView(Views.Public.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private Specialty specialty;
 
     @ManyToMany(fetch = FetchType.LAZY)

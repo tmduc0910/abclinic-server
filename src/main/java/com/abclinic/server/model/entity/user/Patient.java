@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "patient")
 public class Patient extends User implements IPayload {
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Public.class)
     private String address;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Inquiry.class, mappedBy = "patient")
