@@ -1,8 +1,10 @@
 package com.abclinic.server.service.entity;
 
 import com.abclinic.server.common.constant.PayloadStatus;
+import com.abclinic.server.common.constant.RecordType;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.payload.Inquiry;
+import com.abclinic.server.model.entity.payload.record.Record;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.InquiryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,11 +61,13 @@ public class InquiryService implements IDataMapperService<Inquiry> {
                 break;
             case SPECIALIST:
                 Specialist specialist = (Specialist) doctorService.getById(user.getId());
-                inquiries = inquiryRepository.findByPatientIn(specialist.getPatients(), pageable);
+                inquiries = inquiryRepository.findByPatientInAndType(specialist.getPatients(),
+                        RecordType.MEDICAL.getValue(), pageable);
                 break;
             case DIETITIAN:
                 Dietitian dietitian = (Dietitian) doctorService.getById(user.getId());
-                inquiries = inquiryRepository.findByPatientIn(dietitian.getPatients(), pageable);
+                inquiries = inquiryRepository.findByPatientInAndType(dietitian.getPatients(),
+                        RecordType.DIET.getValue(), pageable);
                 break;
             case PATIENT:
                 Patient patient = patientService.getById(user.getId());
