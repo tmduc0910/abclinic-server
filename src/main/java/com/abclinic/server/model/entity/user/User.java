@@ -2,6 +2,7 @@ package com.abclinic.server.model.entity.user;
 
 
 import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.Constant;
 import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.common.utils.DateTimeUtils;
@@ -41,7 +42,7 @@ public class User {
     private int gender;
 
     @Column(name = "dob")
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = Constant.DATE_FORMAT)
     @JsonView(Views.Public.class)
     private LocalDate dateOfBirth;
 

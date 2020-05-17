@@ -1,6 +1,7 @@
 package com.abclinic.server.model.entity.payload;
 
 import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.Constant;
 import com.abclinic.server.controller.ImageController;
 import com.abclinic.server.model.entity.payload.record.DietRecord;
 import com.abclinic.server.model.entity.payload.record.MedicalRecord;
@@ -9,6 +10,7 @@ import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.serializer.ViewSerializer;
 import com.abclinic.server.service.CloudinaryService;
 import com.abclinic.server.service.GooglePhotosService;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -56,6 +58,10 @@ public class Inquiry extends IPayloadIpml {
     private int status;
 
     @JsonView(Views.Public.class)
+    @JsonFormat(pattern = Constant.DATE_TIME_FORMAT)
+    private LocalDateTime date;
+
+    @JsonView(Views.Public.class)
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -66,11 +72,12 @@ public class Inquiry extends IPayloadIpml {
     public Inquiry() {
     }
 
-    public Inquiry(Patient patient, String albumId, String content, int type) {
+    public Inquiry(Patient patient, String albumId, String content, int type, LocalDateTime date) {
         this.patient = patient;
         this.albumId = albumId;
-        this.type = type;
         this.content = content;
+        this.type = type;
+        this.date = date;
     }
 
     public Patient getPatient() {
@@ -103,6 +110,14 @@ public class Inquiry extends IPayloadIpml {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
     }
 
     public LocalDateTime getCreatedAt() {

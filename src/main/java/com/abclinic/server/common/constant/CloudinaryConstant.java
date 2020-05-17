@@ -17,7 +17,7 @@ public class CloudinaryConstant {
     public static final String KEY_USE_FILENAME = "use_filename";
     public static final String KEY_TAGS = "tags";
     public static final String KEY_FOLDER = "folder";
-    public static final String KEY_URL = "secure_url";
+    public static final String KEY_URL = "url";
     public static final String KEY_RESOURCES = "resources";
 
     public static final boolean USE_FILENAME = true;

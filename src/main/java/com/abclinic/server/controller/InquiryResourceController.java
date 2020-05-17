@@ -84,7 +84,8 @@ public class InquiryResourceController extends CustomController {
                         patient,
                         requestCreateInquiryDto.getAlbumId(),
                         requestCreateInquiryDto.getContent(),
-                        requestCreateInquiryDto.getType());
+                        requestCreateInquiryDto.getType(),
+                        requestCreateInquiryDto.getDate());
                 inquiry = inquiryService.save(inquiry);
 
                 //Send notification

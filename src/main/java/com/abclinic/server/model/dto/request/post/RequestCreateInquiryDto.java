@@ -1,6 +1,9 @@
 package com.abclinic.server.model.dto.request.post;
 
+import com.abclinic.server.common.utils.DateTimeUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.time.LocalDateTime;
 
 /**
  * @author tmduc
@@ -12,6 +15,7 @@ public class RequestCreateInquiryDto {
     private String albumId = null;
     private int type;
     private String content;
+    private String date;
 
     public String getAlbumId() {
         return albumId;
@@ -35,5 +39,13 @@ public class RequestCreateInquiryDto {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public LocalDateTime getDate() {
+        return DateTimeUtils.parseDateTime(date);
     }
 }
