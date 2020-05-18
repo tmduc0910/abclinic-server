@@ -4,7 +4,9 @@ import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.PayloadStatus;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.payload.IPayloadIpml;
+import com.abclinic.server.serializer.ViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -22,6 +24,7 @@ public class Record extends IPayloadIpml {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "inquiry_id")
     @JsonView(Views.Abridged.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private Inquiry inquiry;
 
     @JsonView(Views.Confidential.class)

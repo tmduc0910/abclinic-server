@@ -5,7 +5,9 @@ import com.abclinic.server.common.constant.RecordType;
 import com.abclinic.server.model.entity.Disease;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.Specialist;
+import com.abclinic.server.serializer.ViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
 
@@ -15,7 +17,8 @@ public class MedicalRecord extends Record {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "specialist_id")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private Specialist specialist;
 
     @ManyToOne(fetch = FetchType.EAGER)
