@@ -65,9 +65,11 @@ public class HealthIndex extends IPayloadIpml {
 
     public void addField(HealthIndexField field) {
         this.fields.add(field);
+        field.setHealthIndex(this);
     }
 
     public void removeField(HealthIndexField field) {
-        this.fields.remove(field);
+        fields.remove(field);
+        field.setHealthIndex(null);
     }
 }

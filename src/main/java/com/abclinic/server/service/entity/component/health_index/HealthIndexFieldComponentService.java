@@ -38,6 +38,10 @@ public class HealthIndexFieldComponentService implements IDataMapperService<Heal
         return !healthIndexFieldRepository.findByHealthIndexAndNameIgnoreCase(index, name).isEmpty();
     }
 
+    public List<HealthIndexField> getByName(String name) {
+        return healthIndexFieldRepository.findByName(name);
+    }
+
     @Transactional
     public List<HealthIndexField> getList(HealthIndex healthIndex) {
         return healthIndexFieldRepository.findByHealthIndex(healthIndex).orElseThrow(NotFoundException::new);

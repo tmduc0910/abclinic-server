@@ -72,6 +72,13 @@ public class HealthIndexService {
         return healthIndexFieldComponentService.isExist(index, name);
     }
 
+    public HealthIndexField getOldField(String name) {
+        List<HealthIndexField> list = healthIndexFieldComponentService.getByName(name);
+        if (list.isEmpty())
+            return null;
+        return list.get(0);
+    }
+
     public HealthIndexSchedule getSchedule(long id) {
         return healthIndexScheduleComponentService.getById(id);
     }

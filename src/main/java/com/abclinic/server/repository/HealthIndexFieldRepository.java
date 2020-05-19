@@ -16,4 +16,5 @@ public interface HealthIndexFieldRepository extends JpaRepository<HealthIndexFie
     Optional<HealthIndexField> findById(long id);
     Optional<List<HealthIndexField>> findByHealthIndex(HealthIndex healthIndex);
     List<HealthIndexField> findByHealthIndexAndNameIgnoreCase(HealthIndex index, String name);
+    List<HealthIndexField> findByName(String name);
 }

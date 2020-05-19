@@ -36,7 +36,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -146,11 +145,17 @@ public class HealthIndexResourceController extends CustomController {
                                                 @RequestBody RequestCreateHealthIndexFieldDto requestCreateHealthIndexFieldDto,
                                                 @PathVariable("id") long indexId) {
         HealthIndex index = healthIndexService.getIndex(indexId);
-        if (!healthIndexService.isFieldExist(index, requestCreateHealthIndexFieldDto.getField())) {
-            HealthIndexField f = new HealthIndexField(index, requestCreateHealthIndexFieldDto.getField());
+        String fieldName = requestCreateHealthIndexFieldDto.getField();
+        if (!healthIndexService.isFieldExist(index, fieldName) ) {
+            HealthIndexField f = healthIndexService.getOldField(fieldName);
+            if (f == null)
+                f = new HealthIndexField(index, requestCreateHealthIndexFieldDto.getField());
+            else index.addField(f);
             healthIndexService.save(f);
             return new ResponseEntity<>(healthIndexService.getIndex(index.getId()), HttpStatus.CREATED);
-        } else throw new BadRequestException(user.getId(), "Trường này đã tồn tại");
+        } else {
+            throw new BadRequestException(user.getId(), "Trường này đã tồn tại");
+        }
     }
 
     @DeleteMapping("/{id}/field")
@@ -178,7 +183,7 @@ public class HealthIndexResourceController extends CustomController {
     }
 
     @GetMapping("/schedule")
-    @Restricted(excluded = { Coordinator.class, Practitioner.class })
+    @Restricted(excluded = {Coordinator.class, Practitioner.class})
     @ApiOperation(
             value = "Lấy danh sách lịch gửi chỉ số sức khỏe",
             notes = "Trả về 200 OK hoặc 404 NOT FOUND",
