@@ -36,6 +36,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -200,7 +201,7 @@ public class HealthIndexResourceController extends CustomController {
     })
     @JsonView(Views.Abridged.class)
     public ResponseEntity<Page<HealthIndexSchedule>> getScheduleList(@ApiIgnore @RequestAttribute("User") User user,
-                                                                     @RequestParam("search") String search,
+                                                                     @RequestParam("search") @Nullable String search,
                                                                      @RequestParam("page") int page,
                                                                      @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("patient").ascending());

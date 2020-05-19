@@ -11,7 +11,9 @@ import com.abclinic.server.model.entity.user.Doctor;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.HealthIndexScheduleRepository;
+import com.abclinic.server.service.entity.DoctorService;
 import com.abclinic.server.service.entity.IDataMapperService;
+import com.abclinic.server.service.entity.PatientService;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,10 +31,14 @@ import java.util.List;
 @Component
 public class HealthIndexScheduleComponentService implements IDataMapperService<HealthIndexSchedule> {
     private HealthIndexScheduleRepository healthIndexScheduleRepository;
+    private PatientService patientService;
+    private DoctorService doctorService;
 
     @Autowired
-    public HealthIndexScheduleComponentService(HealthIndexScheduleRepository healthIndexScheduleRepository) {
+    public HealthIndexScheduleComponentService(HealthIndexScheduleRepository healthIndexScheduleRepository, PatientService patientService, DoctorService doctorService) {
         this.healthIndexScheduleRepository = healthIndexScheduleRepository;
+        this.patientService = patientService;
+        this.doctorService = doctorService;
     }
 
     @Override
@@ -48,12 +54,12 @@ public class HealthIndexScheduleComponentService implements IDataMapperService<H
             case COORDINATOR:
                 return healthIndexScheduleRepository.findAll(pageable);
             case PATIENT:
-                return healthIndexScheduleRepository.findByPatient((Patient) user, pageable)
+                return healthIndexScheduleRepository.findByPatient(patientService.getById(user.getId()), pageable)
                         .orElseThrow(NotFoundException::new);
             case PRACTITIONER:
             case SPECIALIST:
             case DIETITIAN:
-                return healthIndexScheduleRepository.findByDoctor((Doctor) user, pageable)
+                return healthIndexScheduleRepository.findByDoctor((Doctor) doctorService.getById(user.getId()), pageable)
                         .orElseThrow(NotFoundException::new);
             default:
                 return null;

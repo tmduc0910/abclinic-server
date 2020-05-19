@@ -10,7 +10,9 @@ import com.abclinic.server.model.entity.user.Doctor;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.PatientHealthIndexFieldRepository;
+import com.abclinic.server.service.entity.DoctorService;
 import com.abclinic.server.service.entity.IDataMapperService;
+import com.abclinic.server.service.entity.PatientService;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,10 +29,14 @@ import javax.transaction.Transactional;
 @Component
 public class PatientHealthIndexFieldComponentService implements IDataMapperService<PatientHealthIndexField> {
     private PatientHealthIndexFieldRepository patientHealthIndexFieldRepository;
+    private PatientService patientService;
+    private DoctorService doctorService;
 
     @Autowired
-    public PatientHealthIndexFieldComponentService(PatientHealthIndexFieldRepository patientHealthIndexFieldRepository) {
+    public PatientHealthIndexFieldComponentService(PatientHealthIndexFieldRepository patientHealthIndexFieldRepository, PatientService patientService, DoctorService doctorService) {
         this.patientHealthIndexFieldRepository = patientHealthIndexFieldRepository;
+        this.patientService = patientService;
+        this.doctorService = doctorService;
     }
 
     @Override
@@ -44,12 +50,12 @@ public class PatientHealthIndexFieldComponentService implements IDataMapperServi
     public Page<PatientHealthIndexField> getList(User user, Pageable pageable) {
         switch (user.getRole()) {
             case PATIENT:
-                return patientHealthIndexFieldRepository.findBySchedulePatient((Patient) user, pageable)
+                return patientHealthIndexFieldRepository.findBySchedulePatient(patientService.getById(user.getId()), pageable)
                         .orElseThrow(NotFoundException::new);
             case PRACTITIONER:
             case SPECIALIST:
             case DIETITIAN:
-                return patientHealthIndexFieldRepository.findByScheduleDoctor((Doctor) user, pageable)
+                return patientHealthIndexFieldRepository.findByScheduleDoctor((Doctor) doctorService.getById(user.getId()), pageable)
                         .orElseThrow(NotFoundException::new);
             default:
                 return null;

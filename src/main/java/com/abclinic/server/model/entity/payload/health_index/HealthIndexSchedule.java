@@ -36,7 +36,7 @@ public class HealthIndexSchedule extends IPayloadIpml {
     @JoinColumn(name = "doctor_id")
     @JsonView(Views.Abridged.class)
     @JsonSerialize(using = ViewSerializer.class)
-    private Doctor doctor;
+    private User doctor;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "index_id")
@@ -91,7 +91,7 @@ public class HealthIndexSchedule extends IPayloadIpml {
         this.patient = patient;
     }
 
-    public Doctor getDoctor() {
+    public User getDoctor() {
         return doctor;
     }
 
