@@ -80,17 +80,17 @@ public class RecordResourceController extends CustomController {
             if (inquiry.getType() == RecordType.MEDICAL.getValue()) {
                 if (user.getRole() == Role.SPECIALIST)
                     record = new MedicalRecord(inquiry,
-                            requestCreateRecordDto.getDiagnose(),
+                            requestCreateRecordDto.getNote(),
                             requestCreateRecordDto.getPrescription(),
                             (Specialist) doctorService.getById(user.getId()),
-                            requestCreateRecordDto.getNote());
+                            requestCreateRecordDto.getDiagnose());
                 else
                     throw new ForbiddenException(user.getId(), "Chỉ có bác sĩ chuyên khoa mới có thể tư vấn khám bệnh");
             } else {
                 if (user.getRole() == Role.DIETITIAN) {
                     record = new DietRecord(inquiry,
-                            requestCreateRecordDto.getPrescription(),
                             requestCreateRecordDto.getNote(),
+                            requestCreateRecordDto.getPrescription(),
                             (Dietitian) doctorService.getById(user.getId()));
                     record.setStatus(PayloadStatus.PROCESSED);
                 }
