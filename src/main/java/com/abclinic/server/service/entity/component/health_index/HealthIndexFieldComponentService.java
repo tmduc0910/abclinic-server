@@ -35,7 +35,7 @@ public class HealthIndexFieldComponentService implements IDataMapperService<Heal
     }
 
     public boolean isExist(HealthIndex index, String name) {
-        return !healthIndexFieldRepository.findByHealthIndexAndNameIgnoreCase(index, name);
+        return !healthIndexFieldRepository.findByHealthIndexAndNameIgnoreCase(index, name).isEmpty();
     }
 
     @Transactional

@@ -91,6 +91,10 @@ public class HealthIndexResourceController extends CustomController {
             notes = "Trả về 201 CREATED hoặc 400 BAD REQUEST",
             tags = "Nhân viên phòng khám"
     )
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Tạo mới thành công"),
+            @ApiResponse(code = 400, message = "Chỉ số sức khỏe này đã tồn tại")
+    })
     @JsonView(Views.Public.class)
     public ResponseEntity<HealthIndex> createIndex(@ApiIgnore @RequestAttribute("User") User user,
                                                    @RequestBody RequestCreateHealthIndexDto requestCreateHealthIndexDto) {

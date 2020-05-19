@@ -102,6 +102,23 @@ public class UserInfoResourceController extends CustomController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    @PutMapping("/user/{id}")
+    @Restricted(included = Coordinator.class)
+    @ApiOperation(
+            value = "Sửa thông tin người dùng",
+            notes = "Trả về 200 OK",
+            tags = "Điều phối viên"
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Chỉnh sửa thành công")
+    })
+    public ResponseEntity<? extends User> editUserInfo(@ApiIgnore @RequestAttribute("User") User user,
+                                   @RequestBody RequestUpdateUserInfoDto requestUpdateUserInfoDto,
+                                   @PathVariable("id") long id) {
+        User u = userService.getById(id);
+        return editUserInfo(u, requestUpdateUserInfoDto);
+    }
+
     @DeleteMapping("/user")
     @Restricted(included = Coordinator.class)
     @ApiOperation(

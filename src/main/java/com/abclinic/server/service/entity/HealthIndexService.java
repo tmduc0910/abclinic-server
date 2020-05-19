@@ -130,9 +130,10 @@ public class HealthIndexService {
         index = (HealthIndex) save(index);
         for (String fieldName: fieldNames) {
             HealthIndexField field = new HealthIndexField(index, fieldName);
+            index.addField(field);
             save(field);
         }
-        return getIndex(index.getId());
+        return index;
     }
 
     public List<PatientHealthIndexField> createResults(HealthIndexSchedule schedule, List<HealthIndexField> fields, List<String> values) {

@@ -23,6 +23,7 @@ public class Practitioner extends Doctor {
             inverseJoinColumns = @JoinColumn(name = "specialty_id")
     )
     @JsonView(Views.Public.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private Set<Specialty> specialties;
 
     @OneToMany(targetEntity = Patient.class, mappedBy = "practitioner")

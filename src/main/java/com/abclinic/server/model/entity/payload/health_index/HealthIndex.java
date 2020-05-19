@@ -2,9 +2,12 @@ package com.abclinic.server.model.entity.payload.health_index;
 
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.model.entity.payload.IPayloadIpml;
+import com.abclinic.server.serializer.ViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,9 +26,10 @@ public class HealthIndex extends IPayloadIpml {
     @JsonView(Views.Abridged.class)
     private String description;
 
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = HealthIndexField.class, mappedBy = "healthIndex")
-    @JsonView(Views.Public.class)
-    private List<HealthIndexField> fields;
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = HealthIndexField.class, mappedBy = "healthIndex", cascade = CascadeType.ALL)
+    @JsonView(Views.Abridged.class)
+    @JsonSerialize(using = ViewSerializer.class)
+    private List<HealthIndexField> fields = new ArrayList<>();
 
     public HealthIndex() {
     }
@@ -57,6 +61,10 @@ public class HealthIndex extends IPayloadIpml {
 
     public void setFields(List<HealthIndexField> fields) {
         this.fields = fields;
+    }
+
+    public void addField(HealthIndexField field) {
+        this.fields.add(field);
     }
 
     public void removeField(HealthIndexField field) {
