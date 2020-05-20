@@ -46,7 +46,6 @@ public class WebSocketService {
     @Autowired
     private WebSocketPublisher publisher;
     private Logger logger = LoggerFactory.getLogger(WebSocketService.class);
-    private static StompSession session;
 
     public String getTopicUrl(User user) {
         return "/topic/users/" +
@@ -56,12 +55,8 @@ public class WebSocketService {
     public void broadcast(String destination, NotificationDto notification) {
         try {
             Gson gson = new Gson();
-            if (session == null) {
-                session = publisher.getSession();
-                session.send("/sendNoti", gson.toJson(notification).getBytes());
-            }
-            session.send("/api/app/sendNoti", gson.toJson(notification).getBytes());
-            session.send("/sendNoti", gson.toJson(notification).getBytes());
+//            publisher.getSession().send("/api/app/sendNoti", gson.toJson(notification).getBytes());
+            publisher.getSession().send(destination, gson.toJson(notification).getBytes());
         } catch (Exception e) {
             e.printStackTrace();
         }

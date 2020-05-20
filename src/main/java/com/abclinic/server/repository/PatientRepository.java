@@ -1,6 +1,7 @@
 package com.abclinic.server.repository;
 
 import com.abclinic.server.model.entity.user.*;
+import com.abclinic.server.model.entity.user.QPatient;
 import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.core.types.dsl.StringPath;
 import org.springframework.data.domain.Page;

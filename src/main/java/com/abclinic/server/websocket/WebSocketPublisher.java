@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
  */
 @Component
 public class WebSocketPublisher {
+    private static StompSession session;
 
     @Value("${server.port}")
     private String port;
@@ -34,11 +35,14 @@ public class WebSocketPublisher {
     }
 
     public StompSession getSession(String url) throws InterruptedException, ExecutionException {
-        return stompClient.connect(url, new StompSessionHandlerAdapter() {}).get();
+        session = stompClient.connect(url, new StompSessionHandlerAdapter() {}).get();
+        return session;
     }
 
     public StompSession getSession() throws ExecutionException, InterruptedException {
-        return getSession(getUri());
+        if (session == null)
+            session = getSession(getUri());
+        return session;
     }
 
     public String getUri() {
