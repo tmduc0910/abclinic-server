@@ -4,6 +4,7 @@ import com.abclinic.server.common.utils.DateTimeUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 /**
  * @author tmduc
@@ -46,6 +47,10 @@ public class RequestCreateInquiryDto {
     }
 
     public LocalDateTime getDate() {
-        return DateTimeUtils.parseDateTime(date);
+        try {
+            return DateTimeUtils.parseDateTime(date);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 }

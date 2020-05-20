@@ -67,12 +67,15 @@ public class AuthController extends CustomController {
     @PostMapping(value = "/login")
     @ApiOperation(value = "Người dùng đăng nhập qua account", notes = "Trả về chuỗi UID hoặc 404 NOT FOUND\n" +
             "Trường UID được trả về sẽ được gán vào header Authorization ở tất cả các API sau đó.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Client-Type", value = "Client-Type", paramType = "header", dataType = "string")
+    })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Đăng nhập thành công"),
             @ApiResponse(code = 404, message = "Đăng nhập thất bại")
     })
     @JsonView(Views.Private.class)
-    public ResponseEntity<String> processLogin(@ApiIgnore @RequestHeader("Client-Type") String type,
+    public ResponseEntity<String> processLogin(@RequestHeader("Client-Type") String type,
                                                @RequestBody RequestLoginDto requestLoginDto) {
         return userService.findByUsernamePassword(requestLoginDto.getAccount(), requestLoginDto.getPassword()).map(u -> {
             if (!type.equalsIgnoreCase("Mobile") || u.getRole() == Role.PATIENT) {

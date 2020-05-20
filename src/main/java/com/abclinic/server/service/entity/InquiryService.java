@@ -42,7 +42,9 @@ public class InquiryService implements IDataMapperService<Inquiry> {
     @Override
     @Transactional
     public Inquiry getById(long id) throws NotFoundException {
-        return inquiryRepository.findById(id).orElseThrow(NotFoundException::new);
+        Inquiry inquiry = inquiryRepository.findById(id).orElseThrow(NotFoundException::new);
+        inquiry.setStatus(PayloadStatus.ON_HOLD);
+        return save(inquiry);
     }
 
     @Override

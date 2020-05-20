@@ -150,7 +150,7 @@ public class PatientResourceController extends CustomController {
     )
     @ApiResponses({
             @ApiResponse(code = 201, message = "Yêu cầu thành công"),
-            @ApiResponse(code = 400, message = "ID bác sĩ không tồn tại")
+            @ApiResponse(code = 400, message = "Gán không thành công")
     })
     public ResponseEntity addPatientDoctor(@ApiIgnore @RequestAttribute("User") User user,
                                            @PathVariable("id") long id,
@@ -159,6 +159,9 @@ public class PatientResourceController extends CustomController {
             Inquiry inquiry = inquiryService.getById(requestCreatePatientDoctorDto.getInquiryId());
             UserStatus newStatus = null;
             Patient patient = patientService.getById(id);
+            if (!inquiry.getPatient().equals(patient)) {
+                throw new BadRequestException(user.getId(), "Yêu cầu tư vấn không của bệnh nhân");
+            }
             if (!StatusUtils.containsStatus(patient, UserStatus.NEW) && patientService.isPatientOf(patient, doctorService.getById(requestCreatePatientDoctorDto.getDoctorId())))
                 throw new BadRequestException(user.getId(), "Bác sĩ này đã được gán cho bệnh nhân này");
 
@@ -184,15 +187,13 @@ public class PatientResourceController extends CustomController {
                     message.setTargetUser(subDoc);
                     break;
             }
-            patient = StatusUtils.remove(patient, UserStatus.NEW);
             patient = StatusUtils.update(patient, newStatus);
+            patient = StatusUtils.remove(patient, UserStatus.NEW);
             patientService.save(patient);
 
             if (message.getTargetUser() != null)
                 notificationService.makeNotification(user, message);
             return new ResponseEntity(HttpStatus.CREATED);
-        } catch (NotFoundException e) {
-            throw new BadRequestException(user.getId(), "ID không tồn tại");
         } catch (ClassCastException e) {
             throw new BadRequestException(user.getId(), "Không thể gán yêu cầu khám bệnh cho bác sĩ dinh dưỡng và ngược lại");
         }

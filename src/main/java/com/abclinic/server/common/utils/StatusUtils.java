@@ -39,7 +39,9 @@ public class StatusUtils {
     public static <T extends User> T remove(T user, UserStatus toRemove) {
         if (containsStatus(user, toRemove)) {
             user.setStatus(user.getStatus() - toRemove.getValue());
-        }
+            if (user.getStatus() == 0)
+                user.setStatus(UserStatus.NEW.getValue());
+        } 
         return user;
     }
 

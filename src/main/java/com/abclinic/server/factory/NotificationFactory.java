@@ -25,16 +25,19 @@ public class NotificationFactory {
 
     public static List<NotificationMessage> getMessages(Inquiry payload) {
         List<NotificationMessage> list = new ArrayList<>();
+
         NotificationMessage message = getMessage(payload.getStatus() == PayloadStatus.UNREAD ? MessageType.INQUIRE : MessageType.REPLY, payload.getPatient().getPractitioner(), payload);
         list.add(message);
-        list.addAll(payload.getPatient().getDietitians().stream().map(d -> {
-            message.setTargetUser(d);
-            return message;
-        }).collect(Collectors.toList()));
-        list.addAll(payload.getPatient().getSpecialists().stream().map(s -> {
-            message.setTargetUser(s);
-            return message;
-        }).collect(Collectors.toList()));
+        if (message.getMessageType().equals(MessageType.INQUIRE)) {
+            list.addAll(payload.getPatient().getDietitians().stream().map(d -> {
+                message.setTargetUser(d);
+                return message;
+            }).collect(Collectors.toList()));
+            list.addAll(payload.getPatient().getSpecialists().stream().map(s -> {
+                message.setTargetUser(s);
+                return message;
+            }).collect(Collectors.toList()));
+        }
         return list;
     }
 }
