@@ -72,6 +72,7 @@ public class HealthIndexScheduleComponentService implements IDataMapperService<H
         return save(schedule);
     }
 
+    @Transactional
     public List<HealthIndexSchedule> getAllAvailableSchedules() {
         return healthIndexScheduleRepository.findByStatus(PayloadStatus.UNREAD);
     }

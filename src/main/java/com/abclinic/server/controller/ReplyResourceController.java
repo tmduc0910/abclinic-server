@@ -68,7 +68,7 @@ public class ReplyResourceController extends CustomController {
             if (inquiry.of(user)) {
                 Reply r = new Reply(inquiry, user, requestCreateReplyDto.getReply());
                 r = replyService.save(r);
-                notificationService.makeNotification(user, NotificationFactory.getMessages(inquiry));
+                notificationService.makeNotification(user, NotificationFactory.getReplyMessages(user, r));
                 return new ResponseEntity<>(r, HttpStatus.CREATED);
             } else throw new ForbiddenException(user.getId(), "Bạn không có quyền tạo câu trả lời cho tư vấn này");
         } catch (NotFoundException e) {

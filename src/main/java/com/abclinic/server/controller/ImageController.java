@@ -75,7 +75,7 @@ public class ImageController extends CustomController {
             @ApiResponse(code = 400, message = "File không hợp lệ")
     })
     public ResponseEntity<AlbumDto> processUpload(@ApiIgnore @RequestAttribute("User") User user,
-                                                  @RequestAttribute("files") MultipartFile[] files) {
+                                                  @RequestPart("files") MultipartFile[] files) {
         Patient patient = patientService.getById(user.getId());
         if (files.length == 0)
             throw new BadRequestException(patient.getId(), "phải ít nhất upload lên 1 ảnh");

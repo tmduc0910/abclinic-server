@@ -51,7 +51,7 @@ public class WebSocketTest {
 
     @Test
     public void testNoti() throws InterruptedException, ExecutionException, TimeoutException {
-        User user = userRepository.findById(2).get();
+        User user = userRepository.findById(6).get();
         try {
             WebSocketStompClient stompClient = new WebSocketStompClient(new SockJsClient(
                     Arrays.asList(new WebSocketTransport(new StandardWebSocketClient()))));
@@ -60,9 +60,9 @@ public class WebSocketTest {
                     .connect(URL, new StompSessionHandlerAdapter() {
                     })
                     .get(1, SECONDS);
-            session.subscribe("/topic/users/5", new CustomStompSessionHandler());
+            session.subscribe("/topic/users/6", new CustomStompSessionHandler());
         } finally {
-            service.makeNotification(userRepository.findById(5).get(), new NotificationMessage(MessageType.INQUIRE, user, inquiryRepository.findById(1).get()));
+            service.makeNotification(userRepository.findById(1).get(), new NotificationMessage(MessageType.REPLY, user, inquiryRepository.findById(5).get()));
             new Scanner(System.in).nextLine();
         }
     }

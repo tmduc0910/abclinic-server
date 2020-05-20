@@ -169,16 +169,20 @@ public class Inquiry extends IPayloadIpml {
     }
 
     public boolean of(User user) {
-        switch (user.getRole()) {
-            case DIETITIAN:
-                return patient.getDietitians().contains(user);
-            case SPECIALIST:
-                return patient.getSpecialists().contains(user);
-            case PRACTITIONER:
-                return patient.getPractitioner().equals(user);
-            case PATIENT:
-                return patient.equals(user);
+        try {
+            switch (user.getRole()) {
+                case DIETITIAN:
+                    return patient.getDietitians().contains(user);
+                case SPECIALIST:
+                    return patient.getSpecialists().contains(user);
+                case PRACTITIONER:
+                    return patient.getPractitioner().equals(user);
+                case PATIENT:
+                    return patient.equals(user);
+            }
+            return false;
+        } catch (NullPointerException e) {
+            return false;
         }
-        return false;
     }
 }

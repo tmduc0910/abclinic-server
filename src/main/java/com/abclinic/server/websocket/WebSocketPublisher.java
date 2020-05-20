@@ -38,8 +38,11 @@ public class WebSocketPublisher {
     }
 
     public StompSession getSession() throws ExecutionException, InterruptedException {
+        return getSession(getUri());
+    }
+
+    public String getUri() {
         String hostName = InetAddress.getLoopbackAddress().getHostName();
-        String uri = "ws://" + hostName + ":" + port + "/api/ws";
-        return getSession(uri);
+        return "http://" + hostName + ":" + port + "/api/ws";
     }
 }

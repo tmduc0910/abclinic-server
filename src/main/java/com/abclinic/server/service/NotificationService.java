@@ -3,6 +3,7 @@ package com.abclinic.server.service;
 import com.abclinic.server.common.constant.MessageType;
 import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.exception.NotFoundException;
+import com.abclinic.server.model.dto.NotificationDto;
 import com.abclinic.server.model.entity.notification.Notification;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
@@ -73,8 +74,9 @@ public class NotificationService implements IDataMapperService<Notification> {
         String message = pack(sender, notificationMessage);
         Notification notification = new Notification(sender, notificationMessage.getTargetUser(), message, notificationMessage.getMessageType().getValue());
         notification.setPayloadId(notificationMessage.getPayload().getId());
-        webSocketService.broadcast(notificationMessage.getTargetUser(), message);
-        return notificationRepository.save(notification);
+        notification = notificationRepository.save(notification);
+        webSocketService.broadcast(notificationMessage.getTargetUser(), new NotificationDto(notification.getId(), notification.getReceiver().getId(), message));
+        return notification;
     }
 
     public List<Notification> makeNotification(User sender, List<NotificationMessage> notificationMessages) {

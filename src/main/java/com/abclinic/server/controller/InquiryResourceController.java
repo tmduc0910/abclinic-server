@@ -30,8 +30,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.annotation.Nullable;
-import javax.swing.text.View;
 import java.util.List;
 
 /**
@@ -90,7 +88,7 @@ public class InquiryResourceController extends CustomController {
 
                 //Send notification
                 if (!StatusUtils.containsStatus(patient, UserStatus.NEW))
-                    notificationService.makeNotification(user, NotificationFactory.getMessages(inquiry));
+                    notificationService.makeNotification(user, NotificationFactory.getInquiryMessages(inquiry));
                 else {
                     List<User> coordinators = userService.findAllCoordinators();
                     Inquiry finalInquiry = inquiry;
