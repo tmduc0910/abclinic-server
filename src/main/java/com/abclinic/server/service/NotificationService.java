@@ -58,7 +58,7 @@ public class NotificationService implements IDataMapperService<Notification> {
 
         if (message.getMessageType() == MessageType.SCHEDULE_REMINDER) {
             LocalDateTime now = DateTimeUtils.getCurrent();
-            int time = DateTimeUtils.getDistanceByHour(now, ((HealthIndexSchedule) message.getPayload()).getEndedAt());
+            long time = DateTimeUtils.getDistanceByHour(now, ((HealthIndexSchedule) message.getPayload()).getEndedAt());
             return new StringJoiner(" ")
                     .add("Bạn")
                     .add(message.getMessageType().getAction())

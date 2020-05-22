@@ -30,7 +30,7 @@ public class Record extends IPayloadIpml {
     @JsonView(Views.Confidential.class)
     private int recordType;
 
-    @JsonView(Views.Confidential.class)
+    @JsonView(Views.Abridged.class)
     private int status;
 
     @JsonView(Views.Abridged.class)

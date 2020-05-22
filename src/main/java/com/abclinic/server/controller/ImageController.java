@@ -2,6 +2,7 @@ package com.abclinic.server.controller;
 
 import com.abclinic.server.annotation.authorized.Restricted;
 import com.abclinic.server.common.base.CustomController;
+import com.abclinic.server.common.base.CustomRuntimeException;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.utils.FileUtils;
 import com.abclinic.server.exception.BadRequestException;
@@ -103,25 +104,28 @@ public class ImageController extends CustomController {
     }
 
     @PostMapping(value = "/avatar")
-    @ApiOperation(value = "Upload ảnh avatar", notes = "Trả về ảnh avatar hoặc 400 BAD REQUEST", consumes = "multipart/form-data")
+    @ApiOperation(value = "Upload ảnh avatar", notes = "Trả về ảnh avatar hoặc 400 BAD REQUEST")
     @ApiResponses({
             @ApiResponse(code = 201, message = "Upload ảnh avatar thành công"),
             @ApiResponse(code = 400, message = "File không hợp lệ")
     })
     @JsonView(Views.Public.class)
     public ResponseEntity<String> processUploadAvatar(@ApiIgnore @RequestAttribute("User") User user,
-                                                      @RequestAttribute("file") MultipartFile file) {
+                                                      @RequestPart("files") MultipartFile[] files) {
 //        Album album;
 //        Optional<Album> op = GooglePhotosService.getAlbumByName("Avatar");
 //        album = op.orElseGet(() -> GooglePhotosService.makeAlbum("Avatar"));
         try {
 //            Image avatar = upload(file, album);
             CloudinaryService service = CloudinaryService.getInstance(fileService.getUploadDirectory());
-            Image avatar = service.uploadAvatar(file);
+            Image avatar = service.uploadAvatar(files[0]);
             user.setAvatar(avatar.getPath());
             userService.save(user);
             return new ResponseEntity<>(avatar.getPath(), HttpStatus.CREATED);
-        } catch (Exception e) {
+        } catch (CustomRuntimeException e) {
+            throw new BadRequestException(user.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
             throw new BadRequestException(user.getId());
         }
     }

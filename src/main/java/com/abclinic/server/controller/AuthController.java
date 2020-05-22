@@ -4,6 +4,7 @@ import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.RoleValue;
+import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.exception.DuplicateValueException;
 import com.abclinic.server.exception.WrongCredentialException;
@@ -78,7 +79,7 @@ public class AuthController extends CustomController {
     public ResponseEntity<String> processLogin(@RequestHeader("Client-Type") String type,
                                                @RequestBody RequestLoginDto requestLoginDto) {
         return userService.findByUsernamePassword(requestLoginDto.getAccount(), requestLoginDto.getPassword()).map(u -> {
-            if (!type.equalsIgnoreCase("Mobile") || u.getRole() == Role.PATIENT) {
+            if ((!type.equalsIgnoreCase("Mobile") || u.getRole() == Role.PATIENT) && u.getStatus() != UserStatus.DEACTIVATED.getValue()) {
                 u.setUid(UUID.randomUUID().toString());
                 userService.save(u);
                 return new ResponseEntity<>(u.getUid(), HttpStatus.OK);

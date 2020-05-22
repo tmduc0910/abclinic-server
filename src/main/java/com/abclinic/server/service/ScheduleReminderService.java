@@ -14,7 +14,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,12 +32,16 @@ public class ScheduleReminderService {
     @Autowired
     private NotificationService notificationService;
 
+    @Transactional
     @Scheduled(cron = "0 0 */4 ? * *")
     public void remind() {
         List<HealthIndexSchedule> schedules = healthIndexService.getAvailableSchedules();
         LocalDateTime now = DateTimeUtils.getCurrent();
         schedules.forEach(s -> {
-            if (DateTimeUtils.getDistanceByHour(now, s.getEndedAt()) <= Constant.REMINDER_LIMIT) {
+            long distance = DateTimeUtils.getDistanceByHour(now, s.getEndedAt());
+            if (distance < 0) {
+                healthIndexService.updateSchedule(s);
+            } else if (distance <= Constant.REMINDER_LIMIT) {
                 notificationService.makeNotification(s.getDoctor(), NotificationFactory.getMessage(MessageType.SCHEDULE_REMINDER, s.getPatient(), s));
             }
         });

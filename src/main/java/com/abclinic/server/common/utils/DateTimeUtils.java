@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 /**
  * @author tmduc
@@ -48,8 +49,8 @@ public class DateTimeUtils {
         return getDistanceByYear(from, getCurrentDate());
     }
 
-    public static int getDistanceByHour(LocalDateTime from, LocalDateTime to) {
-        return to.getHour() - from.getHour();
+    public static long getDistanceByHour(LocalDateTime from, LocalDateTime to) {
+        return ChronoUnit.HOURS.between(from, to);
     }
 
     public static int secondsToHours(long time) {

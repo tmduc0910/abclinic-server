@@ -6,6 +6,7 @@ import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.model.dto.request.delete.RequestDeleteDto;
+import com.abclinic.server.model.dto.request.post.RequestReactivateUser;
 import com.abclinic.server.model.dto.request.put.RequestUpdateDoctorSpecialtyDto;
 import com.abclinic.server.model.dto.request.put.RequestUpdateUserInfoDto;
 import com.abclinic.server.model.entity.user.*;
@@ -22,7 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -133,6 +133,23 @@ public class UserInfoResourceController extends CustomController {
                                      @RequestBody RequestDeleteDto requestDeleteDto) {
         User u = userService.getById(requestDeleteDto.getId());
         userService.deactivateUser(u);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("/user")
+    @Restricted(included = Coordinator.class)
+    @ApiOperation(
+            value = "Tái kích hoạt tài khoản",
+            notes = "Trả về 200 OK",
+            tags = "Điều phối viên"
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Tái kích hoạt thành công")
+    })
+    public ResponseEntity reactivateUser(@RequestBody RequestReactivateUser requestReactivateUser) {
+        User u = userService.getById(requestReactivateUser.getId());
+        u.setStatus(UserStatus.NEW.getValue());
+        userService.save(u);
         return new ResponseEntity(HttpStatus.OK);
     }
 
