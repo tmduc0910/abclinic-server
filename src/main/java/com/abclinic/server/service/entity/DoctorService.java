@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author tmduc
@@ -52,6 +54,18 @@ public class DoctorService implements IDataMapperService<User> {
         if (expression != null)
             return userRepository.findAll(expression, pageable);
         return userRepository.findAll(pageable);
+    }
+
+    @Transactional
+    public List<Specialist> getSpecialists(Patient patient) {
+        return patient.getSpecialists().stream().map(u -> (Specialist) getById(u.getId()))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<Dietitian> getDietitians(Patient patient) {
+        return patient.getDietitians().stream().map(u -> (Dietitian) getById(u.getId()))
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -29,13 +29,13 @@ public class Patient extends User implements IPayload {
     @JsonSerialize(using = ViewSerializer.class)
     private List<Inquiry> inquiries;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "practitioner_id")
     @JsonView(Views.Abridged.class)
     @JsonSerialize(using = ViewSerializer.class)
     private Practitioner practitioner;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "doctor_patient",
             joinColumns = @JoinColumn(name = "patient_id"),
@@ -89,17 +89,15 @@ public class Patient extends User implements IPayload {
         this.subDoctors = subDoctors;
     }
 
-    public List<Specialist> getSpecialists() {
+    public List<User> getSpecialists() {
         return subDoctors.stream()
                 .filter(u -> u.getRole().equals(Role.SPECIALIST))
-                .map(u -> (Specialist) u)
                 .collect(Collectors.toList());
     }
 
-    public List<Dietitian> getDietitians() {
+    public List<User> getDietitians() {
         return subDoctors.stream()
                 .filter(u -> u.getRole().equals(Role.DIETITIAN))
-                .map(u -> (Dietitian) u)
                 .collect(Collectors.toList());
     }
 
@@ -109,11 +107,5 @@ public class Patient extends User implements IPayload {
 
     public boolean removeSubDoc(User doctor) {
         return this.subDoctors.remove(doctor);
-    }
-
-    @JsonIgnore
-    public List<Doctor> getDoctors() {
-        return subDoctors.stream()
-                .map(d -> (Doctor) d).collect(Collectors.toList());
     }
 }

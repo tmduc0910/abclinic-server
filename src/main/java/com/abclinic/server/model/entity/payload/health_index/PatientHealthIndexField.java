@@ -5,8 +5,10 @@ import com.abclinic.server.model.entity.payload.IPayloadIpml;
 import com.abclinic.server.serializer.ViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 /**
  * @author tmduc
@@ -16,9 +18,13 @@ import javax.persistence.*;
 @Entity
 @Table(name = "patient_health_index_field")
 public class PatientHealthIndexField extends IPayloadIpml {
+    @JsonView(Views.Abridged.class)
+    @Column(name = "tag_id")
+    private long tagId;
+
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = HealthIndexSchedule.class)
     @JoinColumn(name = "schedule_id")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     @JsonSerialize(using = ViewSerializer.class)
     private HealthIndexSchedule schedule;
 
@@ -31,6 +37,10 @@ public class PatientHealthIndexField extends IPayloadIpml {
     @JsonView(Views.Abridged.class)
     private String value;
 
+    @CreationTimestamp
+    @JsonView(Views.Abridged.class)
+    private LocalDateTime createdAt;
+
     public PatientHealthIndexField() {
     }
 
@@ -38,6 +48,14 @@ public class PatientHealthIndexField extends IPayloadIpml {
         this.schedule = schedule;
         this.field = field;
         this.value = value;
+    }
+
+    public long getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(long tagId) {
+        this.tagId = tagId;
     }
 
     public HealthIndexSchedule getSchedule() {
@@ -62,5 +80,13 @@ public class PatientHealthIndexField extends IPayloadIpml {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

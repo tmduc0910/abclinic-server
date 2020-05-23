@@ -112,10 +112,14 @@ public class HealthIndexService {
         return patientHealthIndexFieldComponentService.getList(user, search, new PatientHealthIndexFieldPredicateBuilder(), pageable);
     }
 
+    public List<PatientHealthIndexField> getValuesList(User user, long id) {
+        return patientHealthIndexFieldComponentService.getList(user, id);
+    }
+
     public HealthIndexSchedule createSchedule(Patient patient, Doctor doctor, long scheduleTime, LocalDateTime startTime, HealthIndex index) {
         HealthIndexSchedule schedule = new HealthIndexSchedule(patient, doctor, index, scheduleTime, startTime);
         schedule = (HealthIndexSchedule) save(schedule);
-        List<Doctor> doctors = patient.getDoctors();
+        List<User> doctors = patient.getSubDoctors();
         HealthIndexSchedule finalSchedule = schedule;
         doctors.stream()
                 .filter(d -> !d.equals(doctor))
@@ -148,16 +152,18 @@ public class HealthIndexService {
     public List<PatientHealthIndexField> createResults(HealthIndexSchedule schedule, List<HealthIndexField> fields, List<String> values) {
         List<PatientHealthIndexField> results = new ArrayList<>();
         Patient patient = schedule.getPatient();
+        long tagId = -1;
+
         schedule = updateSchedule(schedule);
         for (int i = 0; i < fields.size(); i++) {
             PatientHealthIndexField f = createResult(schedule, fields.get(i), values.get(i));
             f.setSchedule(schedule);
-            if (i >= 1) {
-                f.setId(fields.get(0).getId());
-                f = (PatientHealthIndexField) save(f);
-            }
+            if (tagId < 0)
+                tagId = f.getId();
+            f.setTagId(tagId);
+            f = (PatientHealthIndexField) save(f);
             PatientHealthIndexField finalF = f;
-            patient.getDoctors().forEach(d -> {
+            patient.getSubDoctors().forEach(d -> {
                 notificationService.makeNotification(patient,
                         NotificationFactory.getMessage(MessageType.SEND_INDEX, d, finalF));
             });

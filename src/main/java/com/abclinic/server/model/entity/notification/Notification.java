@@ -3,6 +3,7 @@ package com.abclinic.server.model.entity.notification;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.serializer.ViewSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.CreationTimestamp;
@@ -109,6 +110,7 @@ public class Notification {
         this.type = type;
     }
 
+    @JsonIgnore
     public boolean isRead() {
         return isRead;
     }

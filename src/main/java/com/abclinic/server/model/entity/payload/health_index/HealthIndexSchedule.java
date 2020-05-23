@@ -34,18 +34,18 @@ public class HealthIndexSchedule extends IPayloadIpml {
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
     @JoinColumn(name = "doctor_id")
-    @JsonView(Views.Abridged.class)
+    @JsonView(Views.Public.class)
     @JsonSerialize(using = ViewSerializer.class)
     private User doctor;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "index_id")
-    @JsonView(Views.Abridged.class)
+    @JsonView(Views.Public.class)
     @JsonSerialize(using = ViewSerializer.class)
     private HealthIndex index;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = PatientHealthIndexField.class, mappedBy = "schedule")
-    @JsonView(Views.Abridged.class)
+    @JsonView(Views.Private.class)
     @JsonSerialize(using = ViewSerializer.class)
     private List<PatientHealthIndexField> patientValues;
 

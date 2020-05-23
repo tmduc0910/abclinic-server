@@ -1,8 +1,10 @@
 package com.abclinic.server.repository;
 
-import com.abclinic.server.model.entity.payload.health_index.*;
-import com.abclinic.server.model.entity.user.Doctor;
-import com.abclinic.server.model.entity.user.Patient;
+import com.abclinic.server.model.entity.payload.health_index.HealthIndexField;
+import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
+import com.abclinic.server.model.entity.payload.health_index.PatientHealthIndexField;
+import com.abclinic.server.model.entity.payload.health_index.QPatientHealthIndexField;
+import com.abclinic.server.model.entity.user.User;
 import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.core.types.dsl.StringPath;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.querydsl.binding.SingleValueBinding;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -28,9 +31,11 @@ public interface PatientHealthIndexFieldRepository extends JpaRepository<Patient
 
     Optional<Page<PatientHealthIndexField>> findBySchedule(HealthIndexSchedule schedule, Pageable pageable);
 
-    Optional<Page<PatientHealthIndexField>> findBySchedulePatient(Patient patient, Pageable pageable);
+    Optional<Page<PatientHealthIndexField>> findBySchedule_Patient_Id(long id, Pageable pageable);
 
-    Optional<Page<PatientHealthIndexField>> findByScheduleDoctor(Doctor doctor, Pageable pageable);
+    Optional<Page<PatientHealthIndexField>> findBySchedule_Doctor_Id(long id, Pageable pageable);
+
+    Optional<List<PatientHealthIndexField>> findByScheduleDoctorAndTagId(User doctor, long id);
 
     @Override
     default void customize(QuerydslBindings querydslBindings, QPatientHealthIndexField qPatientHealthIndexField) {

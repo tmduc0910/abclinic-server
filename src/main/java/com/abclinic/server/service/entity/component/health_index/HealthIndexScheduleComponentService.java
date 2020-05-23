@@ -1,5 +1,6 @@
 package com.abclinic.server.service.entity.component.health_index;
 
+import com.abclinic.server.common.constant.FilterConstant;
 import com.abclinic.server.common.constant.PayloadStatus;
 import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.criteria.EntityPredicateBuilder;
@@ -80,7 +81,12 @@ public class HealthIndexScheduleComponentService implements IDataMapperService<H
     @Override
     @Transactional
     public Page<HealthIndexSchedule> getList(User user, String search, EntityPredicateBuilder builder, Pageable pageable) {
-        HealthIndexSchedulePredicateBuilder predBuilder = (HealthIndexSchedulePredicateBuilder) builder.init(search);
+        String key = search;
+        if (search.contains("id"))
+            key = search.replace("id", FilterConstant.SCHEDULE_PAT_ID.getValue());
+        if (search.contains("name"))
+            key = search.replace("name", FilterConstant.SCHEDULE_PAT_NAME.getValue());
+        HealthIndexSchedulePredicateBuilder predBuilder = (HealthIndexSchedulePredicateBuilder) builder.init(key);
         BooleanExpression expression = predBuilder.build();
         if (expression != null)
             return healthIndexScheduleRepository.findAll(expression, pageable);

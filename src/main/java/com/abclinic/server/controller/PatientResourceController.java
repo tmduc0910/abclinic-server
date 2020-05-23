@@ -40,6 +40,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author tmduc
@@ -136,7 +137,7 @@ public class PatientResourceController extends CustomController {
                                                               @PathVariable("id") long id) {
         Patient patient = patientService.getById(id);
         if (patientService.isPatientOf(patient, user)) {
-            return new ResponseEntity<>(new DoctorListDto(patient), HttpStatus.OK);
+            return new ResponseEntity<>(new DoctorListDto(patient, doctorService.getSpecialists(patient), doctorService.getDietitians(patient)), HttpStatus.OK);
         } else throw new ForbiddenException(user.getId(), "Bệnh nhân không thuộc quyền quản lý");
     }
 

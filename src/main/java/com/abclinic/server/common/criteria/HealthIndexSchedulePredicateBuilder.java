@@ -15,7 +15,7 @@ public class HealthIndexSchedulePredicateBuilder extends EntityPredicateBuilder<
         this.allow(FilterConstant.SCHEDULE_PAT_ID)
                 .allow(FilterConstant.SCHEDULE_PAT_NAME)
                 .allow(FilterConstant.STATUS)
-                .setPredicate(new CustomPredicate<HealthIndexSchedule>())
-                .setPathBuilder(new PathBuilder(HealthIndexSchedule.class, "health_index_schedule"));
+                .setPredicate(new CustomPredicate<>())
+                .setPathBuilder(new PathBuilder<>(HealthIndexSchedule.class, "healthIndexSchedule"));
     }
 }

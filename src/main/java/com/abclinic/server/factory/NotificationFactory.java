@@ -49,13 +49,21 @@ public class NotificationFactory {
         if (sender.getRole().equals(Role.PATIENT)) {
             NotificationMessage message = getMessage(MessageType.REPLY, patient.getPractitioner(), reply);
             list.add(message);
-            list.addAll(patient.getDoctors().stream().map(d -> {
+            list.addAll(patient.getSubDoctors().stream().map(d -> {
                 message.setTargetUser(d);
                 return message;
             }).collect(Collectors.toList())) ;
         } else {
             list.add(getMessage(MessageType.REPLY, patient, reply));
         }
+        return list;
+    }
+
+    public static List<NotificationMessage> getDeactivateMessages(Patient sender) {
+        List<NotificationMessage> list = new ArrayList<>();
+        if (sender.getPractitioner() != null)
+            list.add(getMessage(MessageType.DEACTIVATED, sender.getPractitioner(), sender));
+        sender.getSubDoctors().forEach(d -> list.add(getMessage(MessageType.DEACTIVATED, d, sender)));
         return list;
     }
 }

@@ -33,11 +33,11 @@ public class DoctorListDto {
     @JsonSerialize(using = ViewSerializer.class)
     private List<Dietitian> dietitians;
 
-    public DoctorListDto(Patient patient) {
+    public DoctorListDto(Patient patient, List<Specialist> specialists, List<Dietitian> dietitians) {
         this.patient = patient;
         this.practitioner = patient.getPractitioner();
-        this.specialists = patient.getSpecialists();
-        this.dietitians = patient.getDietitians();
+        this.specialists = specialists;
+        this.dietitians = dietitians;
     }
 
     public Patient getPatient() {

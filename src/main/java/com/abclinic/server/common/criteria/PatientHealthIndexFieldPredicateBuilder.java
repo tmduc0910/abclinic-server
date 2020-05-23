@@ -15,8 +15,9 @@ public class PatientHealthIndexFieldPredicateBuilder extends EntityPredicateBuil
         this.allow(FilterConstant.VAL_PAT_ID)
                 .allow(FilterConstant.VAL_PAT_NAME)
                 .allow(FilterConstant.VAL_INDEX_ID)
+                .allow(FilterConstant.VAL_INDEX_NAME)
                 .allow(FilterConstant.VAL_SCHEDULE_ID)
-                .setPredicate(new CustomPredicate<PatientHealthIndexField>())
-                .setPathBuilder(new PathBuilder(PatientHealthIndexField.class, "patient_health_index_field"));
+                .setPredicate(new CustomPredicate<>())
+                .setPathBuilder(new PathBuilder<>(PatientHealthIndexField.class, "patientHealthIndexField"));
     }
 }

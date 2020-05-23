@@ -49,7 +49,9 @@ public class CustomPredicate<T> {
                 case Constant.NOT_SBL:
                     return path.ne(value);
                 case Constant.AND_SBL:
-                    return path.divide(value).floor().mod(2).eq(1);
+                    if (value != 0)
+                        return path.divide(value).floor().mod(2).eq(1);
+                    return path.eq(0);
             }
         } else if (criteria.getOperation().equalsIgnoreCase(Constant.CONTAIN_SBL)) {
             QPatient qPatient = QPatient.patient;

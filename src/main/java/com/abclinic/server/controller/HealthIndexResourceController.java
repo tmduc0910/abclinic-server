@@ -21,9 +21,11 @@ import com.abclinic.server.model.entity.payload.health_index.HealthIndexField;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
 import com.abclinic.server.model.entity.payload.health_index.PatientHealthIndexField;
 import com.abclinic.server.model.entity.user.*;
+import com.abclinic.server.serializer.ViewSerializer;
 import com.abclinic.server.service.entity.HealthIndexService;
 import com.abclinic.server.service.entity.PatientService;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,7 +149,7 @@ public class HealthIndexResourceController extends CustomController {
                                                 @PathVariable("id") long indexId) {
         HealthIndex index = healthIndexService.getIndex(indexId);
         String fieldName = requestCreateHealthIndexFieldDto.getField();
-        if (!healthIndexService.isFieldExist(index, fieldName) ) {
+        if (!healthIndexService.isFieldExist(index, fieldName)) {
             HealthIndexField f = healthIndexService.getOldField(fieldName);
             if (f == null)
                 f = new HealthIndexField(index, requestCreateHealthIndexFieldDto.getField());
@@ -291,7 +293,7 @@ public class HealthIndexResourceController extends CustomController {
             tags = {"Bệnh nhân", "Chuyên khoa", "Dinh dưỡng"}
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "search", value = "Filter lọc kết quả (ID bệnh nhân, tên bệnh nhân, ID lịch, ID chỉ số)", paramType = "query", example = "status=1,name=admin,"),
+            @ApiImplicitParam(name = "search", value = "Filter lọc kết quả (patient_id, patient_name, schedule_id, index_id, index_name)", paramType = "query", example = "status=1,name=admin,"),
             @ApiImplicitParam(name = "page", value = "Số thứ tự trang", required = true, paramType = "query", allowableValues = "range[1, infinity]", example = "1"),
             @ApiImplicitParam(name = "size", value = "Kích thước trang", required = true, paramType = "query", example = "4")
     })
@@ -301,15 +303,37 @@ public class HealthIndexResourceController extends CustomController {
     })
     @JsonView(Views.Abridged.class)
     public ResponseEntity<Page<PatientHealthIndexField>> getResultList(@ApiIgnore @RequestAttribute("User") User user,
-                                                                       @RequestParam("search") String search,
+                                                                       @RequestParam("search") @Nullable String search,
                                                                        @RequestParam("page") int page,
                                                                        @RequestParam("size") int size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("patient").ascending());
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("schedule.patient").ascending());
         if (StringUtils.isNull(search)) {
-            return new ResponseEntity<>(healthIndexService.getValuesList(user, pageable), HttpStatus.OK);
+            Page<PatientHealthIndexField> p = healthIndexService.getValuesList(user, pageable);
+            return new ResponseEntity<>(p, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(healthIndexService.getValuesList(user, search, pageable), HttpStatus.OK);
         }
+    }
+
+    @GetMapping("/result/{id}")
+    @Restricted(included = {Specialist.class, Dietitian.class})
+    @ApiOperation(
+            value = "Lấy danh sách kết quả thông số sức khỏe theo ID kết quả",
+            notes = "Trả về 200 OK hoặc 404 NOT FOUND",
+            tags = {"Chuyên khoa", "Dinh dưỡng"}
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "ID của kết quả", required = true, paramType = "path", dataType = "long", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Danh sách kết quả"),
+            @ApiResponse(code = 404, message = "Mã ID không tồn tại")
+    })
+    @JsonView(Views.Public.class)
+    @JsonSerialize(using = ViewSerializer.class)
+    public ResponseEntity<List<PatientHealthIndexField>> getResultList(@ApiIgnore @RequestAttribute("User") User user,
+                                                                       @PathVariable("id") long id) {
+        return new ResponseEntity<>(healthIndexService.getValuesList(user, id), HttpStatus.OK);
     }
 
     @PostMapping("/result")

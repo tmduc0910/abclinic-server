@@ -3,13 +3,16 @@ package com.abclinic.server.controller;
 import com.abclinic.server.annotation.authorized.Restricted;
 import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.exception.BadRequestException;
+import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.dto.request.delete.RequestDeleteDto;
 import com.abclinic.server.model.dto.request.post.RequestReactivateUser;
 import com.abclinic.server.model.dto.request.put.RequestUpdateDoctorSpecialtyDto;
 import com.abclinic.server.model.dto.request.put.RequestUpdateUserInfoDto;
 import com.abclinic.server.model.entity.user.*;
+import com.abclinic.server.service.NotificationService;
 import com.abclinic.server.service.entity.DoctorService;
 import com.abclinic.server.service.entity.PatientService;
 import com.abclinic.server.service.entity.SpecialtyService;
@@ -47,6 +50,9 @@ public class UserInfoResourceController extends CustomController {
 
     @Autowired
     private SpecialtyService specialtyService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     public void init() {
@@ -132,6 +138,10 @@ public class UserInfoResourceController extends CustomController {
     public ResponseEntity deleteUser(@ApiIgnore @RequestAttribute("User") User user,
                                      @RequestBody RequestDeleteDto requestDeleteDto) {
         User u = userService.getById(requestDeleteDto.getId());
+        if (u.getRole() == Role.PATIENT) {
+            Patient p = patientService.getById(u.getId());
+            notificationService.makeNotification(u, NotificationFactory.getDeactivateMessages(p));
+        }
         userService.deactivateUser(u);
         return new ResponseEntity(HttpStatus.OK);
     }

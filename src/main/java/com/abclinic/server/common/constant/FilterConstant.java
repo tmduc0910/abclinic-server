@@ -22,7 +22,8 @@ public enum FilterConstant {
     VAL_PAT_ID("schedule.patient.id"),
     VAL_PAT_NAME("schedule.patient.name"),
     VAL_INDEX_ID("schedule.index.id"),
-    VAL_SCHEDULE_ID("schedule.id");
+    VAL_SCHEDULE_ID("schedule.id"),
+    VAL_INDEX_NAME("schedule.index.name");
 
     private final String value;
 
