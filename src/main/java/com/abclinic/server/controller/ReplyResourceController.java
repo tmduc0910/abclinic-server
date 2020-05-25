@@ -61,6 +61,7 @@ public class ReplyResourceController extends CustomController {
             @ApiResponse(code = 400, message = "Mã ID của yêu cầu tư vấn không tồn tại"),
             @ApiResponse(code = 403, message = "Bạn không có quyền tạo câu trả lời cho tư vấn này")
     })
+    @JsonView(Views.Abridged.class)
     public ResponseEntity<Reply> createReply(@ApiIgnore @RequestAttribute("User") User user,
                                              @RequestBody RequestCreateReplyDto requestCreateReplyDto) {
         try {

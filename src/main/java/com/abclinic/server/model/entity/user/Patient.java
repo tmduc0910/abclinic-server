@@ -29,7 +29,7 @@ public class Patient extends User implements IPayload {
     @JsonSerialize(using = ViewSerializer.class)
     private List<Inquiry> inquiries;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "practitioner_id")
     @JsonView(Views.Abridged.class)
     @JsonSerialize(using = ViewSerializer.class)
