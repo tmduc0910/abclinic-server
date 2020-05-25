@@ -3,19 +3,39 @@ package com.abclinic.server.model.dto.request.put;
 /**
  * @author tmduc
  * @package com.abclinic.server.model.dto.request.put
- * @created 5/15/2020 9:37 AM
+ * @created 5/25/2020 9:51 AM
  */
-public class RequestUpdateUserInfoDto {
+public class RequestUpdateOtherUserInfo {
+    private String name;
+    private String dob;
+    private int gender;
     private String email;
     private String phone;
     private String address = null;
     private String description = null;
 
-    public RequestUpdateUserInfoDto(String email, String phone, String address, String description) {
-        this.email = email;
-        this.phone = phone;
-        this.address = address;
-        this.description = description;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+
+    public int getGender() {
+        return gender;
+    }
+
+    public void setGender(int gender) {
+        this.gender = gender;
     }
 
     public String getEmail() {

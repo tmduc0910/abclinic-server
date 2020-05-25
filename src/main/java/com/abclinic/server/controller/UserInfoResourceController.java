@@ -5,11 +5,13 @@ import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.UserStatus;
+import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.dto.request.delete.RequestDeleteDto;
 import com.abclinic.server.model.dto.request.post.RequestReactivateUser;
 import com.abclinic.server.model.dto.request.put.RequestUpdateDoctorSpecialtyDto;
+import com.abclinic.server.model.dto.request.put.RequestUpdateOtherUserInfo;
 import com.abclinic.server.model.dto.request.put.RequestUpdateUserInfoDto;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
@@ -26,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -112,17 +115,27 @@ public class UserInfoResourceController extends CustomController {
     @Restricted(included = Coordinator.class)
     @ApiOperation(
             value = "Sửa thông tin người dùng",
-            notes = "Trả về 200 OK",
+            notes = "Trả về 200 OK hoặc 400 BAD REQUEST",
             tags = "Điều phối viên"
     )
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Chỉnh sửa thành công")
+            @ApiResponse(code = 200, message = "Chỉnh sửa thành công"),
+            @ApiResponse(code = 400, message = "Format ngày tháng không hợp lệ")
     })
     public ResponseEntity<? extends User> editUserInfo(@ApiIgnore @RequestAttribute("User") User user,
-                                   @RequestBody RequestUpdateUserInfoDto requestUpdateUserInfoDto,
-                                   @PathVariable("id") long id) {
+                                                       @RequestBody RequestUpdateOtherUserInfo requestUpdateOtherUserInfo,
+                                                       @PathVariable("id") long id) {
         User u = userService.getById(id);
-        return editUserInfo(u, requestUpdateUserInfoDto);
+        try {
+            u.setName(requestUpdateOtherUserInfo.getName());
+            u.setDateOfBirth(DateTimeUtils.parseDate(requestUpdateOtherUserInfo.getDob()));
+            return editUserInfo(u, new RequestUpdateUserInfoDto(requestUpdateOtherUserInfo.getEmail(),
+                    requestUpdateOtherUserInfo.getPhone(),
+                    requestUpdateOtherUserInfo.getAddress(),
+                    requestUpdateOtherUserInfo.getDescription()));
+        } catch (DateTimeParseException e) {
+            throw new BadRequestException(user.getId(), "Format ngày tháng không hợp lệ");
+        }
     }
 
     @DeleteMapping("/user")

@@ -45,16 +45,17 @@ public class NotificationFactory {
 
     public static List<NotificationMessage> getReplyMessages(User sender, Reply reply) {
         List<NotificationMessage> list = new ArrayList<>();
-        Patient patient = reply.getInquiry().getPatient();
+        Inquiry inquiry = reply.getInquiry();
+        Patient patient = inquiry.getPatient();
         if (sender.getRole().equals(Role.PATIENT)) {
-            NotificationMessage message = getMessage(MessageType.REPLY, patient.getPractitioner(), reply);
+            NotificationMessage message = getMessage(MessageType.REPLY, patient.getPractitioner(), inquiry);
             list.add(message);
             list.addAll(patient.getSubDoctors().stream().map(d -> {
                 message.setTargetUser(d);
                 return message;
             }).collect(Collectors.toList())) ;
         } else {
-            list.add(getMessage(MessageType.REPLY, patient, reply));
+            list.add(getMessage(MessageType.REPLY, patient, inquiry));
         }
         return list;
     }
