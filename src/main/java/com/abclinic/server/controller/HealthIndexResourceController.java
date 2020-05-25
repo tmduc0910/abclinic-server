@@ -10,6 +10,7 @@ import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.model.dto.IndexResultRequestDto;
 import com.abclinic.server.model.dto.IndexResultResponseDto;
+import com.abclinic.server.model.dto.PageDto;
 import com.abclinic.server.model.dto.request.delete.RequestDeleteDto;
 import com.abclinic.server.model.dto.request.post.RequestCreateHealthIndexDto;
 import com.abclinic.server.model.dto.request.post.RequestCreateHealthIndexFieldDto;
@@ -302,14 +303,13 @@ public class HealthIndexResourceController extends CustomController {
             @ApiResponse(code = 404, message = "Không tìm thấy kết quả nào đúng yêu cầu")
     })
     @JsonView(Views.Abridged.class)
-    public ResponseEntity<Page<PatientHealthIndexField>> getResultList(@ApiIgnore @RequestAttribute("User") User user,
+    public ResponseEntity<PageDto<PatientHealthIndexField>> getResultList(@ApiIgnore @RequestAttribute("User") User user,
                                                                        @RequestParam("search") @Nullable String search,
                                                                        @RequestParam("page") int page,
                                                                        @RequestParam("size") int size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("schedule.patient").ascending());
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
         if (StringUtils.isNull(search)) {
-            Page<PatientHealthIndexField> p = healthIndexService.getValuesList(user, pageable);
-            return new ResponseEntity<>(p, HttpStatus.OK);
+            return new ResponseEntity<>(healthIndexService.getValuesList(user, pageable), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(healthIndexService.getValuesList(user, search, pageable), HttpStatus.OK);
         }

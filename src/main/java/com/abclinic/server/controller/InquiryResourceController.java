@@ -120,7 +120,7 @@ public class InquiryResourceController extends CustomController {
                                                         @RequestParam(value = "assigned", defaultValue = "false") boolean assigned,
                                                         @RequestParam("page") int page,
                                                         @RequestParam("size") int size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt"));
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
         return new ResponseEntity<>(inquiryService.getList(user, assigned, pageable), HttpStatus.OK);
     }
 

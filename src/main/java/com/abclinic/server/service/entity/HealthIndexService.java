@@ -5,6 +5,7 @@ import com.abclinic.server.common.criteria.HealthIndexSchedulePredicateBuilder;
 import com.abclinic.server.common.criteria.PatientHealthIndexFieldPredicateBuilder;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
+import com.abclinic.server.model.dto.PageDto;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndex;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexField;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
@@ -18,14 +19,18 @@ import com.abclinic.server.service.entity.component.health_index.HealthIndexFiel
 import com.abclinic.server.service.entity.component.health_index.HealthIndexScheduleComponentService;
 import com.abclinic.server.service.entity.component.health_index.PatientHealthIndexFieldComponentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author tmduc
@@ -96,8 +101,18 @@ public class HealthIndexService {
         return patientHealthIndexFieldComponentService.getById(id);
     }
 
-    public Page<PatientHealthIndexField> getValuesList(User user, Pageable pageable) {
-        return patientHealthIndexFieldComponentService.getList(user, pageable);
+    public PageDto<PatientHealthIndexField> getValuesList(User user, Pageable pageable) {
+        Page<Long> tags = getTags(pageable);
+        List<PatientHealthIndexField> res = patientHealthIndexFieldComponentService.getList(user, tags.getContent());
+        return new PageDto<>(res,
+                tags.getTotalElements(),
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                pageable.getSort());
+    }
+
+    private Page<Long> getTags(Pageable pageable) {
+        return patientHealthIndexFieldComponentService.getTagIds(pageable);
     }
 
     public Page<PatientHealthIndexField> getValuesList(HealthIndexSchedule schedule, Pageable pageable) {
@@ -108,8 +123,23 @@ public class HealthIndexService {
         return patientHealthIndexFieldComponentService.getList(field, pageable);
     }
 
-    public Page<PatientHealthIndexField> getValuesList(User user, String search, Pageable pageable) {
-        return patientHealthIndexFieldComponentService.getList(user, search, new PatientHealthIndexFieldPredicateBuilder(), pageable);
+    public PageDto<PatientHealthIndexField> getValuesList(User user, String search, Pageable pageable) {
+        List<PatientHealthIndexField> res = new ArrayList<>();
+        List<PatientHealthIndexField> p = patientHealthIndexFieldComponentService.getList(user, search, new PatientHealthIndexFieldPredicateBuilder(), pageable.getSort());
+        List<Long> tags = p
+                .stream()
+                .map(PatientHealthIndexField::getTagId)
+                .distinct()
+                .collect(Collectors.toList());
+        if (!tags.isEmpty()) {
+            List<Long> temp = tags.subList(pageable.getPageNumber() * pageable.getPageSize(), (pageable.getPageNumber() + 1) * pageable.getPageSize());
+            res = p.stream().filter(i -> temp.contains(i.getTagId())).collect(Collectors.toList());
+        }
+        return new PageDto<>(res,
+                tags.size(),
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                pageable.getSort());
     }
 
     public List<PatientHealthIndexField> getValuesList(User user, long id) {
@@ -141,7 +171,7 @@ public class HealthIndexService {
     public HealthIndex createIndex(String indexName, String description, String[] fieldNames) {
         HealthIndex index = new HealthIndex(indexName, description);
         index = (HealthIndex) save(index);
-        for (String fieldName: fieldNames) {
+        for (String fieldName : fieldNames) {
             HealthIndexField field = new HealthIndexField(index, fieldName);
             index.addField(field);
             save(field);

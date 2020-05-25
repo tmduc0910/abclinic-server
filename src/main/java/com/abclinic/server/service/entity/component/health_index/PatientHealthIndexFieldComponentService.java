@@ -7,7 +7,6 @@ import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexField;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
 import com.abclinic.server.model.entity.payload.health_index.PatientHealthIndexField;
-import com.abclinic.server.model.entity.user.Doctor;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.PatientHealthIndexFieldRepository;
 import com.abclinic.server.service.entity.DoctorService;
@@ -17,6 +16,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -51,21 +51,36 @@ public class PatientHealthIndexFieldComponentService implements IDataMapperServi
     public Page<PatientHealthIndexField> getList(User user, Pageable pageable) {
         switch (user.getRole()) {
             case PATIENT:
-                return patientHealthIndexFieldRepository.findBySchedule_Patient_Id(user.getId(), pageable)
+                return patientHealthIndexFieldRepository.findBySchedulePatientId(user.getId(), pageable)
                         .orElseThrow(NotFoundException::new);
             case PRACTITIONER:
             case SPECIALIST:
             case DIETITIAN:
-                return patientHealthIndexFieldRepository.findBySchedule_Doctor_Id(user.getId(), pageable)
+                return patientHealthIndexFieldRepository.findByScheduleDoctorId(user.getId(), pageable)
                         .orElseThrow(NotFoundException::new);
             default:
                 return null;
         }
     }
 
-    @Override
     @Transactional
-    public Page<PatientHealthIndexField> getList(User user, String search, EntityPredicateBuilder builder, Pageable pageable) {
+    public List<PatientHealthIndexField> getList(User user, List<Long> tagIds) {
+        switch (user.getRole()) {
+            case PATIENT:
+                return patientHealthIndexFieldRepository.findBySchedulePatientIdAndTagIdIn(user.getId(), tagIds)
+                        .orElseThrow(NotFoundException::new);
+            case PRACTITIONER:
+            case SPECIALIST:
+            case DIETITIAN:
+                return patientHealthIndexFieldRepository.findByScheduleDoctorIdAndTagIdIn(user.getId(), tagIds)
+                        .orElseThrow(NotFoundException::new);
+            default:
+                return null;
+        }
+    }
+
+    @Transactional
+    public List<PatientHealthIndexField> getList(User user, String search, EntityPredicateBuilder builder, Sort sort) {
         String key = search;
         if (search.contains("patient_id"))
             key = search.replace("patient_id", FilterConstant.VAL_PAT_ID.getValue());
@@ -80,8 +95,8 @@ public class PatientHealthIndexFieldComponentService implements IDataMapperServi
         PatientHealthIndexFieldPredicateBuilder predBuilder = (PatientHealthIndexFieldPredicateBuilder) builder.init(key);
         BooleanExpression expression = predBuilder.build();
         if (expression != null)
-            return patientHealthIndexFieldRepository.findAll(expression, pageable);
-        return patientHealthIndexFieldRepository.findAll(pageable);
+            return patientHealthIndexFieldRepository.findAll(expression, sort);
+        return patientHealthIndexFieldRepository.findAll(sort);
     }
 
     @Transactional
@@ -100,6 +115,22 @@ public class PatientHealthIndexFieldComponentService implements IDataMapperServi
     public List<PatientHealthIndexField> getList(User user, long id) {
         return patientHealthIndexFieldRepository.findByScheduleDoctorAndTagId(user, id)
                 .orElseThrow(NotFoundException::new);
+    }
+
+    @Transactional
+    public Page<Long> getTagIds(Pageable pageable) {
+        return patientHealthIndexFieldRepository.findDistinctTagId(pageable);
+    }
+
+
+    @Transactional
+    public int countByTag(List<Long> tags) {
+        return patientHealthIndexFieldRepository.countIdByTag(tags);
+    }
+
+    @Transactional
+    public Page<PatientHealthIndexField> getAll(Pageable pageable) {
+        return patientHealthIndexFieldRepository.findAll(pageable);
     }
 
     @Override

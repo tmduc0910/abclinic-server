@@ -54,7 +54,7 @@ public class Inquiry extends IPayloadIpml {
     @JsonView(Views.Abridged.class)
     private int type;
 
-    @JsonView(Views.Confidential.class)
+    @JsonView(Views.Private.class)
     private int status;
 
     @JsonView(Views.Public.class)

@@ -5,11 +5,14 @@ import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule
 import com.abclinic.server.model.entity.payload.health_index.PatientHealthIndexField;
 import com.abclinic.server.model.entity.payload.health_index.QPatientHealthIndexField;
 import com.abclinic.server.model.entity.user.User;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.core.types.dsl.StringPath;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
@@ -31,11 +34,27 @@ public interface PatientHealthIndexFieldRepository extends JpaRepository<Patient
 
     Optional<Page<PatientHealthIndexField>> findBySchedule(HealthIndexSchedule schedule, Pageable pageable);
 
-    Optional<Page<PatientHealthIndexField>> findBySchedule_Patient_Id(long id, Pageable pageable);
+    Optional<Page<PatientHealthIndexField>> findByScheduleDoctorId(long id, Pageable pageable);
 
-    Optional<Page<PatientHealthIndexField>> findBySchedule_Doctor_Id(long id, Pageable pageable);
+    Optional<Page<PatientHealthIndexField>> findBySchedulePatientId(long id, Pageable pageable);
+
+    Optional<List<PatientHealthIndexField>> findBySchedulePatientIdAndTagIdIn(long id, List<Long> tagIds);
+
+    Optional<List<PatientHealthIndexField>> findByScheduleDoctorIdAndTagIdIn(long id, List<Long> tagsIds);
 
     Optional<List<PatientHealthIndexField>> findByScheduleDoctorAndTagId(User doctor, long id);
+
+    List<PatientHealthIndexField> findAll(Predicate predicate);
+
+    List<PatientHealthIndexField> findAll(Predicate predicate, Sort sort);
+
+    List<PatientHealthIndexField> findAll(Sort sort);
+
+    @Query(value = "select distinct p.tagId from PatientHealthIndexField p")
+    Page<Long> findDistinctTagId(Pageable pageable);
+
+    @Query(value = "select count(p.id) from PatientHealthIndexField p where p.tagId in ?1")
+    int countIdByTag(List<Long> tagsId);
 
     @Override
     default void customize(QuerydslBindings querydslBindings, QPatientHealthIndexField qPatientHealthIndexField) {
