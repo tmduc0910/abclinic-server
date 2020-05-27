@@ -58,15 +58,12 @@ public class NotificationFactory {
 //            list.add(getMessage(MessageType.REPLY, patient, inquiry));
 //        }
 
-        NotificationMessage message = getMessage(MessageType.REPLY, patient.getPractitioner(), inquiry);
-        list.add(message);
-        list.addAll(patient.getSubDoctors().stream().map(d -> {
-            message.setTargetUser(d);
-            return message;
-        }).collect(Collectors.toList()));
+        list.add(getMessage(MessageType.REPLY, patient.getPractitioner(), inquiry));
+        list.addAll(patient.getSubDoctors().stream()
+                .map(d -> getMessage(MessageType.REPLY, d, inquiry))
+                .collect(Collectors.toList()));
         if (!sender.getRole().equals(Role.PATIENT)) {
-            message.setTargetUser(patient);
-            list.add(message);
+            list.add(getMessage(MessageType.REPLY, patient, inquiry));
             list.removeIf(m -> m.getTargetUser().equals(sender));
         }
         return list;
