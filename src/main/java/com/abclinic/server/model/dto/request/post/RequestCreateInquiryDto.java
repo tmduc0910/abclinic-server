@@ -38,12 +38,10 @@ public class RequestCreateInquiryDto {
         return content;
     }
 
-    @JsonProperty("album_id")
     public void setContent(String content) {
         this.content = content;
     }
 
-    @JsonProperty("album_id")
     public void setDate(String date) {
         this.date = date;
     }
