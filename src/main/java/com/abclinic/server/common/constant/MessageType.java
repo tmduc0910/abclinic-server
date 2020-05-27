@@ -16,7 +16,8 @@ public enum MessageType {
     SCHEDULE(7, "đặt lịch gửi chỉ số sức khỏe"),
     SEND_INDEX(8, "gửi chỉ số sức khỏe"),
     SCHEDULE_REMINDER(9, "có lịch gửi chỉ số sức khỏe phải nộp"),
-    DEACTIVATED(10, "đã được hủy kích hoạt");
+    DEACTIVATED(10, "đã được hủy kích hoạt"),
+    UPDATE_ADVICE(11, "cập nhật lại tư vấn");
 
     private int value;
     private String action;

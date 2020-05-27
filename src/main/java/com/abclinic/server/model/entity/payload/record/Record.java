@@ -41,6 +41,7 @@ public class Record extends IPayloadIpml {
 
     @CreationTimestamp
     @JsonView(Views.Abridged.class)
+    @JsonSerialize(using = ViewSerializer.class)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp

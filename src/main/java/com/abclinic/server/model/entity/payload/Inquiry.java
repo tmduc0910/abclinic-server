@@ -58,14 +58,14 @@ public class Inquiry extends IPayloadIpml {
     private int status;
 
     @JsonView(Views.Public.class)
-    @JsonFormat(pattern = Constant.DATE_TIME_FORMAT)
+//    @JsonFormat(pattern = Constant.DATE_TIME_FORMAT)
     private LocalDateTime date;
 
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 

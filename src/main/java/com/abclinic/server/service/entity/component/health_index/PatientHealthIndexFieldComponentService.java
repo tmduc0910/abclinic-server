@@ -4,6 +4,7 @@ import com.abclinic.server.common.constant.FilterConstant;
 import com.abclinic.server.common.criteria.EntityPredicateBuilder;
 import com.abclinic.server.common.criteria.PatientHealthIndexFieldPredicateBuilder;
 import com.abclinic.server.exception.NotFoundException;
+import com.abclinic.server.model.dto.TagDto;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexField;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
 import com.abclinic.server.model.entity.payload.health_index.PatientHealthIndexField;
@@ -118,7 +119,7 @@ public class PatientHealthIndexFieldComponentService implements IDataMapperServi
     }
 
     @Transactional
-    public Page<Long> getTagIds(Pageable pageable) {
+    public Page<TagDto> getTagIds(Pageable pageable) {
         return patientHealthIndexFieldRepository.findDistinctTagId(pageable);
     }
 

@@ -1,5 +1,8 @@
 package com.abclinic.server;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -26,4 +29,13 @@ public class ServerApplication {
             }
         };
     }
+
+//    @Bean
+//    public ObjectMapper getObjectMapper() {
+//        ObjectMapper mapper = new ObjectMapper();
+//        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
+//        mapper.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+//        mapper.registerModule(new JavaTimeModule());
+//        return mapper;
+//    }
 }

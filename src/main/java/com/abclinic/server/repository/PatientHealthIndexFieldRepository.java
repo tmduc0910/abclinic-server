@@ -1,5 +1,6 @@
 package com.abclinic.server.repository;
 
+import com.abclinic.server.model.dto.TagDto;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexField;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
 import com.abclinic.server.model.entity.payload.health_index.PatientHealthIndexField;
@@ -50,8 +51,8 @@ public interface PatientHealthIndexFieldRepository extends JpaRepository<Patient
 
     List<PatientHealthIndexField> findAll(Sort sort);
 
-    @Query(value = "select distinct p.tagId from PatientHealthIndexField p")
-    Page<Long> findDistinctTagId(Pageable pageable);
+    @Query(value = "select distinct new com.abclinic.server.model.dto.TagDto(p.tagId, p.createdAt) from PatientHealthIndexField p")
+    Page<TagDto> findDistinctTagId(Pageable pageable);
 
     @Query(value = "select count(p.id) from PatientHealthIndexField p where p.tagId in ?1")
     int countIdByTag(List<Long> tagsId);

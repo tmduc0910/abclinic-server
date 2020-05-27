@@ -6,6 +6,7 @@ import com.abclinic.server.common.criteria.PatientHealthIndexFieldPredicateBuild
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.dto.PageDto;
+import com.abclinic.server.model.dto.TagDto;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndex;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexField;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
@@ -102,8 +103,13 @@ public class HealthIndexService {
     }
 
     public PageDto<PatientHealthIndexField> getValuesList(User user, Pageable pageable) {
-        Page<Long> tags = getTags(pageable);
-        List<PatientHealthIndexField> res = patientHealthIndexFieldComponentService.getList(user, tags.getContent());
+        Page<TagDto> tags = getTags(pageable);
+        List<PatientHealthIndexField> res = patientHealthIndexFieldComponentService
+                .getList(user, tags
+                        .getContent()
+                        .stream()
+                        .map(TagDto::getTagId)
+                        .collect(Collectors.toList()));
         return new PageDto<>(res,
                 tags.getTotalElements(),
                 pageable.getPageNumber(),
@@ -111,7 +117,7 @@ public class HealthIndexService {
                 pageable.getSort());
     }
 
-    private Page<Long> getTags(Pageable pageable) {
+    private Page<TagDto> getTags(Pageable pageable) {
         return patientHealthIndexFieldComponentService.getTagIds(pageable);
     }
 

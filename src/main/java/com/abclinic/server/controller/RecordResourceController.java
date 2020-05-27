@@ -93,14 +93,15 @@ public class RecordResourceController extends CustomController {
                             requestCreateRecordDto.getPrescription(),
                             (Dietitian) doctorService.getById(user.getId()));
                     record.setStatus(PayloadStatus.PROCESSED);
-                }
-                else
+                } else
                     throw new ForbiddenException(user.getId(), "Chỉ có bác sĩ dinh dưỡng mới có thể tư vấn dinh dưỡng");
             }
             inquiry.setStatus(PayloadStatus.PROCESSED);
             inquiryService.save(inquiry);
             record = recordService.save(record);
             notificationService.makeNotification(user, NotificationFactory.getMessage(MessageType.ADVICE, inquiry.getPatient().getPractitioner(), record));
+            if (inquiry.getType() == RecordType.DIET.getValue())
+                notificationService.makeNotification(user, NotificationFactory.getMessage(MessageType.ADVICE, inquiry.getPatient(), record));
             return new ResponseEntity<>(record, HttpStatus.CREATED);
         } catch (NotFoundException e) {
             throw new BadRequestException(user.getId(), "Mã ID của yêu cầu tư vấn không tồn tại");
@@ -124,12 +125,20 @@ public class RecordResourceController extends CustomController {
         try {
             Record record = recordService.getById(requestUpdateRecordDto.getId());
             if (record.getInquiry().of(user)) {
+                Patient patient = record.getInquiry().getPatient();
                 record.setNote(requestUpdateRecordDto.getNote());
                 if (record.getRecordType() == RecordType.MEDICAL.getValue())
                     ((MedicalRecord) record).setDiagnose(requestUpdateRecordDto.getDiagnose());
                 record.setPrescription(requestUpdateRecordDto.getPrescription());
-                if (user.getRole() == Role.PRACTITIONER)
+
+                if (record.getRecordType() == RecordType.MEDICAL.getValue() &&
+                        user.getRole() == Role.PRACTITIONER &&
+                        record.getStatus() == PayloadStatus.UNREAD) {
                     record.setStatus(PayloadStatus.PROCESSED);
+                    notificationService.makeNotification(((MedicalRecord) record).getSpecialist(),
+                            NotificationFactory.getMessage(MessageType.ADVICE, patient, record));
+                } else notificationService.makeNotification(user,
+                        NotificationFactory.getMessage(MessageType.UPDATE_ADVICE, patient, record));
                 record = recordService.save(record);
             } else throw new ForbiddenException(user.getId(), "Bác sĩ không phụ trách bệnh nhân này");
             return new ResponseEntity<>(record, HttpStatus.OK);
