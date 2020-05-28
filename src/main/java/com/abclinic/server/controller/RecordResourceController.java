@@ -108,6 +108,7 @@ public class RecordResourceController extends CustomController {
         }
     }
 
+    //TODO: Đa khoa backup lại tư vấn
     @PutMapping("/records")
     @Restricted(included = Practitioner.class)
     @ApiOperation(

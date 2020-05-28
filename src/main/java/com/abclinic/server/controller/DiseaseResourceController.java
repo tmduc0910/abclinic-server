@@ -10,6 +10,7 @@ import com.abclinic.server.model.dto.request.put.RequestUpdateDiseaseDto;
 import com.abclinic.server.model.entity.Disease;
 import com.abclinic.server.model.entity.user.Coordinator;
 import com.abclinic.server.model.entity.user.Patient;
+import com.abclinic.server.model.entity.user.Practitioner;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.service.entity.DiseaseService;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -69,11 +70,11 @@ public class DiseaseResourceController extends CustomController {
     }
 
     @PostMapping("")
-    @Restricted(included = Coordinator.class)
+    @Restricted(included = {Coordinator.class, Practitioner.class})
     @ApiOperation(
             value = "Tạo căn bệnh mới",
             notes = "Trả về 201 CREATED hoặc 400 BAD REQUEST",
-            tags = "Điều phối viên"
+            tags = {"Điều phối viên", "Đa khoa"}
     )
     @ApiResponses({
             @ApiResponse(code = 201, message = "Tạo mới thành công"),
