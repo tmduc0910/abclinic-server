@@ -5,7 +5,9 @@ import com.abclinic.server.common.criteria.HealthIndexSchedulePredicateBuilder;
 import com.abclinic.server.common.criteria.PatientHealthIndexFieldPredicateBuilder;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
+import com.abclinic.server.model.dto.GetIndexResultResponseDto;
 import com.abclinic.server.model.dto.PageDto;
+import com.abclinic.server.model.dto.ResultDto;
 import com.abclinic.server.model.dto.TagDto;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndex;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexField;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -102,16 +105,17 @@ public class HealthIndexService {
         return patientHealthIndexFieldComponentService.getById(id);
     }
 
-    public PageDto<PatientHealthIndexField> getValuesList(User user, Pageable pageable) {
+    public PageDto<GetIndexResultResponseDto> getValuesList(User user, Pageable pageable) {
         Page<TagDto> tags = getTags(pageable);
+        List<Long> tagIds = new LinkedHashSet<>(tags.getContent())
+                .stream()
+                .map(TagDto::getTagId)
+                .collect(Collectors.toList());
         List<PatientHealthIndexField> res = patientHealthIndexFieldComponentService
-                .getList(user, tags
-                        .getContent()
-                        .stream()
-                        .map(TagDto::getTagId)
-                        .collect(Collectors.toList()));
-        return new PageDto<>(res,
-                tags.getTotalElements(),
+                .getList(user, tagIds);
+        List<ResultDto> dtos = res.stream().map(ResultDto::new).collect(Collectors.toList());
+        return new PageDto<>(getResultResponseDto(res, tagIds),
+                patientHealthIndexFieldComponentService.countDistinctTagId(),
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 pageable.getSort());
@@ -129,23 +133,31 @@ public class HealthIndexService {
         return patientHealthIndexFieldComponentService.getList(field, pageable);
     }
 
-    public PageDto<PatientHealthIndexField> getValuesList(User user, String search, Pageable pageable) {
+    public PageDto<GetIndexResultResponseDto> getValuesList(User user, String search, Pageable pageable) {
         List<PatientHealthIndexField> res = new ArrayList<>();
+        List<Long> temp;
+
         List<PatientHealthIndexField> p = patientHealthIndexFieldComponentService.getList(user, search, new PatientHealthIndexFieldPredicateBuilder(), pageable.getSort());
         List<Long> tags = p
                 .stream()
                 .map(PatientHealthIndexField::getTagId)
                 .distinct()
                 .collect(Collectors.toList());
+        PageDto<GetIndexResultResponseDto> r = new PageDto<>(tags.size(), pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
         if (!tags.isEmpty()) {
-            List<Long> temp = tags.subList(pageable.getPageNumber() * pageable.getPageSize(), (pageable.getPageNumber() + 1) * pageable.getPageSize());
+            temp = tags.subList(pageable.getPageNumber() * pageable.getPageSize(), (pageable.getPageNumber() + 1) * pageable.getPageSize());
             res = p.stream().filter(i -> temp.contains(i.getTagId())).collect(Collectors.toList());
+            r.setContent(getResultResponseDto(res, temp));
         }
-        return new PageDto<>(res,
-                tags.size(),
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                pageable.getSort());
+        return r;
+    }
+
+    private List<GetIndexResultResponseDto> getResultResponseDto(List<PatientHealthIndexField> root, List<Long> tags) {
+        List<ResultDto> dtos = root.stream().map(ResultDto::new).collect(Collectors.toList());
+        return tags.stream().map(t -> {
+            List<ResultDto> temp = dtos.stream().filter(d -> d.getTagId() == t).collect(Collectors.toList());
+            return new GetIndexResultResponseDto(t, temp.get(0).getSchedule(), temp);
+        }).collect(Collectors.toList());
     }
 
     public List<PatientHealthIndexField> getValuesList(User user, long id) {

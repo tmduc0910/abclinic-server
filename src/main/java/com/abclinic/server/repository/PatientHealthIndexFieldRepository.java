@@ -57,6 +57,9 @@ public interface PatientHealthIndexFieldRepository extends JpaRepository<Patient
     @Query(value = "select count(p.id) from PatientHealthIndexField p where p.tagId in ?1")
     int countIdByTag(List<Long> tagsId);
 
+    @Query(value = "select count(distinct p.tagId) from PatientHealthIndexField p")
+    int countDistinctTagId();
+
     @Override
     default void customize(QuerydslBindings querydslBindings, QPatientHealthIndexField qPatientHealthIndexField) {
         querydslBindings.bind(String.class)

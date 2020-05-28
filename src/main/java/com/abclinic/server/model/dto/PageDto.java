@@ -2,6 +2,7 @@ package com.abclinic.server.model.dto;
 
 import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,6 +21,16 @@ public class PageDto<T> {
 
     public PageDto(List<T> content, long totalElements, int page, int size, Sort sort) {
         this.content = content;
+        this.totalElements = totalElements;
+        this.page = page;
+        this.size = size;
+        this.sort = sort;
+        this.totalPages = (int) Math.ceil((double) totalElements / size);
+        this.isLast = page >= totalPages - 1;
+    }
+
+    public PageDto(long totalElements, int page, int size, Sort sort) {
+        this.content = new ArrayList<>();
         this.totalElements = totalElements;
         this.page = page;
         this.size = size;

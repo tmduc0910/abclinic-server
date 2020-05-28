@@ -30,7 +30,7 @@ public class PatientHealthIndexField extends IPayloadIpml {
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = HealthIndexField.class)
     @JoinColumn(name = "field_id")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Abridged.class)
     @JsonSerialize(using = ViewSerializer.class)
     private HealthIndexField field;
 

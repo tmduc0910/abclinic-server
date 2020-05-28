@@ -76,6 +76,8 @@ public class RecordResourceController extends CustomController {
                                                          @RequestBody RequestCreateRecordDto requestCreateRecordDto) {
         try {
             Inquiry inquiry = inquiryService.getById(requestCreateRecordDto.getInquiryId());
+            inquiry.setStatus(PayloadStatus.PROCESSED);
+            inquiry = inquiryService.save(inquiry);
             Record record;
             if (inquiry.getType() == RecordType.MEDICAL.getValue()) {
                 if (user.getRole() == Role.SPECIALIST)
@@ -96,8 +98,6 @@ public class RecordResourceController extends CustomController {
                 } else
                     throw new ForbiddenException(user.getId(), "Chỉ có bác sĩ dinh dưỡng mới có thể tư vấn dinh dưỡng");
             }
-            inquiry.setStatus(PayloadStatus.PROCESSED);
-            inquiryService.save(inquiry);
             record = recordService.save(record);
             notificationService.makeNotification(user, NotificationFactory.getMessage(MessageType.ADVICE, inquiry.getPatient().getPractitioner(), record));
             if (inquiry.getType() == RecordType.DIET.getValue())

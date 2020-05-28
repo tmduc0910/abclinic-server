@@ -123,6 +123,10 @@ public class PatientHealthIndexFieldComponentService implements IDataMapperServi
         return patientHealthIndexFieldRepository.findDistinctTagId(pageable);
     }
 
+    public int countDistinctTagId() {
+        return patientHealthIndexFieldRepository.countDistinctTagId();
+    }
+
 
     @Transactional
     public int countByTag(List<Long> tags) {

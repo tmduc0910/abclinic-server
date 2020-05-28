@@ -8,6 +8,7 @@ import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.common.utils.StringUtils;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
+import com.abclinic.server.model.dto.GetIndexResultResponseDto;
 import com.abclinic.server.model.dto.IndexResultRequestDto;
 import com.abclinic.server.model.dto.IndexResultResponseDto;
 import com.abclinic.server.model.dto.PageDto;
@@ -303,10 +304,10 @@ public class HealthIndexResourceController extends CustomController {
             @ApiResponse(code = 404, message = "Không tìm thấy kết quả nào đúng yêu cầu")
     })
     @JsonView(Views.Abridged.class)
-    public ResponseEntity<PageDto<PatientHealthIndexField>> getResultList(@ApiIgnore @RequestAttribute("User") User user,
-                                                                       @RequestParam("search") @Nullable String search,
-                                                                       @RequestParam("page") int page,
-                                                                       @RequestParam("size") int size) {
+    public ResponseEntity<PageDto<GetIndexResultResponseDto>> getResultList(@ApiIgnore @RequestAttribute("User") User user,
+                                                                            @RequestParam("search") @Nullable String search,
+                                                                            @RequestParam("page") int page,
+                                                                            @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
         if (StringUtils.isNull(search)) {
             return new ResponseEntity<>(healthIndexService.getValuesList(user, pageable), HttpStatus.OK);
