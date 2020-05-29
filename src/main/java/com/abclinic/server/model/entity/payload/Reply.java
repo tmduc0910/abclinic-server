@@ -2,7 +2,7 @@ package com.abclinic.server.model.entity.payload;
 
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.model.entity.user.User;
-import com.abclinic.server.serializer.ViewSerializer;
+import com.abclinic.server.serializer.AbridgedViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.CreationTimestamp;
@@ -18,13 +18,13 @@ public class Reply extends IPayloadIpml {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inquiry_id")
     @JsonView(Views.Private.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private Inquiry inquiry;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private User user;
 
     @JsonView(Views.Abridged.class)

@@ -5,16 +5,12 @@ import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.RoleValue;
 import com.abclinic.server.model.entity.payload.IPayload;
 import com.abclinic.server.model.entity.payload.Inquiry;
-import com.abclinic.server.serializer.ViewSerializer;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.abclinic.server.serializer.AbridgedViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,13 +24,13 @@ public class Patient extends User implements IPayload {
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Inquiry.class, mappedBy = "patient")
     @JsonView(Views.Private.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private List<Inquiry> inquiries;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "practitioner_id")
     @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private Practitioner practitioner;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -44,7 +40,7 @@ public class Patient extends User implements IPayload {
             inverseJoinColumns = @JoinColumn(name = "doctor_id")
     )
     @JsonView(Views.Confidential.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private List<User> subDoctors;
 
     public Patient() {
@@ -92,7 +88,7 @@ public class Patient extends User implements IPayload {
     }
 
     @JsonView(Views.Private.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     public List<User> getSpecialists() {
         return subDoctors.stream()
                 .filter(u -> u.getRole().equals(Role.SPECIALIST))
@@ -100,7 +96,7 @@ public class Patient extends User implements IPayload {
     }
 
     @JsonView(Views.Private.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     public List<User> getDietitians() {
         return subDoctors.stream()
                 .filter(u -> u.getRole().equals(Role.DIETITIAN))

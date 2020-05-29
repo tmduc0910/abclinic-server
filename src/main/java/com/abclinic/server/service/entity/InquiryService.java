@@ -43,8 +43,11 @@ public class InquiryService implements IDataMapperService<Inquiry> {
     @Transactional
     public Inquiry getById(long id) throws NotFoundException {
         Inquiry inquiry = inquiryRepository.findById(id).orElseThrow(NotFoundException::new);
-        inquiry.setStatus(PayloadStatus.ON_HOLD);
-        return save(inquiry);
+        if (inquiry.getStatus() == PayloadStatus.UNREAD) {
+            inquiry.setStatus(PayloadStatus.ON_HOLD);
+            inquiry = save(inquiry);
+        }
+        return inquiry;
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.abclinic.server.model.entity.payload.health_index;
 
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.model.entity.payload.IPayloadIpml;
-import com.abclinic.server.serializer.ViewSerializer;
+import com.abclinic.server.serializer.AbridgedViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -28,7 +28,7 @@ public class HealthIndex extends IPayloadIpml {
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = HealthIndexField.class, mappedBy = "healthIndex", cascade = CascadeType.ALL)
     @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private List<HealthIndexField> fields = new ArrayList<>();
 
     public HealthIndex() {

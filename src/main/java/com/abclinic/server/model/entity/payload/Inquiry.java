@@ -1,21 +1,18 @@
 package com.abclinic.server.model.entity.payload;
 
 import com.abclinic.server.common.base.Views;
-import com.abclinic.server.common.constant.Constant;
-import com.abclinic.server.controller.ImageController;
+import com.abclinic.server.common.constant.PayloadStatus;
 import com.abclinic.server.model.entity.payload.record.DietRecord;
 import com.abclinic.server.model.entity.payload.record.MedicalRecord;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
-import com.abclinic.server.serializer.ViewSerializer;
-import com.abclinic.server.service.CloudinaryService;
-import com.abclinic.server.service.GooglePhotosService;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.abclinic.server.serializer.AbridgedViewSerializer;
+import com.abclinic.server.serializer.PrivateViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -29,7 +26,7 @@ public class Inquiry extends IPayloadIpml {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "patient_id")
     @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private Patient patient;
 
     @JsonView(Views.Private.class)
@@ -41,12 +38,14 @@ public class Inquiry extends IPayloadIpml {
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = MedicalRecord.class, mappedBy = "inquiry")
     @JsonView(Views.Private.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = PrivateViewSerializer.class)
+    @Where(clause = "status = " + PayloadStatus.PROCESSED)
     private List<MedicalRecord> medicalRecords;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = DietRecord.class, mappedBy = "inquiry")
     @JsonView(Views.Private.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = PrivateViewSerializer.class)
+    @Where(clause = "status = " + PayloadStatus.PROCESSED)
     private List<DietRecord> dietRecords;
 
     @JsonView(Views.Abridged.class)

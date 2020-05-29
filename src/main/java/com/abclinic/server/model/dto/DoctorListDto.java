@@ -5,7 +5,7 @@ import com.abclinic.server.model.entity.user.Dietitian;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.Practitioner;
 import com.abclinic.server.model.entity.user.Specialist;
-import com.abclinic.server.serializer.ViewSerializer;
+import com.abclinic.server.serializer.AbridgedViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -18,19 +18,19 @@ import java.util.List;
  */
 public class DoctorListDto {
     @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private Patient patient;
 
     @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private Practitioner practitioner;
 
     @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private List<Specialist> specialists;
 
     @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private List<Dietitian> dietitians;
 
     public DoctorListDto(Patient patient, List<Specialist> specialists, List<Dietitian> dietitians) {

@@ -3,7 +3,7 @@ package com.abclinic.server.model.entity.user;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.RoleValue;
 import com.abclinic.server.model.entity.Specialty;
-import com.abclinic.server.serializer.ViewSerializer;
+import com.abclinic.server.serializer.AbridgedViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -19,7 +19,7 @@ public class Dietitian extends Doctor {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "specialty_id")
     @JsonView(Views.Public.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private Specialty specialty;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -29,7 +29,7 @@ public class Dietitian extends Doctor {
             inverseJoinColumns = @JoinColumn(name = "patient_id")
     )
     @JsonView(Views.Private.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private List<Patient> patients;
 
     public Dietitian() {

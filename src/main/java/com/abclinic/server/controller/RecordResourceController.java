@@ -122,6 +122,7 @@ public class RecordResourceController extends CustomController {
             @ApiResponse(code = 400, message = "Mã ID của tư vấn không tồn tại"),
             @ApiResponse(code = 403, message = "Bác sĩ không phụ trách bệnh nhân này")
     })
+    @JsonView(Views.Abridged.class)
     public ResponseEntity<? extends Record> editRecord(@ApiIgnore @RequestAttribute("User") User user,
                                                        @RequestBody RequestUpdateRecordDto requestUpdateRecordDto) {
         try {
@@ -152,8 +153,9 @@ public class RecordResourceController extends CustomController {
                 clone.setId(0);
                 clone.setNote(requestUpdateRecordDto.getNote());
                 clone.setPrescription(requestUpdateRecordDto.getPrescription());
-                if (record.getRecordType() == RecordType.MEDICAL.getValue())
-                    ((MedicalRecord) record).setDiagnose(requestUpdateRecordDto.getDiagnose());
+                if (record.getRecordType() == RecordType.MEDICAL.getValue()) {
+                    ((MedicalRecord) clone).setDiagnose(requestUpdateRecordDto.getDiagnose());
+                }
                 clone.setDoctor(user);
                 if (user.getRole() == Role.PRACTITIONER) {
                     clone.setStatus(PayloadStatus.PROCESSED);

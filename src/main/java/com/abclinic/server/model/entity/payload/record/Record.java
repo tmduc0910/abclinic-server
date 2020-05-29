@@ -4,14 +4,14 @@ import com.abclinic.server.common.base.Views;
 import com.abclinic.server.model.entity.payload.IPayloadIpml;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.User;
-import com.abclinic.server.serializer.ViewSerializer;
+import com.abclinic.server.serializer.AbridgedViewSerializer;
+import com.abclinic.server.serializer.PublicViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -26,13 +26,13 @@ public class Record extends IPayloadIpml {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "inquiry_id")
     @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private Inquiry inquiry;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "doctor_id")
-    @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonView(Views.Public.class)
+    @JsonSerialize(using = PublicViewSerializer.class)
     private User doctor;
 
     @JsonView(Views.Abridged.class)
@@ -49,7 +49,7 @@ public class Record extends IPayloadIpml {
 
     @CreationTimestamp
     @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp

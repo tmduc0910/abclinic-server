@@ -11,9 +11,15 @@ import java.io.IOException;
 /**
  * @author tmduc
  * @package com.abclinic.server.serializer
- * @created 4/11/2020 10:05 AM
+ * @created 5/29/2020 3:05 PM
  */
-public class ViewSerializer extends JsonSerializer<Object> {
+public abstract class AbstractViewSerializer<T> extends JsonSerializer<T> {
+    private Class c;
+
+    public AbstractViewSerializer(Class c) {
+        this.c = c;
+    }
+
     @Override
     public void serialize(Object o, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -21,7 +27,7 @@ public class ViewSerializer extends JsonSerializer<Object> {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
         mapper.registerModule(new JavaTimeModule());
-        mapper.setConfig(mapper.getSerializationConfig().withView(Views.Abridged.class));
+        mapper.setConfig(mapper.getSerializationConfig().withView(c));
 
         jsonGenerator.setCodec(mapper);
         jsonGenerator.writeObject(o);

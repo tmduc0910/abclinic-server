@@ -23,7 +23,7 @@ import com.abclinic.server.model.entity.payload.health_index.HealthIndexField;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
 import com.abclinic.server.model.entity.payload.health_index.PatientHealthIndexField;
 import com.abclinic.server.model.entity.user.*;
-import com.abclinic.server.serializer.ViewSerializer;
+import com.abclinic.server.serializer.AbridgedViewSerializer;
 import com.abclinic.server.service.entity.HealthIndexService;
 import com.abclinic.server.service.entity.PatientService;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -331,7 +331,7 @@ public class HealthIndexResourceController extends CustomController {
             @ApiResponse(code = 404, message = "Mã ID không tồn tại")
     })
     @JsonView(Views.Public.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     public ResponseEntity<List<PatientHealthIndexField>> getResultList(@ApiIgnore @RequestAttribute("User") User user,
                                                                        @PathVariable("id") long id) {
         return new ResponseEntity<>(healthIndexService.getValuesList(user, id), HttpStatus.OK);

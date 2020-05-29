@@ -6,7 +6,7 @@ import com.abclinic.server.model.entity.payload.IPayloadIpml;
 import com.abclinic.server.model.entity.user.Doctor;
 import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
-import com.abclinic.server.serializer.ViewSerializer;
+import com.abclinic.server.serializer.AbridgedViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,24 +29,24 @@ public class HealthIndexSchedule extends IPayloadIpml {
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Patient.class)
     @JoinColumn(name = "patient_id")
     @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private Patient patient;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
     @JoinColumn(name = "doctor_id")
     @JsonView(Views.Public.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private User doctor;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "index_id")
     @JsonView(Views.Public.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private HealthIndex index;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = PatientHealthIndexField.class, mappedBy = "schedule")
     @JsonView(Views.Private.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private List<PatientHealthIndexField> patientValues;
 
     @Column(name = "scheduled")

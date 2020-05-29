@@ -2,7 +2,7 @@ package com.abclinic.server.model.entity.payload.health_index;
 
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.model.entity.payload.IPayloadIpml;
-import com.abclinic.server.serializer.ViewSerializer;
+import com.abclinic.server.serializer.AbridgedViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.CreationTimestamp;
@@ -25,13 +25,13 @@ public class PatientHealthIndexField extends IPayloadIpml {
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = HealthIndexSchedule.class)
     @JoinColumn(name = "schedule_id")
     @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private HealthIndexSchedule schedule;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = HealthIndexField.class)
     @JoinColumn(name = "field_id")
     @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private HealthIndexField field;
 
     @JsonView(Views.Abridged.class)

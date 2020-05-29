@@ -1,7 +1,7 @@
 package com.abclinic.server.model.entity.payload.health_index;
 
 import com.abclinic.server.common.base.Views;
-import com.abclinic.server.serializer.ViewSerializer;
+import com.abclinic.server.serializer.AbridgedViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -23,7 +23,7 @@ public class HealthIndexField {
     @ManyToOne(fetch = FetchType.EAGER, targetEntity = HealthIndex.class)
     @JoinColumn(name = "index_id")
     @JsonView(Views.Public.class)
-    @JsonSerialize(using = ViewSerializer.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
     private HealthIndex healthIndex;
 
     @JsonView(Views.Abridged.class)
