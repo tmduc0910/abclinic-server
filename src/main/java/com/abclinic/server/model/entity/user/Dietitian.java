@@ -14,6 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "dietitian")
 public class Dietitian extends Doctor {
+    private static final long serialVersionUID = 1L;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "specialty_id")

@@ -22,9 +22,7 @@ import com.abclinic.server.service.entity.component.health_index.HealthIndexFiel
 import com.abclinic.server.service.entity.component.health_index.HealthIndexScheduleComponentService;
 import com.abclinic.server.service.entity.component.health_index.PatientHealthIndexFieldComponentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +30,6 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -134,7 +131,7 @@ public class HealthIndexService {
     }
 
     public PageDto<GetIndexResultResponseDto> getValuesList(User user, String search, Pageable pageable) {
-        List<PatientHealthIndexField> res = new ArrayList<>();
+        List<PatientHealthIndexField> res;
         List<Long> temp;
 
         List<PatientHealthIndexField> p = patientHealthIndexFieldComponentService.getList(user, search, new PatientHealthIndexFieldPredicateBuilder(), pageable.getSort());
@@ -215,6 +212,7 @@ public class HealthIndexService {
                 notificationService.makeNotification(patient,
                         NotificationFactory.getMessage(MessageType.SEND_INDEX, d, finalF));
             });
+            notificationService.makeNotification(patient, NotificationFactory.getMessage(MessageType.SEND_INDEX, patient.getPractitioner(), f));
             results.add(f);
         }
         return results;

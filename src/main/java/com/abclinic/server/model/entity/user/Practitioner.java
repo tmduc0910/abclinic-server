@@ -16,6 +16,8 @@ import java.util.Set;
 @Entity
 @Table(name = "Practitioner")
 public class Practitioner extends Doctor {
+    private static final long serialVersionUID = 1L;
+
     @ManyToMany
     @JoinTable(
             name = "practitioner_specialty",

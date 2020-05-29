@@ -1,0 +1,21 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="record_changeset_2" author="ductm">
+        <dropForeignKeyConstraint baseTableName="medical_record" constraintName="mr_sid_specialist"/>
+        <dropForeignKeyConstraint baseTableName="dietitian_record" constraintName="dr_did_dietitian"/>
+
+        <renameColumn tableName="medical_record" oldColumnName="specialist_id" newColumnName="doctor_id" columnDataType="int(11)"/>
+        <renameColumn tableName="dietitian_record" oldColumnName="dietitian_id" newColumnName="doctor_id" columnDataType="int(11)"/>
+
+        <addForeignKeyConstraint baseTableName="medical_record" baseColumnNames="doctor_id" constraintName="fk_mr_user"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="dietitian_record" baseColumnNames="doctor_id"
+                                 constraintName="fk_dr_user"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

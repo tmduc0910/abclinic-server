@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import java.io.Serializable;
 
 /**
  * @author tmduc
@@ -14,7 +15,9 @@ import javax.persistence.MappedSuperclass;
  * @created 2/10/2020 4:05 PM
  */
 @MappedSuperclass
-public abstract class IPayloadIpml implements IPayload {
+public abstract class IPayloadIpml implements IPayload, Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Abridged.class)

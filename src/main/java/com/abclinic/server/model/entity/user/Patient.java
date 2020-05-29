@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "patient")
 public class Patient extends User implements IPayload {
+    private static final long serialVersionUID = 1L;
+
     @JsonView(Views.Public.class)
     private String address;
 

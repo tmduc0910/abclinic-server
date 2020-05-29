@@ -217,11 +217,11 @@ public class HealthIndexResourceController extends CustomController {
     }
 
     @GetMapping("/schedule/{id}")
-    @Restricted(excluded = {Coordinator.class, Practitioner.class})
+    @Restricted(excluded = Coordinator.class)
     @ApiOperation(
             value = "Lấy thông tin chi tiết lịch nhắc nhở",
             notes = "Trả về 200 OK hoặc 403 FORBIDDEN",
-            tags = {"Bệnh nhân", "Chuyên khoa", "Dinh dưỡng"}
+            tags = {"Đa khoa", "Bệnh nhân", "Chuyên khoa", "Dinh dưỡng"}
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "Mã ID của lịch", required = true, paramType = "path", dataType = "long", example = "1")
@@ -240,11 +240,11 @@ public class HealthIndexResourceController extends CustomController {
     }
 
     @PostMapping("/schedule")
-    @Restricted(included = {Specialist.class, Dietitian.class})
+    @Restricted(included = {Practitioner.class, Specialist.class, Dietitian.class})
     @ApiOperation(
             value = "Tạp lịch gửi chỉ số sức khỏe",
             notes = "Trả về 201 CREATED hoặc 400 BAD REQUEST",
-            tags = {"Chuyên khoa", "Dinh dưỡng"}
+            tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
     )
     @ApiResponses({
             @ApiResponse(code = 201, message = "Tạo lịch thành công"),
@@ -265,11 +265,11 @@ public class HealthIndexResourceController extends CustomController {
     }
 
     @DeleteMapping("/schedule")
-    @Restricted(included = {Specialist.class, Dietitian.class})
+    @Restricted(included = {Practitioner.class, Specialist.class, Dietitian.class})
     @ApiOperation(
             value = "Xóa lịch hẹn chỉ số sức khỏe",
             notes = "Trả về 200 OK hoặc 403 FORBIDDEN",
-            tags = {"Chuyên khoa", "Dinh dưỡng"}
+            tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
     )
     @ApiResponses({
             @ApiResponse(code = 200, message = "Xóa thành công"),
@@ -288,11 +288,11 @@ public class HealthIndexResourceController extends CustomController {
     }
 
     @GetMapping("/result")
-    @Restricted(excluded = {Coordinator.class, Practitioner.class})
+    @Restricted(excluded = Coordinator.class)
     @ApiOperation(
             value = "Lấy danh sách kết quả chỉ số sức khỏe",
             notes = "Trả về 200 OK hoặc 404 NOT FOUND",
-            tags = {"Bệnh nhân", "Chuyên khoa", "Dinh dưỡng"}
+            tags = {"Đa khoa", "Bệnh nhân", "Chuyên khoa", "Dinh dưỡng"}
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "search", value = "Filter lọc kết quả (patient_id, patient_name, schedule_id, index_id, index_name)", paramType = "query", example = "status=1,name=admin,"),
@@ -317,11 +317,11 @@ public class HealthIndexResourceController extends CustomController {
     }
 
     @GetMapping("/result/{id}")
-    @Restricted(included = {Specialist.class, Dietitian.class})
+    @Restricted(included = {Practitioner.class, Specialist.class, Dietitian.class})
     @ApiOperation(
             value = "Lấy danh sách kết quả thông số sức khỏe theo ID kết quả",
             notes = "Trả về 200 OK hoặc 404 NOT FOUND",
-            tags = {"Chuyên khoa", "Dinh dưỡng"}
+            tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "ID của kết quả", required = true, paramType = "path", dataType = "long", example = "1")

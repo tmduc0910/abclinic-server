@@ -1,14 +1,11 @@
 package com.abclinic.server.model.entity.payload.record;
 
-import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.RecordType;
 import com.abclinic.server.model.entity.payload.Inquiry;
-import com.abclinic.server.model.entity.user.Dietitian;
-import com.abclinic.server.serializer.ViewSerializer;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.abclinic.server.model.entity.user.User;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * @author tmduc
@@ -19,26 +16,12 @@ import javax.persistence.*;
 @Entity
 @Table(name = "dietitian_record")
 public class DietRecord extends Record {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dietitian_id")
-    @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
-    private Dietitian dietitian;
 
     public DietRecord() {
 
     }
 
-    public DietRecord(Inquiry inquiry, String note, String prescription, Dietitian dietitian) {
-        super(inquiry, RecordType.DIET.getValue(), note, prescription);
-        this.dietitian = dietitian;
-    }
-
-    public Dietitian getDietitian() {
-        return dietitian;
-    }
-
-    public void setDietitian(Dietitian dietitian) {
-        this.dietitian = dietitian;
+    public DietRecord(Inquiry inquiry, User doctor, String note, String prescription) {
+        super(inquiry, doctor, RecordType.DIET.getValue(), note, prescription);
     }
 }

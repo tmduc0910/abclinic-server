@@ -24,6 +24,7 @@ import com.abclinic.server.service.entity.InquiryService;
 import com.abclinic.server.service.entity.RecordService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
+import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -82,18 +83,18 @@ public class RecordResourceController extends CustomController {
             if (inquiry.getType() == RecordType.MEDICAL.getValue()) {
                 if (user.getRole() == Role.SPECIALIST)
                     record = new MedicalRecord(inquiry,
+                            doctorService.getById(user.getId()),
                             requestCreateRecordDto.getNote(),
                             requestCreateRecordDto.getPrescription(),
-                            (Specialist) doctorService.getById(user.getId()),
                             requestCreateRecordDto.getDiagnose());
                 else
                     throw new ForbiddenException(user.getId(), "Chỉ có bác sĩ chuyên khoa mới có thể tư vấn khám bệnh");
             } else {
                 if (user.getRole() == Role.DIETITIAN) {
                     record = new DietRecord(inquiry,
+                            doctorService.getById(user.getId()),
                             requestCreateRecordDto.getNote(),
-                            requestCreateRecordDto.getPrescription(),
-                            (Dietitian) doctorService.getById(user.getId()));
+                            requestCreateRecordDto.getPrescription());
                     record.setStatus(PayloadStatus.PROCESSED);
                 } else
                     throw new ForbiddenException(user.getId(), "Chỉ có bác sĩ dinh dưỡng mới có thể tư vấn dinh dưỡng");
@@ -117,7 +118,7 @@ public class RecordResourceController extends CustomController {
             tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
     )
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Chỉnh sửa thành công"),
+            @ApiResponse(code = 201, message = "Chỉnh sửa thành công"),
             @ApiResponse(code = 400, message = "Mã ID của tư vấn không tồn tại"),
             @ApiResponse(code = 403, message = "Bác sĩ không phụ trách bệnh nhân này")
     })
@@ -125,24 +126,41 @@ public class RecordResourceController extends CustomController {
                                                        @RequestBody RequestUpdateRecordDto requestUpdateRecordDto) {
         try {
             Record record = recordService.getById(requestUpdateRecordDto.getId());
+//            if (record.getInquiry().of(user)) {
+//                Patient patient = record.getInquiry().getPatient();
+//                record.setNote(requestUpdateRecordDto.getNote());
+//                if (record.getRecordType() == RecordType.MEDICAL.getValue())
+//                    ((MedicalRecord) record).setDiagnose(requestUpdateRecordDto.getDiagnose());
+//                record.setPrescription(requestUpdateRecordDto.getPrescription());
+//
+//                if (record.getRecordType() == RecordType.MEDICAL.getValue() &&
+//                        user.getRole() == Role.PRACTITIONER &&
+//                        record.getStatus() == PayloadStatus.UNREAD) {
+//                    record.setStatus(PayloadStatus.PROCESSED);
+//                    notificationService.makeNotification(((MedicalRecord) record).getSpecialist(),
+//                            NotificationFactory.getMessage(MessageType.ADVICE, patient, record));
+//                } else notificationService.makeNotification(user,
+//                        NotificationFactory.getMessage(MessageType.UPDATE_ADVICE, patient, record));
+//                record = recordService.save(record);
+//            } else throw new ForbiddenException(user.getId(), "Bác sĩ không phụ trách bệnh nhân này");
+//            return new ResponseEntity<>(record, HttpStatus.OK);
+
             if (record.getInquiry().of(user)) {
                 Patient patient = record.getInquiry().getPatient();
-                record.setNote(requestUpdateRecordDto.getNote());
+
+                Record clone = SerializationUtils.clone(record);
+                clone.setId(0);
+                clone.setNote(requestUpdateRecordDto.getNote());
+                clone.setPrescription(requestUpdateRecordDto.getPrescription());
                 if (record.getRecordType() == RecordType.MEDICAL.getValue())
                     ((MedicalRecord) record).setDiagnose(requestUpdateRecordDto.getDiagnose());
-                record.setPrescription(requestUpdateRecordDto.getPrescription());
-
-                if (record.getRecordType() == RecordType.MEDICAL.getValue() &&
-                        user.getRole() == Role.PRACTITIONER &&
-                        record.getStatus() == PayloadStatus.UNREAD) {
-                    record.setStatus(PayloadStatus.PROCESSED);
-                    notificationService.makeNotification(((MedicalRecord) record).getSpecialist(),
-                            NotificationFactory.getMessage(MessageType.ADVICE, patient, record));
-                } else notificationService.makeNotification(user,
-                        NotificationFactory.getMessage(MessageType.UPDATE_ADVICE, patient, record));
-                record = recordService.save(record);
+                clone.setDoctor(user);
+                notificationService.makeNotification(user, NotificationFactory.getMessage(MessageType.ADVICE, patient, clone));
+                if (user.getRole() == Role.PRACTITIONER) {
+                    clone.setStatus(PayloadStatus.PROCESSED);
+                } else notificationService.makeNotification(user, NotificationFactory.getMessage(MessageType.ADVICE, patient.getPractitioner(), clone));
+                return new ResponseEntity<>(recordService.save(clone), HttpStatus.CREATED);
             } else throw new ForbiddenException(user.getId(), "Bác sĩ không phụ trách bệnh nhân này");
-            return new ResponseEntity<>(record, HttpStatus.OK);
         } catch (NotFoundException e) {
             throw new BadRequestException(user.getId(), "Mã ID của tư vấn không tồn tại");
         }

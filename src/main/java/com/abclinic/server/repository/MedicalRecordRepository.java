@@ -2,6 +2,7 @@ package com.abclinic.server.repository;
 
 import com.abclinic.server.model.entity.Disease;
 import com.abclinic.server.model.entity.payload.record.MedicalRecord;
+import com.abclinic.server.model.entity.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,7 +15,7 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, Lo
     Optional<Page<MedicalRecord>> findByInquiryPatientPractitionerId(long id, Pageable pageable);
     Optional<Page<MedicalRecord>> findByInquiryPatientIdAndStatus(long id, int status, Pageable pageable);
     Optional<Page<MedicalRecord>> findByDisease(Disease disease, Pageable pageable);
-    Optional<Page<MedicalRecord>> findBySpecialistId(long id, Pageable pageable);
+    Optional<Page<MedicalRecord>> findByDoctor(User user, Pageable pageable);
 
 //    @Query("select mr from MedicalRecord mr " +
 //            "where (:patient is null or mr.patient.name like :patient) " +

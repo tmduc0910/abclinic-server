@@ -4,23 +4,14 @@ import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.RecordType;
 import com.abclinic.server.model.entity.Disease;
 import com.abclinic.server.model.entity.payload.Inquiry;
-import com.abclinic.server.model.entity.user.Specialist;
-import com.abclinic.server.serializer.ViewSerializer;
+import com.abclinic.server.model.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "medical_record")
 public class MedicalRecord extends Record {
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "specialist_id")
-    @JsonView(Views.Abridged.class)
-    @JsonSerialize(using = ViewSerializer.class)
-    private Specialist specialist;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "disease_id")
     @JsonView(Views.Abridged.class)
@@ -33,18 +24,9 @@ public class MedicalRecord extends Record {
 
     }
 
-    public MedicalRecord(Inquiry inquiry, String note, String prescription, Specialist specialist, String diagnose) {
-        super(inquiry, RecordType.MEDICAL.getValue(), note, prescription);
-        this.specialist = specialist;
+    public MedicalRecord(Inquiry inquiry, User doctor, String note, String prescription, String diagnose) {
+        super(inquiry, doctor, RecordType.MEDICAL.getValue(), note, prescription);
         this.diagnose = diagnose;
-    }
-
-    public Specialist getSpecialist() {
-        return specialist;
-    }
-
-    public void setSpecialist(Specialist specialist) {
-        this.specialist = specialist;
     }
 
     public Disease getDisease() {

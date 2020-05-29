@@ -24,6 +24,7 @@ import java.util.List;
 @Entity
 @Table(name = "inquiry")
 public class Inquiry extends IPayloadIpml {
+    private static final long serialVersionUID = 1L;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "patient_id")

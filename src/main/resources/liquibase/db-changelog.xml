@@ -9,4 +9,5 @@
     <include file="liquibase/patient_health_index_field_changeset.xml"/>
     <include file="liquibase/patient_health_index_field_changeset_1.xml"/>
     <include file="liquibase/inquiry_changeset.xml"/>
+    <include file="liquibase/record_changeset_2.xml"/>
 </databaseChangeLog>

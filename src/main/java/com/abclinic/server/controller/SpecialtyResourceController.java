@@ -8,6 +8,7 @@ import com.abclinic.server.model.dto.request.put.RequestUpdateSpecialtyDto;
 import com.abclinic.server.model.entity.Specialty;
 import com.abclinic.server.model.entity.user.Coordinator;
 import com.abclinic.server.model.entity.user.Patient;
+import com.abclinic.server.model.entity.user.Practitioner;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.service.entity.SpecialtyService;
 import io.swagger.annotations.*;
@@ -54,13 +55,13 @@ public class SpecialtyResourceController extends CustomController {
     @ApiOperation(
             value = "Tạo một chuyên môn mới",
             notes = "Trả về 201 CREATED",
-            tags = "Điều phối viên"
+            tags = {"Điều phối viên", "Đa khoa"}
     )
     @ApiResponses({
             @ApiResponse(code = 201, message = "Tạo mới thành công"),
             @ApiResponse(code = 400, message = "Chuyên môn đã tồn tại")
     })
-    @Restricted(included = Coordinator.class)
+    @Restricted(included = {Coordinator.class, Practitioner.class})
     public ResponseEntity<Specialty> addSpecialty(@ApiIgnore @RequestAttribute("User") User user,
                                                   @RequestBody RequestCreateSpecialtyDto requestCreateSpecialtyDto) {
         if (!specialtyService.isExist(requestCreateSpecialtyDto.getName())) {

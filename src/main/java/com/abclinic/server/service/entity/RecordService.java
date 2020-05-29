@@ -54,7 +54,7 @@ public class RecordService implements IDataMapperService<Record> {
                 op = medicalRecordRepository.findByInquiryPatientPractitionerId(user.getId(), pageable);
                 break;
             case SPECIALIST:
-                op = medicalRecordRepository.findBySpecialistId(user.getId(), pageable);
+                op = medicalRecordRepository.findByDoctor(user, pageable);
                 break;
             case PATIENT:
                 op = medicalRecordRepository.findByInquiryPatientIdAndStatus(user.getId(), PayloadStatus.PROCESSED, pageable);
@@ -73,7 +73,7 @@ public class RecordService implements IDataMapperService<Record> {
                 op = dietitianRecordRepository.findByInquiryPatientPractitionerId(user.getId(), pageable);
                 break;
             case DIETITIAN:
-                op = dietitianRecordRepository.findByDietitianId(user.getId(), pageable);
+                op = dietitianRecordRepository.findByDoctor(user, pageable);
                 break;
             case PATIENT:
                 op = dietitianRecordRepository.findByInquiryPatientIdAndStatus(user.getId(), PayloadStatus.PROCESSED, pageable);
