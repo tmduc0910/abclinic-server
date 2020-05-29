@@ -103,7 +103,7 @@ public class DoctorResourceController extends CustomController {
             @ApiResponse(code = 200, message = "Thông tin chi tiết bác sĩ"),
             @ApiResponse(code = 404, message = "ID của bác sĩ không tồn tại")
     })
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Public.class)
     public ResponseEntity getDoctorDetail(@ApiIgnore @RequestAttribute("User") User user,
                                           @PathVariable(value = "id") long id) {
         try {

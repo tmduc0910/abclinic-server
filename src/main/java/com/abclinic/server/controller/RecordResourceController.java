@@ -155,10 +155,14 @@ public class RecordResourceController extends CustomController {
                 if (record.getRecordType() == RecordType.MEDICAL.getValue())
                     ((MedicalRecord) record).setDiagnose(requestUpdateRecordDto.getDiagnose());
                 clone.setDoctor(user);
-                notificationService.makeNotification(user, NotificationFactory.getMessage(MessageType.ADVICE, patient, clone));
                 if (user.getRole() == Role.PRACTITIONER) {
                     clone.setStatus(PayloadStatus.PROCESSED);
-                } else notificationService.makeNotification(user, NotificationFactory.getMessage(MessageType.ADVICE, patient.getPractitioner(), clone));
+                    clone = recordService.save(clone);
+                } else {
+                    clone = recordService.save(clone);
+                    notificationService.makeNotification(user, NotificationFactory.getMessage(MessageType.ADVICE, patient.getPractitioner(), clone));
+                }
+                notificationService.makeNotification(user, NotificationFactory.getMessage(MessageType.ADVICE, patient, clone));
                 return new ResponseEntity<>(recordService.save(clone), HttpStatus.CREATED);
             } else throw new ForbiddenException(user.getId(), "Bác sĩ không phụ trách bệnh nhân này");
         } catch (NotFoundException e) {

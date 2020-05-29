@@ -279,7 +279,7 @@ public class HealthIndexResourceController extends CustomController {
                                          @RequestBody RequestDeleteDto requestDeleteDto) {
         HealthIndexSchedule schedule = healthIndexService.getSchedule(requestDeleteDto.getId());
         if (schedule.getDoctor().equals(user)) {
-            schedule.setStatus(PayloadStatus.ON_HOLD);
+            schedule.setStatus(PayloadStatus.DELETED);
             schedule.setStartedAt(null);
             schedule.setEndedAt(null);
             healthIndexService.save(schedule);

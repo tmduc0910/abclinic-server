@@ -35,7 +35,7 @@ public class Record extends IPayloadIpml {
     @JsonSerialize(using = ViewSerializer.class)
     private User doctor;
 
-    @JsonView(Views.Confidential.class)
+    @JsonView(Views.Abridged.class)
     private int recordType;
 
     @JsonView(Views.Abridged.class)

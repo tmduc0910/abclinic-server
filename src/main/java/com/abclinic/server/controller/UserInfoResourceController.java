@@ -67,7 +67,7 @@ public class UserInfoResourceController extends CustomController {
             value = "Xem thông tin cá nhân",
             notes = "Trả về chi tiết thông tin cá nhân"
     )
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Private.class)
     public ResponseEntity getUserInfo(@ApiIgnore @RequestAttribute("User") User user) {
         return new ResponseEntity(userService.getById(user.getId()), HttpStatus.OK);
     }

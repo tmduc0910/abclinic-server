@@ -53,7 +53,7 @@ public class HealthIndexSchedule extends IPayloadIpml {
     @JsonView(Views.Abridged.class)
     private long scheduledTime;
 
-    @JsonView(Views.Private.class)
+    @JsonView(Views.Abridged.class)
     private int status;
 
     @CreationTimestamp

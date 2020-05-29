@@ -64,7 +64,7 @@ public class User implements Serializable {
     private int status;
 
     @CreationTimestamp
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Private.class)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp

@@ -16,17 +16,4 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, Lo
     Optional<Page<MedicalRecord>> findByInquiryPatientIdAndStatus(long id, int status, Pageable pageable);
     Optional<Page<MedicalRecord>> findByDisease(Disease disease, Pageable pageable);
     Optional<Page<MedicalRecord>> findByDoctor(User user, Pageable pageable);
-
-//    @Query("select mr from MedicalRecord mr " +
-//            "where (:patient is null or mr.patient.name like :patient) " +
-//            "and (:disease is null or mr.disease = :disease) " +
-//            "and (:status is null or mr.status = :status)")
-//    Optional<List<MedicalRecord>> findByPatientAndDisease(@Param("patient") String patientName, @Param("disease") Disease disease, @Param("status") int status, Pageable pageable);
-//
-//    @Query("select mr from MedicalRecord mr " +
-//            "where (:patient is null or mr.patient.name like :patient) " +
-//            "and (:disease is null or mr.disease = :disease) " +
-//            "and (:status is null or mr.status = :status) " +
-//            "and mr.practitioner = :practitioner")
-//    Optional<List<MedicalRecord>> findByPractitionerAndPatientAndDisease(@Param("practitioner") Practitioner practitioner, @Param("patient") String patientName, @Param("disease") Disease disease, @Param("status") int status, Pageable pageable);
 }
