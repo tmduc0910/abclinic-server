@@ -187,7 +187,7 @@ public class RecordResourceController extends CustomController {
                                         @RequestParam(value = "type", defaultValue = "0") int type,
                                         @RequestParam("page") int page,
                                         @RequestParam("size") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
         Page result = null;
         switch (user.getRole()) {
             case PRACTITIONER:
