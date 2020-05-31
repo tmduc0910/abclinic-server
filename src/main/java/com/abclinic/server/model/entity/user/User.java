@@ -60,7 +60,7 @@ public class User implements Serializable {
     @JsonView(Views.Abridged.class)
     private String avatar;
 
-    @JsonView(Views.Confidential.class)
+    @JsonView(Views.Abridged.class)
     private int status;
 
     @CreationTimestamp
