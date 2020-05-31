@@ -11,6 +11,9 @@ public class RequestUpdateUserInfoDto {
     private String address = null;
     private String description = null;
 
+    public RequestUpdateUserInfoDto() {
+    }
+
     public RequestUpdateUserInfoDto(String email, String phone, String address, String description) {
         this.email = email;
         this.phone = phone;

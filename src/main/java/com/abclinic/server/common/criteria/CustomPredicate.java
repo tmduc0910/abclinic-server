@@ -1,10 +1,11 @@
 package com.abclinic.server.common.criteria;
 
 import com.abclinic.server.common.constant.Constant;
+import com.abclinic.server.common.constant.FilterConstant;
 import com.abclinic.server.common.utils.StringUtils;
-import com.abclinic.server.model.entity.user.QPatient;
-import com.abclinic.server.model.entity.user.User;
+import com.abclinic.server.model.entity.user.*;
 import com.querydsl.core.types.dsl.*;
+import com.querydsl.jpa.JPAExpressions;
 
 /**
  * @author tmduc
@@ -56,6 +57,25 @@ public class CustomPredicate<T> {
         } else if (criteria.getOperation().equalsIgnoreCase(Constant.CONTAIN_SBL)) {
             QPatient qPatient = QPatient.patient;
             return qPatient.subDoctors.contains((User) criteria.getValue());
+        } else if (criteria.getKey().equalsIgnoreCase(FilterConstant.SPECIALTY.getValue())) {
+            QPractitioner qPractitioner = QPractitioner.practitioner;
+            QSpecialist qSpecialist = QSpecialist.specialist;
+            QDietitian qDietitian = QDietitian.dietitian;
+
+            NumberPath<Long> path = entityPath.getNumber("id", Long.class);
+            return path.in(JPAExpressions.selectFrom(qPractitioner)
+                        .where(qPractitioner.specialties.any().name.containsIgnoreCase(criteria.getValue().toString()))
+                        .select(qPractitioner.id))
+                    .or(path.in(JPAExpressions.selectFrom(qSpecialist)
+                            .where(qSpecialist.specialty.name.containsIgnoreCase(criteria.getValue().toString()))
+                            .select(qSpecialist.id)))
+                    .or(path.in(JPAExpressions.selectFrom(qDietitian)
+                            .where(qDietitian.specialty.name.containsIgnoreCase(criteria.getValue().toString()))
+                            .select(qDietitian.id)));
+
+//            return qPractitioner.specialties.any().name.containsIgnoreCase(criteria.getValue().toString())
+//                    .or(qSpecialist.specialty.name.containsIgnoreCase(criteria.getValue().toString()))
+//                    .or(qDietitian.specialty.name.containsIgnoreCase(criteria.getValue().toString()));
         } else {
             final StringPath path = entityPath.getString(criteria.getKey());
             if (criteria.getOperation().equalsIgnoreCase(Constant.EQUAL_SBL)) {
