@@ -40,7 +40,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.setApplicationDestinationPrefixes(servletContext.getContextPath() + "/app");
+        registry.setApplicationDestinationPrefixes(servletContext.getContextPath() + "/app", servletContext.getContextPath() + "/topic");
         registry.enableSimpleBroker("/topic", "/queue");
     }
 

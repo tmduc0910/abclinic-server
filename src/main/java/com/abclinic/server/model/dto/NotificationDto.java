@@ -13,11 +13,13 @@ public class NotificationDto {
     @JsonProperty("user_id")
     private long userId;
     private String notification;
+    private int type;
 
-    public NotificationDto(long notificationId, long userId, String notification) {
+    public NotificationDto(long notificationId, long userId, String notification, int type) {
         this.notificationId = notificationId;
         this.userId = userId;
         this.notification = notification;
+        this.type = type;
     }
 
     public long getNotificationId() {
@@ -42,5 +44,13 @@ public class NotificationDto {
 
     public void setNotification(String notification) {
         this.notification = notification;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

@@ -4,6 +4,7 @@ import com.abclinic.server.model.dto.NotificationDto;
 import com.abclinic.server.model.entity.notification.Notification;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
 import com.abclinic.server.model.entity.user.User;
+import com.abclinic.server.websocket.firebase.FcmUtils;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +81,7 @@ public class WebSocketService {
 
     public void broadcast(User receiver, NotificationDto notification) {
         broadcast(getTopicUrl(receiver), notification);
+        FcmUtils.pushNoti(receiver.getId(), notification);
     }
 
     private class CustomStompSessionHandler extends StompSessionHandlerAdapter {

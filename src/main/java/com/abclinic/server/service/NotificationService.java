@@ -75,7 +75,7 @@ public class NotificationService implements IDataMapperService<Notification> {
         Notification notification = new Notification(sender, notificationMessage.getTargetUser(), message, notificationMessage.getMessageType().getValue());
         notification.setPayloadId(notificationMessage.getPayload().getId());
         notification = notificationRepository.save(notification);
-        webSocketService.broadcast(notificationMessage.getTargetUser(), new NotificationDto(notification.getId(), notification.getReceiver().getId(), message));
+        webSocketService.broadcast(notificationMessage.getTargetUser(), new NotificationDto(notification.getId(), notification.getReceiver().getId(), message, notification.getType()));
         return notification;
     }
 
