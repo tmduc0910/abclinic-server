@@ -50,3 +50,5 @@ jwt:
   # All files uploaded through the REST API will be stored in this directory
 file:
   upload-dir: src/main/resources/uploads/
+firebase:
+  config-dir: abclinic-noti-firebase-adminsdk-9vf2a-3719016ef8.json

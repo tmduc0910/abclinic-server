@@ -26,16 +26,8 @@ public class WebSocketController {
 
     @MessageMapping("/sendNoti")
     @SendTo("/topic/public")
-    public String sendMessage(@Payload String s) {
-//        Gson gson = new Gson();
-//        template.convertAndSend("/topic/users/" + notificationDto.getUserId(), gson.toJson(notificationDto));
-        return s;
-    }
-
-    @SuppressWarnings("unused")
-    @SubscribeMapping({ "/", "/chat", "/topic/users", "/messages", "/*" })
-    public void listen(Message message, MessageHeaders headers, MessageHeaderAccessor accessor) throws Exception {
-        int i = 0;
-        System.out.println("subscribed");
+    public void sendMessage(@Payload NotificationDto notificationDto) {
+        Gson gson = new Gson();
+        template.convertAndSend("/topic/users/" + notificationDto.getUserId(), gson.toJson(notificationDto));
     }
 }
