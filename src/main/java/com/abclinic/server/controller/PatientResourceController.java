@@ -273,6 +273,7 @@ public class PatientResourceController extends CustomController {
                 case PRACTITIONER:
                     patient.setPractitioner(null);
                     patient = StatusUtils.remove(patient, UserStatus.ASSIGN_L1);
+                    patient = StatusUtils.update(patient, UserStatus.NEW);
                     targets = userService.findAllCoordinators();
                     break;
                 case DIETITIAN:

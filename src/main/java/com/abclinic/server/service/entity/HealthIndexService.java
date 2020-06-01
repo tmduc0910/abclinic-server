@@ -212,9 +212,9 @@ public class HealthIndexService {
                 notificationService.makeNotification(patient,
                         NotificationFactory.getMessage(MessageType.SEND_INDEX, d, finalF));
             });
-            notificationService.makeNotification(patient, NotificationFactory.getMessage(MessageType.SEND_INDEX, patient.getPractitioner(), f));
             results.add(f);
         }
+        notificationService.makeNotification(patient, NotificationFactory.getMessage(MessageType.SEND_INDEX, patient.getPractitioner(), results.get(0)));
         return results;
     }
 

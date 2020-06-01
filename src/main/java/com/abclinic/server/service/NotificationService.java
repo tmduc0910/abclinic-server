@@ -7,6 +7,7 @@ import com.abclinic.server.model.dto.NotificationDto;
 import com.abclinic.server.model.entity.notification.Notification;
 import com.abclinic.server.model.entity.notification.NotificationMessage;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
+import com.abclinic.server.model.entity.payload.health_index.PatientHealthIndexField;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.NotificationRepository;
 import com.abclinic.server.service.entity.IDataMapperService;
@@ -73,7 +74,9 @@ public class NotificationService implements IDataMapperService<Notification> {
     public Notification makeNotification(User sender, NotificationMessage notificationMessage) {
         String message = pack(sender, notificationMessage);
         Notification notification = new Notification(sender, notificationMessage.getTargetUser(), message, notificationMessage.getMessageType().getValue());
-        notification.setPayloadId(notificationMessage.getPayload().getId());
+        if (notificationMessage.getPayload() instanceof PatientHealthIndexField)
+            notification.setPayloadId(((PatientHealthIndexField) notificationMessage.getPayload()).getTagId());
+        else notification.setPayloadId(notificationMessage.getPayload().getId());
         notification = notificationRepository.save(notification);
         webSocketService.broadcast(notificationMessage.getTargetUser(), new NotificationDto(notification.getId(), notification.getReceiver().getId(), message, notification.getType()));
         return notification;
