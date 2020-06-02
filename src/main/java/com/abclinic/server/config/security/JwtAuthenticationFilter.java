@@ -66,6 +66,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String getJwtFromRequest(HttpServletRequest request) {
         String requestUri = request.getRequestURI();
+
+        if (requestUri.startsWith("/api/error") ||
+                requestUri.contains("swagger") ||
+                requestUri.contains("api-docs") ||
+                request.getMethod().contains("OPTIONS"))
+            return null;
+
         if (!requestUri.contains("/api/auth/login") && !requestUri.contains("/ws")) {
             String uid = request.getHeader("Authorization");
             if (uid == null)
