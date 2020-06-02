@@ -2,10 +2,14 @@ package com.abclinic.server.service.entity;
 
 import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.UserStatus;
+import com.abclinic.server.config.security.CustomUserDetails;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -18,7 +22,7 @@ import java.util.Optional;
  * @created 5/3/2020 10:15 AM
  */
 @Service
-public class UserService implements IDataMapperService<User> {
+public class UserService implements IDataMapperService<User>, UserDetailsService {
     private UserRepository userRepository;
 
     @Autowired
@@ -97,5 +101,13 @@ public class UserService implements IDataMapperService<User> {
     @Transactional
     public User save(User obj) {
         return userRepository.save(obj);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        Optional<User> user = findByUsername(s);
+        if (user.isPresent())
+            return new CustomUserDetails(user.get());
+        else throw new UsernameNotFoundException(s);
     }
 }
