@@ -4,7 +4,6 @@ import com.abclinic.server.common.constant.PayloadStatus;
 import com.abclinic.server.common.constant.RecordType;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.payload.Inquiry;
-import com.abclinic.server.model.entity.payload.record.Record;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.InquiryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +43,7 @@ public class InquiryService implements IDataMapperService<Inquiry> {
     public Inquiry getById(long id) throws NotFoundException {
         Inquiry inquiry = inquiryRepository.findById(id).orElseThrow(NotFoundException::new);
         if (inquiry.getStatus() == PayloadStatus.UNREAD) {
-            inquiry.setStatus(PayloadStatus.ON_HOLD);
+            inquiry.setStatus(PayloadStatus.IN_PROCESS);
             inquiry = save(inquiry);
         }
         return inquiry;

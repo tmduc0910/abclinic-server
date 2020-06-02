@@ -164,6 +164,8 @@ public class RecordResourceController extends CustomController {
                     clone = recordService.save(clone);
                     notificationService.makeNotification(user, NotificationFactory.getMessage(MessageType.ADVICE, patient.getPractitioner(), clone));
                 }
+                record.setStatus(PayloadStatus.IN_PROCESS);
+                recordService.save(record);
                 notificationService.makeNotification(user, NotificationFactory.getMessage(MessageType.ADVICE, patient, clone));
                 return new ResponseEntity<>(recordService.save(clone), HttpStatus.CREATED);
             } else throw new ForbiddenException(user.getId(), "Bác sĩ không phụ trách bệnh nhân này");
