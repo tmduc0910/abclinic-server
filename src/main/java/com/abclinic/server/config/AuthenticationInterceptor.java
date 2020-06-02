@@ -1,71 +1,71 @@
-package com.abclinic.server.config;
-
-import com.abclinic.server.common.constant.UserStatus;
-import com.abclinic.server.common.utils.StringUtils;
-import com.abclinic.server.exception.ForbiddenException;
-import com.abclinic.server.exception.UnauthorizedActionException;
-import com.abclinic.server.model.dto.request.post.RequestLoginDto;
-import com.abclinic.server.model.entity.user.User;
-import com.abclinic.server.service.entity.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
-
-    @Autowired
-    private UserService userService;
-
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String requestUri = request.getRequestURI();
-        if (requestUri.startsWith("/api/error") || requestUri.contains("swagger") || requestUri.contains("api-docs"))
-            return true;
-
-        if (request.getMethod().contains("OPTIONS"))
-            return true;
-
-        if (StringUtils.isNull(response.getHeader("Access-Control-Allow-Origin"))) {
-            response.addHeader("Access-Control-Allow-Origin", "*");
-        }
-        response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.addHeader("Access-Control-Max-Age", "1000");
-        response.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-        response.addHeader("Cache-Control", "private");
-
-        try {
-            if (!requestUri.contains("/api/auth/login")) {
-                String uid = request.getHeader("Authorization");
-                if (uid == null)
-                    throw new UnauthorizedActionException(-1, "Thông tin xác thực rỗng");
-                Optional<User> op = userService.findByUID(uid);
-                if (!op.isPresent())
-                    throw new UnauthorizedActionException(-1, "Thông tin xác thực không tồn tại");
-                User user = op.get();
-                if (user.getUid() == null)
-                    throw new UnauthorizedActionException(user.getId(), "Tài khoản chưa đăng nhập");
-                if (user.getStatus() == UserStatus.DEACTIVATED.getValue())
-                    throw new ForbiddenException(user.getId(), "Tài khoản đã bị xóa hoặc vô hiệu hóa");
-//                else if (requestUri.contains("/admin") && user.getRole() == Role.PATIENT)
-//                    throw new UnauthorizedActionException(user.getId(), "Bạn chưa đăng nhập");
-                request.setAttribute("User", user);
-            } else {
-//                String req = request.getReader().lines().collect(Collectors.joining());
-//                RequestLoginDto requestLoginDto = new RequestLoginDto(req);
-//                Optional<User> user = userService.findByUsername(req);
-//                if (user.isPresent()) {
-//                    if (user.get().getUid() != null)
-//                        throw new ForbiddenException(user.get().getId(), "Bạn chưa đăng xuất");
-//                }
-            }
-        } catch (NumberFormatException | NullPointerException e) {
-            System.out.println(requestUri);
-            throw new ForbiddenException(-1);
-        }
-        return super.preHandle(request, response, handler);
-    }
-}
+//package com.abclinic.server.config;
+//
+//import com.abclinic.server.common.constant.UserStatus;
+//import com.abclinic.server.common.utils.StringUtils;
+//import com.abclinic.server.exception.ForbiddenException;
+//import com.abclinic.server.exception.UnauthorizedActionException;
+//import com.abclinic.server.model.dto.request.post.RequestLoginDto;
+//import com.abclinic.server.model.entity.user.User;
+//import com.abclinic.server.service.entity.UserService;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+//
+//import javax.servlet.http.HttpServletRequest;
+//import javax.servlet.http.HttpServletResponse;
+//import java.util.Optional;
+//import java.util.stream.Collectors;
+//
+//public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
+//
+//    @Autowired
+//    private UserService userService;
+//
+//    @Override
+//    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+//        String requestUri = request.getRequestURI();
+//        if (requestUri.startsWith("/api/error") || requestUri.contains("swagger") || requestUri.contains("api-docs"))
+//            return true;
+//
+//        if (request.getMethod().contains("OPTIONS"))
+//            return true;
+//
+//        if (StringUtils.isNull(response.getHeader("Access-Control-Allow-Origin"))) {
+//            response.addHeader("Access-Control-Allow-Origin", "*");
+//        }
+//        response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+//        response.addHeader("Access-Control-Max-Age", "1000");
+//        response.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//        response.addHeader("Cache-Control", "private");
+//
+//        try {
+//            if (!requestUri.contains("/api/auth/login")) {
+//                String uid = request.getHeader("Authorization");
+//                if (uid == null)
+//                    throw new UnauthorizedActionException(-1, "Thông tin xác thực rỗng");
+//                Optional<User> op = userService.findByUID(uid);
+//                if (!op.isPresent())
+//                    throw new UnauthorizedActionException(-1, "Thông tin xác thực không tồn tại");
+//                User user = op.get();
+//                if (user.getUid() == null)
+//                    throw new UnauthorizedActionException(user.getId(), "Tài khoản chưa đăng nhập");
+//                if (user.getStatus() == UserStatus.DEACTIVATED.getValue())
+//                    throw new ForbiddenException(user.getId(), "Tài khoản đã bị xóa hoặc vô hiệu hóa");
+////                else if (requestUri.contains("/admin") && user.getRole() == Role.PATIENT)
+////                    throw new UnauthorizedActionException(user.getId(), "Bạn chưa đăng nhập");
+//                request.setAttribute("User", user);
+//            } else {
+////                String req = request.getReader().lines().collect(Collectors.joining());
+////                RequestLoginDto requestLoginDto = new RequestLoginDto(req);
+////                Optional<User> user = userService.findByUsername(req);
+////                if (user.isPresent()) {
+////                    if (user.get().getUid() != null)
+////                        throw new ForbiddenException(user.get().getId(), "Bạn chưa đăng xuất");
+////                }
+//            }
+//        } catch (NumberFormatException | NullPointerException e) {
+//            System.out.println(requestUri);
+//            throw new ForbiddenException(-1);
+//        }
+//        return super.preHandle(request, response, handler);
+//    }
+//}

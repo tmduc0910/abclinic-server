@@ -6,6 +6,8 @@ import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.RoleValue;
 import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.common.utils.DateTimeUtils;
+import com.abclinic.server.config.security.CustomUserDetails;
+import com.abclinic.server.config.security.JwtTokenProvider;
 import com.abclinic.server.exception.DuplicateValueException;
 import com.abclinic.server.exception.WrongCredentialException;
 import com.abclinic.server.model.dto.request.post.RequestLoginDto;
@@ -18,6 +20,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -36,6 +42,12 @@ public class AuthController extends CustomController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
 
     //TODO: Implements Spring Security + AWT
 
@@ -78,13 +90,26 @@ public class AuthController extends CustomController {
     @JsonView(Views.Private.class)
     public ResponseEntity<String> processLogin(@RequestHeader("Client-Type") String type,
                                                @RequestBody RequestLoginDto requestLoginDto) {
-        return userService.findByUsernamePassword(requestLoginDto.getAccount(), requestLoginDto.getPassword()).map(u -> {
-            if ((!type.equalsIgnoreCase("Mobile") || u.getRole() == Role.PATIENT) && u.getStatus() != UserStatus.DEACTIVATED.getValue()) {
-                u.setUid(UUID.randomUUID().toString());
-                userService.save(u);
-                return new ResponseEntity<>(u.getUid(), HttpStatus.OK);
-            } else return null;
-        }).orElseThrow(WrongCredentialException::new);
+//        return userService.findByUsernamePassword(requestLoginDto.getAccount(), requestLoginDto.getPassword()).map(u -> {
+//            if ((!type.equalsIgnoreCase("Mobile") || u.getRole() == Role.PATIENT) && u.getStatus() != UserStatus.DEACTIVATED.getValue()) {
+//                u.setUid(UUID.randomUUID().toString());
+//                userService.save(u);
+//                return new ResponseEntity<>(u.getUid(), HttpStatus.OK);
+//            } else return null;
+//        }).orElseThrow(WrongCredentialException::new);
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        requestLoginDto.getAccount(),
+                        requestLoginDto.getPassword()
+                )
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        User user = userService.findByUsername((String) authentication.getPrincipal()).get();
+        String jwt = tokenProvider.generateToken(new CustomUserDetails(user));
+        user.setUid(jwt);
+        userService.save(user);
+        return new ResponseEntity<>(jwt, HttpStatus.OK);
     }
 
     @PostMapping(value = "/sign_up")

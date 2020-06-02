@@ -6,15 +6,6 @@ import org.springframework.web.servlet.config.annotation.*;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    @Bean
-    public AuthenticationInterceptor authenticationInterceptor() {
-        return new AuthenticationInterceptor();
-    }
-
-//    @Bean
-//    public DoctorInterceptor doctorInterceptor() {
-//        return new DoctorInterceptor();
-//    }
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
@@ -24,14 +15,5 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authenticationInterceptor())
-                .excludePathPatterns("/misc/**");
-//        registry.addInterceptor(doctorInterceptor())
-//                .addPathPatterns("/admin/**")
-//                .excludePathPatterns("/misc/**");
     }
 }
