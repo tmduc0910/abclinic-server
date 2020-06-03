@@ -124,6 +124,27 @@ public class InquiryResourceController extends CustomController {
         return new ResponseEntity<>(inquiryService.getList(user, assigned, pageable), HttpStatus.OK);
     }
 
+    @GetMapping("/inquiries/monthly")
+    @ApiOperation(
+            value = "Lấy danh sách yêu cầu theo tháng",
+            notes = "Trả về 200 OK hoặc 404 not found",
+            tags = "Bệnh nhân"
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "month", value = "Tháng", required = true, dataType = "int", example = "1"),
+            @ApiImplicitParam(name = "year", value = "Năm", required = true, dataType = "int", example = "2020")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Danh sách yêu cầu"),
+            @ApiResponse(code = 404, message = "Không có kết quả nào theo yêu cầu")
+    })
+    @Restricted(included = Patient.class)
+    public ResponseEntity<List<Inquiry>> getInquiryList(@ApiIgnore @RequestAttribute("User") User user,
+                                                        @RequestParam("month") int month,
+                                                        @RequestParam("year") int year) {
+        return new ResponseEntity<>(inquiryService.getList(user, month, year), HttpStatus.OK);
+    }
+
     @GetMapping("/inquiries/{id}")
     @ApiOperation(
             value = "Lấy thông tin chi tiết yêu cầu tư vấn",

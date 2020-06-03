@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,6 +82,13 @@ public class InquiryService implements IDataMapperService<Inquiry> {
                 break;
         }
         return inquiries.orElseThrow(NotFoundException::new);
+    }
+
+    public List<Inquiry> getList(User user, int month, int year) {
+        LocalDateTime from = LocalDateTime.of(year, month, 1, 0, 0, 0);
+        LocalDateTime to = from.plusMonths(1);
+        return inquiryRepository.findByPatientIdAndCreatedAtBetweenOrderByCreatedAtDesc(user.getId(), from, to)
+                .orElseThrow(NotFoundException::new);
     }
 
     @Override
