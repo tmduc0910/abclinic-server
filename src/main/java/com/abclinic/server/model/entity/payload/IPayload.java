@@ -1,5 +1,7 @@
 package com.abclinic.server.model.entity.payload;
 
+import java.time.LocalDateTime;
+
 /**
  * @author tmduc
  * @package com.abclinic.server.model.entity.payload
@@ -7,4 +9,5 @@ package com.abclinic.server.model.entity.payload;
  */
 public interface IPayload {
     long getId();
+    LocalDateTime getCreatedAt();
 }

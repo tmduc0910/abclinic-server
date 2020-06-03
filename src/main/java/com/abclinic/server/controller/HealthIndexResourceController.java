@@ -188,7 +188,7 @@ public class HealthIndexResourceController extends CustomController {
     }
 
     @GetMapping("/schedule")
-    @Restricted(excluded = {Coordinator.class, Practitioner.class})
+    @Restricted(excluded = {Coordinator.class})
     @ApiOperation(
             value = "Lấy danh sách lịch gửi chỉ số sức khỏe",
             notes = "Trả về 200 OK hoặc 404 NOT FOUND",

@@ -5,8 +5,10 @@ import com.abclinic.server.model.entity.payload.IPayloadIpml;
 import com.abclinic.server.serializer.AbridgedViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +32,10 @@ public class HealthIndex extends IPayloadIpml {
     @JsonView(Views.Abridged.class)
     @JsonSerialize(using = AbridgedViewSerializer.class)
     private List<HealthIndexField> fields = new ArrayList<>();
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     public HealthIndex() {
     }
@@ -61,6 +67,15 @@ public class HealthIndex extends IPayloadIpml {
 
     public void setFields(List<HealthIndexField> fields) {
         this.fields = fields;
+    }
+
+    @Override
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public void addField(HealthIndexField field) {

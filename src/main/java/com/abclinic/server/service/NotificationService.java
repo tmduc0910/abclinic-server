@@ -77,8 +77,9 @@ public class NotificationService implements IDataMapperService<Notification> {
         if (notificationMessage.getPayload() instanceof PatientHealthIndexField)
             notification.setPayloadId(((PatientHealthIndexField) notificationMessage.getPayload()).getTagId());
         else notification.setPayloadId(notificationMessage.getPayload().getId());
+        notification.setCreatedAt(notificationMessage.getPayload().getCreatedAt());
         notification = notificationRepository.save(notification);
-        webSocketService.broadcast(notificationMessage.getTargetUser(), new NotificationDto(notification.getId(), notification.getReceiver().getId(), message, notification.getType()));
+        webSocketService.broadcast(notificationMessage.getTargetUser(), notification, message);
         return notification;
     }
 
