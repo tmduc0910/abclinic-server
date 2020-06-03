@@ -79,9 +79,10 @@ public class WebSocketService {
 //        }
     }
 
-    public void broadcast(User receiver, NotificationDto notification) {
-        broadcast(getTopicUrl(receiver), notification);
-        FcmUtils.pushNoti(receiver.getId(), notification);
+    public void broadcast(User receiver, Notification notification, String message) {
+        NotificationDto n = new NotificationDto(notification.getId(), notification.getReceiver().getId(), message, notification.getType());
+        broadcast(getTopicUrl(receiver), n);
+        FcmUtils.pushNoti(receiver.getId(), n, notification.getPayloadId(), notification.getType());
     }
 
     private class CustomStompSessionHandler extends StompSessionHandlerAdapter {

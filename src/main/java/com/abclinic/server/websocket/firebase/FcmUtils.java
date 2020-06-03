@@ -15,7 +15,7 @@ import com.google.firebase.messaging.Notification;
 public class FcmUtils {
     public static final String TOPIC = "users-";
 
-    public static void pushNoti(long userId, NotificationDto notificationDto) {
+    public static void pushNoti(long userId, NotificationDto notificationDto, long payloadId, int type) {
         try {
             String json = new ObjectMapper().writeValueAsString(notificationDto);
             Message message = Message.builder()
@@ -23,7 +23,8 @@ public class FcmUtils {
                             .setTitle("Tư vấn phòng khám")
                             .setBody(notificationDto.getNotification())
                             .build())
-                    .putData("content", json)
+                    .putData("payloadId", String.valueOf(payloadId))
+                    .putData("type", String.valueOf(type))
                     .setTopic(TOPIC + userId)
                     .build();
             // Send a message to the devices subscribed to the provided topic.

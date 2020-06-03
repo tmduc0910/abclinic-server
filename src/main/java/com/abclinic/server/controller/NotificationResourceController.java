@@ -49,7 +49,7 @@ public class NotificationResourceController extends CustomController {
             @ApiResponse(code = 200, message = "Danh sách thông báo"),
             @ApiResponse(code = 404, message = "Không tìm thấy thông báo nào")
     })
-    @JsonView(Views.Abridged.class)
+    @JsonView(Views.Private.class)
     public ResponseEntity<Page<Notification>> getNotifications(@ApiIgnore @RequestAttribute("User") User user,
                                                                @RequestParam("page") int page,
                                                                @RequestParam("size") int size) {
