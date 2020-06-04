@@ -11,4 +11,5 @@
     <include file="liquibase/inquiry_changeset.xml"/>
     <include file="liquibase/record_changeset_2.xml"/>
     <include file="liquibase/user_changeset.xml"/>
+    <include file="liquibase/health_index_changeset.xml"/>
 </databaseChangeLog>

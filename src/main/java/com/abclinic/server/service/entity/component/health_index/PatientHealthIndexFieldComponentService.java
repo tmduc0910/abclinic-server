@@ -71,6 +71,8 @@ public class PatientHealthIndexFieldComponentService implements IDataMapperServi
                 return patientHealthIndexFieldRepository.findBySchedulePatientIdAndTagIdIn(user.getId(), tagIds)
                         .orElseThrow(NotFoundException::new);
             case PRACTITIONER:
+                return patientHealthIndexFieldRepository.findBySchedulePatientPractitionerIdAndTagIdIn(user.getId(), tagIds)
+                        .orElseThrow(NotFoundException::new);
             case SPECIALIST:
             case DIETITIAN:
                 return patientHealthIndexFieldRepository.findByScheduleDoctorIdAndTagIdIn(user.getId(), tagIds)
@@ -119,8 +121,8 @@ public class PatientHealthIndexFieldComponentService implements IDataMapperServi
     }
 
     @Transactional
-    public Page<TagDto> getTagIds(Pageable pageable) {
-        return patientHealthIndexFieldRepository.findDistinctTagId(pageable);
+    public Page<TagDto> getTagIds(User user, Pageable pageable) {
+        return patientHealthIndexFieldRepository.findDistinctTagIdByUserId(user.getId(), pageable);
     }
 
     public int countDistinctTagId() {

@@ -41,6 +41,8 @@ public interface PatientHealthIndexFieldRepository extends JpaRepository<Patient
 
     Optional<List<PatientHealthIndexField>> findBySchedulePatientIdAndTagIdIn(long id, List<Long> tagIds);
 
+    Optional<List<PatientHealthIndexField>> findBySchedulePatientPractitionerIdAndTagIdIn(long id, List<Long> tagIds);
+
     Optional<List<PatientHealthIndexField>> findByScheduleDoctorIdAndTagIdIn(long id, List<Long> tagsIds);
 
     Optional<List<PatientHealthIndexField>> findByScheduleDoctorAndTagId(User doctor, long id);
@@ -51,8 +53,12 @@ public interface PatientHealthIndexFieldRepository extends JpaRepository<Patient
 
     List<PatientHealthIndexField> findAll(Sort sort);
 
-    @Query(value = "select distinct new com.abclinic.server.model.dto.TagDto(p.tagId, p.createdAt) from PatientHealthIndexField p")
-    Page<TagDto> findDistinctTagId(Pageable pageable);
+    @Query(value = "select distinct new com.abclinic.server.model.dto.TagDto(p.tagId, p.createdAt) " +
+            "from PatientHealthIndexField p " +
+            "where p.schedule.patient.id = :id " +
+            "or p.schedule.patient.practitioner.id = :id " +
+            "or p.schedule.doctor.id = :id")
+    Page<TagDto> findDistinctTagIdByUserId(long id, Pageable pageable);
 
     @Query(value = "select count(p.id) from PatientHealthIndexField p where p.tagId in ?1")
     int countIdByTag(List<Long> tagsId);

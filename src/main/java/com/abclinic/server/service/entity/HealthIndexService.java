@@ -103,7 +103,7 @@ public class HealthIndexService {
     }
 
     public PageDto<GetIndexResultResponseDto> getValuesList(User user, Pageable pageable) {
-        Page<TagDto> tags = getTags(pageable);
+        Page<TagDto> tags = getTags(user, pageable);
         List<Long> tagIds = new LinkedHashSet<>(tags.getContent())
                 .stream()
                 .map(TagDto::getTagId)
@@ -118,8 +118,8 @@ public class HealthIndexService {
                 pageable.getSort());
     }
 
-    private Page<TagDto> getTags(Pageable pageable) {
-        return patientHealthIndexFieldComponentService.getTagIds(pageable);
+    private Page<TagDto> getTags(User user, Pageable pageable) {
+        return patientHealthIndexFieldComponentService.getTagIds(user, pageable);
     }
 
     public Page<PatientHealthIndexField> getValuesList(HealthIndexSchedule schedule, Pageable pageable) {
