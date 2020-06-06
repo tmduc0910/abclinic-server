@@ -23,6 +23,7 @@ public class FcmUtils {
                             .setTitle("Tư vấn phòng khám")
                             .setBody(notificationDto.getNotification())
                             .build())
+                    .putData("content", json)
                     .putData("payloadId", String.valueOf(payloadId))
                     .putData("type", String.valueOf(type))
                     .setTopic(TOPIC + userId)
