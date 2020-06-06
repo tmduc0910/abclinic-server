@@ -38,7 +38,7 @@ public class Patient extends User implements IPayload {
     @JoinTable(
             name = "patient_disease",
             joinColumns = @JoinColumn(name = "patient_id"),
-            inverseJoinColumns = @JoinColumn(name = "doctor_id")
+            inverseJoinColumns = @JoinColumn(name = "disease_id")
     )
     @JsonView(Views.Public.class)
     @JsonSerialize(using = AbridgedViewSerializer.class)

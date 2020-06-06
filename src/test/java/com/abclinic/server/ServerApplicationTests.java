@@ -20,8 +20,6 @@ class ServerApplicationTests {
     @Test
     public void checkReminder() {
         scheduleReminderService.remind();
-        Scanner scanner = new Scanner(System.in);
-        scanner.nextLine();
     }
 
 }
