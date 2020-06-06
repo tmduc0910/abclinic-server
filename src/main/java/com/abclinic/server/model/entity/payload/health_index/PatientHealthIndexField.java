@@ -26,6 +26,7 @@ public class PatientHealthIndexField extends IPayloadIpml {
     @JoinColumn(name = "schedule_id")
     @JsonView(Views.Abridged.class)
     @JsonSerialize(using = AbridgedViewSerializer.class)
+
     private HealthIndexSchedule schedule;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = HealthIndexField.class)
@@ -42,6 +43,11 @@ public class PatientHealthIndexField extends IPayloadIpml {
     private LocalDateTime createdAt;
 
     public PatientHealthIndexField() {
+    }
+
+    public PatientHealthIndexField(HealthIndexField field, String value) {
+        this.field = field;
+        this.value = value;
     }
 
     public PatientHealthIndexField(HealthIndexSchedule schedule, HealthIndexField field, String value) {

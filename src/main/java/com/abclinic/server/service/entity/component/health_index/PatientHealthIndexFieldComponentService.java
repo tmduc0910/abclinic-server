@@ -115,8 +115,8 @@ public class PatientHealthIndexFieldComponentService implements IDataMapperServi
     }
 
     @Transactional
-    public List<PatientHealthIndexField> getList(User user, long id) {
-        return patientHealthIndexFieldRepository.findByScheduleDoctorAndTagId(user, id)
+    public List<PatientHealthIndexField> getList(long id) {
+        return patientHealthIndexFieldRepository.findByTagId(id)
                 .orElseThrow(NotFoundException::new);
     }
 

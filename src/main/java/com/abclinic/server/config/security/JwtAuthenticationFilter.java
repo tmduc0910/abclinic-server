@@ -70,6 +70,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (requestUri.startsWith("/api/error") ||
                 requestUri.contains("swagger") ||
                 requestUri.contains("api-docs") ||
+                requestUri.equalsIgnoreCase("/api/") ||
+                requestUri.equalsIgnoreCase("/api/csrf") ||
                 request.getMethod().contains("OPTIONS"))
             return null;
 

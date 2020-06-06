@@ -8,15 +8,13 @@ import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.common.utils.StringUtils;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
+import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.dto.GetIndexResultResponseDto;
 import com.abclinic.server.model.dto.IndexResultRequestDto;
 import com.abclinic.server.model.dto.IndexResultResponseDto;
 import com.abclinic.server.model.dto.PageDto;
 import com.abclinic.server.model.dto.request.delete.RequestDeleteDto;
-import com.abclinic.server.model.dto.request.post.RequestCreateHealthIndexDto;
-import com.abclinic.server.model.dto.request.post.RequestCreateHealthIndexFieldDto;
-import com.abclinic.server.model.dto.request.post.RequestCreateHealthIndexResultDto;
-import com.abclinic.server.model.dto.request.post.RequestCreateHealthIndexScheduleDto;
+import com.abclinic.server.model.dto.request.post.*;
 import com.abclinic.server.model.dto.request.put.RequestUpdateHealthIndexDto;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndex;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexField;
@@ -43,6 +41,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -320,7 +319,7 @@ public class HealthIndexResourceController extends CustomController {
     @Restricted(included = {Practitioner.class, Specialist.class, Dietitian.class})
     @ApiOperation(
             value = "Lấy danh sách kết quả thông số sức khỏe theo ID kết quả",
-            notes = "Trả về 200 OK hoặc 404 NOT FOUND",
+            notes = "Trả về 200 OK hoặc 403 FORBIDDEN",
             tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
     )
     @ApiImplicitParams({
@@ -328,7 +327,7 @@ public class HealthIndexResourceController extends CustomController {
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "Danh sách kết quả"),
-            @ApiResponse(code = 404, message = "Mã ID không tồn tại")
+            @ApiResponse(code = 403, message = "Bệnh nhân không thuộc quyền quản lý")
     })
     @JsonView(Views.Public.class)
     @JsonSerialize(using = AbridgedViewSerializer.class)
@@ -341,7 +340,7 @@ public class HealthIndexResourceController extends CustomController {
     @Restricted(included = Patient.class)
     @ApiOperation(
             value = "Tạo kết quả chỉ số sức khỏe",
-            notes = "Trả về 202 CREATED hoặc 400 BAD REQUEST",
+            notes = "Trả về 201 CREATED hoặc 400 BAD REQUEST",
             tags = "Bệnh nhân"
     )
     @ApiResponses({
@@ -350,12 +349,17 @@ public class HealthIndexResourceController extends CustomController {
     })
     @JsonView(Views.Private.class)
     public ResponseEntity<IndexResultResponseDto> createResult(@ApiIgnore @RequestAttribute("User") User user,
+                                                               @ApiIgnore HealthIndex index,
                                                                @RequestBody RequestCreateHealthIndexResultDto requestCreateHealthIndexResultDto) {
-        HealthIndexSchedule schedule = healthIndexService.getSchedule(requestCreateHealthIndexResultDto.getScheduleId());
+        HealthIndexSchedule schedule;
+        if (requestCreateHealthIndexResultDto.getScheduleId() != 0)
+            schedule = healthIndexService.getSchedule(requestCreateHealthIndexResultDto.getScheduleId());
+        else schedule = null;
         List<IndexResultRequestDto> requestDtos = requestCreateHealthIndexResultDto.getResults();
-        if (schedule.getIndex().getFields().size() == requestDtos.size()) {
+        if ((schedule != null && schedule.getIndex().getFields().size() == requestDtos.size()) ||
+                (index != null && index.getFields().size() == requestDtos.size())) {
             List<PatientHealthIndexField> values =
-                    healthIndexService.createResults(schedule,
+                    healthIndexService.createResults(user, schedule,
                             requestDtos.stream()
                                     .map(r -> healthIndexService.getField(r.getFieldId()))
                                     .collect(Collectors.toList()),

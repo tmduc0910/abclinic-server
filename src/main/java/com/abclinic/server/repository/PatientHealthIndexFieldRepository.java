@@ -45,7 +45,7 @@ public interface PatientHealthIndexFieldRepository extends JpaRepository<Patient
 
     Optional<List<PatientHealthIndexField>> findByScheduleDoctorIdAndTagIdIn(long id, List<Long> tagsIds);
 
-    Optional<List<PatientHealthIndexField>> findByScheduleDoctorAndTagId(User doctor, long id);
+    Optional<List<PatientHealthIndexField>> findByTagId(long id);
 
     List<PatientHealthIndexField> findAll(Predicate predicate);
 
@@ -57,7 +57,10 @@ public interface PatientHealthIndexFieldRepository extends JpaRepository<Patient
             "from PatientHealthIndexField p " +
             "where p.schedule.patient.id = :id " +
             "or p.schedule.patient.practitioner.id = :id " +
-            "or p.schedule.doctor.id = :id")
+            "or p.schedule.patient.id in (" +
+            "select dp.id from Dietitian d join d.patients dp where d.id = :id)" +
+            "or p.schedule.patient.id in (" +
+            "select sp.id from Specialist s join s.patients sp where s.id = :id)")
     Page<TagDto> findDistinctTagIdByUserId(long id, Pageable pageable);
 
     @Query(value = "select count(p.id) from PatientHealthIndexField p where p.tagId in ?1")

@@ -8,6 +8,7 @@ import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.repository.InquiryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -60,9 +61,10 @@ public class InquiryService implements IDataMapperService<Inquiry> {
                 break;
             case PRACTITIONER:
                 Practitioner practitioner = (Practitioner) doctorService.getById(user.getId());
-                if (!assigned)
-                    inquiries = inquiryRepository.findByPatientPractitionerAndPatientSubDoctorsIsNull(practitioner, pageable);
-                else inquiries = inquiryRepository.findByPatientPractitioner(practitioner, pageable);
+                if (!assigned) {
+                    pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+                    inquiries = inquiryRepository.findByPractitionerIdAndPatientSubDoctorsIsNull(practitioner.getId(), pageable);
+                } else inquiries = inquiryRepository.findByPatientPractitioner(practitioner, pageable);
                 break;
             case SPECIALIST:
                 Specialist specialist = (Specialist) doctorService.getById(user.getId());

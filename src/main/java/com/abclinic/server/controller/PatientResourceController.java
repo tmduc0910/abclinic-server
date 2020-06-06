@@ -88,9 +88,9 @@ public class PatientResourceController extends CustomController {
     @JsonView(Views.Abridged.class)
     @Restricted(excluded = Patient.class)
     public ResponseEntity<Page<Patient>> getPatients(@ApiIgnore @RequestAttribute("User") User user,
-                                      @RequestParam(value = "search", defaultValue = "") String search,
-                                      @RequestParam("page") int page,
-                                      @RequestParam("size") int size) {
+                                                     @RequestParam(value = "search", defaultValue = "") String search,
+                                                     @RequestParam("page") int page,
+                                                     @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("name").ascending());
         Page<Patient> list = patientService.getList(user, search, new PatientPredicateBuilder(), pageable);
         return new ResponseEntity<>(list, HttpStatus.OK);

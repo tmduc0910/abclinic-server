@@ -3,6 +3,7 @@ package com.abclinic.server.model.entity.user;
 import com.abclinic.server.common.base.Views;
 import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.RoleValue;
+import com.abclinic.server.model.entity.Disease;
 import com.abclinic.server.model.entity.payload.IPayload;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.serializer.AbridgedViewSerializer;
@@ -32,6 +33,16 @@ public class Patient extends User implements IPayload {
     @JsonView(Views.Abridged.class)
     @JsonSerialize(using = AbridgedViewSerializer.class)
     private Practitioner practitioner;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "patient_disease",
+            joinColumns = @JoinColumn(name = "patient_id"),
+            inverseJoinColumns = @JoinColumn(name = "doctor_id")
+    )
+    @JsonView(Views.Public.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
+    private List<Disease> diseases;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -77,6 +88,18 @@ public class Patient extends User implements IPayload {
 
     public void setPractitioner(Practitioner practitioner) {
         this.practitioner = practitioner;
+    }
+
+    public List<Disease> getDiseases() {
+        return diseases;
+    }
+
+    public void setDiseases(List<Disease> diseases) {
+        this.diseases = diseases;
+    }
+
+    public void addDisease(Disease disease) {
+        this.diseases.add(disease);
     }
 
     public List<User> getSubDoctors() {

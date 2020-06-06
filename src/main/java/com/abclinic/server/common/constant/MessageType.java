@@ -7,7 +7,7 @@ package com.abclinic.server.common.constant;
  */
 public enum MessageType {
     INQUIRE(0, "gửi yêu cầu tư vấn"),
-    ADVICE(1, "tư vấn"),
+    MED_ADVICE(1, "tư vấn khám bệnh"),
     REPLY(2, "trả lời tư vấn"),
     ASSIGN(3, "gán quyền quản lý"),
     ACCEPT_ASSIGN(4, "chấp nhận quản lý bệnh nhân"),
@@ -17,7 +17,7 @@ public enum MessageType {
     SEND_INDEX(8, "gửi chỉ số sức khỏe"),
     SCHEDULE_REMINDER(9, "có lịch gửi chỉ số sức khỏe phải nộp"),
     DEACTIVATED(10, "đã được hủy kích hoạt"),
-    UPDATE_ADVICE(11, "cập nhật lại tư vấn");
+    DIET_ADVICE(11, "tư vấn dinh dưỡng");
 
     private int value;
     private String action;

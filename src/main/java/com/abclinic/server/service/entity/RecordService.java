@@ -1,11 +1,14 @@
 package com.abclinic.server.service.entity;
 
 import com.abclinic.server.common.constant.PayloadStatus;
+import com.abclinic.server.common.constant.RecordType;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.model.entity.payload.record.DietRecord;
 import com.abclinic.server.model.entity.payload.record.MedicalRecord;
 import com.abclinic.server.model.entity.payload.record.Record;
+import com.abclinic.server.model.entity.user.Dietitian;
+import com.abclinic.server.model.entity.user.Specialist;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.repository.DietitianRecordRepository;
 import com.abclinic.server.repository.MedicalRecordRepository;
@@ -26,24 +29,31 @@ import java.util.Optional;
 public class RecordService implements IDataMapperService<Record> {
     private MedicalRecordRepository medicalRecordRepository;
     private DietitianRecordRepository dietitianRecordRepository;
+    private DoctorService doctorService;
 
     @Autowired
-    public RecordService(MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository) {
+    public RecordService(MedicalRecordRepository medicalRecordRepository, DietitianRecordRepository dietitianRecordRepository, DoctorService doctorService) {
         this.medicalRecordRepository = medicalRecordRepository;
         this.dietitianRecordRepository = dietitianRecordRepository;
+        this.doctorService = doctorService;
     }
 
-
     @Override
-    @Transactional
     public Record getById(long id) throws NotFoundException {
-        Optional<? extends Record> op = medicalRecordRepository.findById(id);
-        if (!op.isPresent()) {
-            op = dietitianRecordRepository.findById(id);
-            if (!op.isPresent())
-                throw new NotFoundException();
+        throw new UnsupportedOperationException();
+    }
+
+    @Transactional
+    public Record getByTypeAndId(int type, long id) throws NotFoundException {
+        switch (RecordType.getType(type)) {
+            case MEDICAL:
+                return medicalRecordRepository.findById(id)
+                        .orElseThrow(NotFoundException::new);
+            case DIET:
+                return dietitianRecordRepository.findById(id)
+                        .orElseThrow(NotFoundException::new);
         }
-        return op.get();
+        throw new NotFoundException();
     }
 
     @Transactional
@@ -54,7 +64,8 @@ public class RecordService implements IDataMapperService<Record> {
                 op = medicalRecordRepository.findByInquiryPatientPractitionerId(user.getId(), pageable);
                 break;
             case SPECIALIST:
-                op = medicalRecordRepository.findByDoctor(user, pageable);
+                Specialist sp = (Specialist) doctorService.getById(user.getId());
+                op = medicalRecordRepository.findByInquiryPatientIn(sp.getPatients(), pageable);
                 break;
             case PATIENT:
                 op = medicalRecordRepository.findByInquiryPatientIdAndStatus(user.getId(), PayloadStatus.PROCESSED, pageable);
@@ -73,7 +84,8 @@ public class RecordService implements IDataMapperService<Record> {
                 op = dietitianRecordRepository.findByInquiryPatientPractitionerId(user.getId(), pageable);
                 break;
             case DIETITIAN:
-                op = dietitianRecordRepository.findByDoctor(user, pageable);
+                Dietitian di = (Dietitian) doctorService.getById(user.getId());
+                op = dietitianRecordRepository.findByInquiryPatientIn(di.getPatients(), pageable);
                 break;
             case PATIENT:
                 op = dietitianRecordRepository.findByInquiryPatientIdAndStatus(user.getId(), PayloadStatus.PROCESSED, pageable);

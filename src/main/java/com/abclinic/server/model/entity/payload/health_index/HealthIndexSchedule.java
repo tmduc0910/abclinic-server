@@ -10,6 +10,7 @@ import com.abclinic.server.serializer.AbridgedViewSerializer;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -23,6 +24,7 @@ import java.util.List;
  */
 
 @Entity
+@DynamicUpdate
 @Table(name = "health_index_schedule")
 public class HealthIndexSchedule extends IPayloadIpml {
 
@@ -64,9 +66,11 @@ public class HealthIndexSchedule extends IPayloadIpml {
     @JsonView(Views.Confidential.class)
     private LocalDateTime updatedAt;
 
+    @Column(name = "started_at", columnDefinition = "TIMESTAMP")
     @JsonView(Views.Public.class)
     private LocalDateTime startedAt;
 
+    @Column(name = "ended_at", columnDefinition = "TIMESTAMP")
     @JsonView(Views.Public.class)
     private LocalDateTime endedAt;
 

@@ -44,10 +44,6 @@ public class ScheduleReminderService {
             } else if (distance <= Constant.REMINDER_LIMIT) {
                 notificationService.makeNotification(s.getDoctor(), NotificationFactory.getMessage(MessageType.SCHEDULE_REMINDER, s.getPatient(), s));
             }
-
-            while (s.getEndedAt().isBefore(now)) {
-                healthIndexService.updateSchedule(s);
-            }
         });
     }
 }

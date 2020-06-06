@@ -1,5 +1,7 @@
 package com.abclinic.server.common.constant;
 
+import java.util.Arrays;
+
 /**
  * @author tmduc
  * @package com.abclinic.server.constant
@@ -17,5 +19,9 @@ public enum RecordType {
 
     public int getValue() {
         return value;
+    }
+
+    public static RecordType getType(int type) {
+        return Arrays.stream(RecordType.values()).filter(t -> t.getValue() == type).findFirst().get();
     }
 }

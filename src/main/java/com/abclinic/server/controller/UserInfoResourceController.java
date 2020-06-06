@@ -7,18 +7,22 @@ import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.exception.BadRequestException;
+import com.abclinic.server.exception.ForbiddenException;
+import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
+import com.abclinic.server.model.dto.IndexResultResponseDto;
 import com.abclinic.server.model.dto.request.delete.RequestDeleteDto;
+import com.abclinic.server.model.dto.request.post.RequestCreateHealthIndexResultDto;
+import com.abclinic.server.model.dto.request.post.RequestCreateOtherHealthIndexResultDto;
 import com.abclinic.server.model.dto.request.post.RequestReactivateUser;
 import com.abclinic.server.model.dto.request.put.RequestUpdateDoctorSpecialtyDto;
 import com.abclinic.server.model.dto.request.put.RequestUpdateOtherUserInfo;
+import com.abclinic.server.model.dto.request.put.RequestUpdatePatientDiseaseDto;
 import com.abclinic.server.model.dto.request.put.RequestUpdateUserInfoDto;
+import com.abclinic.server.model.entity.payload.health_index.HealthIndex;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
-import com.abclinic.server.service.entity.DoctorService;
-import com.abclinic.server.service.entity.PatientService;
-import com.abclinic.server.service.entity.SpecialtyService;
-import com.abclinic.server.service.entity.UserService;
+import com.abclinic.server.service.entity.*;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
@@ -29,7 +33,9 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -56,6 +62,15 @@ public class UserInfoResourceController extends CustomController {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private DiseaseService diseaseService;
+
+    @Autowired
+    private HealthIndexService healthIndexService;
+
+    @Autowired
+    private HealthIndexResourceController healthIndexResourceController;
 
     @Override
     public void init() {
@@ -223,5 +238,75 @@ public class UserInfoResourceController extends CustomController {
                 }
         }
         return null;
+    }
+
+    @PutMapping("/user/{id}/specialties")
+    @Restricted(included = Coordinator.class)
+    @ApiOperation(
+            value = "Điều phối viên sửa chuyên môn của bác sĩ",
+            notes = "Trả về 200 OK hoặc 400 BAD REQUEST hoặc 403 FORBIDDEN",
+            tags = "Điều phối viên"
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Sửa thành công"),
+            @ApiResponse(code = 400, message = "Bác sĩ dinh dưỡng/chuyên khoa chỉ có thể chọn tối đa 1 chuyên môn"),
+            @ApiResponse(code = 403, message = "Đây không phải bác sĩ")
+    })
+    @JsonView(Views.Public.class)
+    public ResponseEntity<? extends User> editSpecialties(@ApiIgnore @RequestAttribute("User") User user,
+                                                          @RequestBody RequestUpdateDoctorSpecialtyDto requestUpdateDoctorSpecialtyDto,
+                                                          @PathVariable("id") long id) {
+        User u = userService.getById(id);
+        if (user.getRole() == Role.PATIENT || user.getRole() == Role.COORDINATOR)
+            throw new ForbiddenException(user.getId(), "Đây không phải bác sĩ");
+        else return editSpecialties(u, requestUpdateDoctorSpecialtyDto);
+    }
+
+    @PutMapping("/user/{id}/diseases")
+    @ApiOperation(
+            value = "Lập tiền sử bệnh án của bệnh nhân",
+            notes = "Trả về 200 OK hoặc 400 BAD REQUEST",
+            tags = "Điều phối viên"
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Lập thành công"),
+            @ApiResponse(code = 400, message = "Mã ID của bệnh không hợp lệ")
+    })
+    @Restricted(included = Coordinator.class)
+    @JsonView(Views.Public.class)
+    public ResponseEntity<Patient> editPatientDisease(@ApiIgnore @RequestAttribute("User") User user,
+                                                      @RequestBody RequestUpdatePatientDiseaseDto requestUpdatePatientDiseaseDto,
+                                                      @PathVariable("id") long id) {
+        Patient patient = patientService.getById(id);
+        try {
+            requestUpdatePatientDiseaseDto.getDiseaseIds().forEach(diseaseId ->
+                patient.addDisease(diseaseService.getById(diseaseId)));
+            return new ResponseEntity<>(patientService.save(patient), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            throw new BadRequestException(user.getId(), "Mã ID của bệnh không hợp lệ");
+        }
+    }
+
+    @PostMapping("/user/{id}/results")
+    @Restricted(included = Coordinator.class)
+    @ApiOperation(
+            value = "Điều phối viên khởi tạo thông tin sức khỏe bệnh nhân",
+            notes = "Trả về 201 CREATED hoặc 403 FORBIDDEN",
+            tags = "Điều phối viên"
+    )
+    @JsonView(Views.Public.class)
+    public ResponseEntity<List<IndexResultResponseDto>> initHealthIndexes(@ApiIgnore @RequestAttribute("User") User user,
+                                                                          @RequestBody RequestCreateOtherHealthIndexResultDto requestCreateOtherHealthIndexResultDto,
+                                                                          @PathVariable("id") long id) {
+        Patient p = patientService.getById(id);
+        List<IndexResultResponseDto> result = new ArrayList<>();
+        requestCreateOtherHealthIndexResultDto.getRequestDtos().forEach(dto -> {
+            HealthIndex index = healthIndexService.getIndex(dto.getIndexId());
+            RequestCreateHealthIndexResultDto request = new RequestCreateHealthIndexResultDto();
+            request.setScheduleId(0);
+            request.setResults(new ArrayList<>(dto.getRequestDtos()));
+            result.add(healthIndexResourceController.createResult(p, index, request).getBody());
+        });
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

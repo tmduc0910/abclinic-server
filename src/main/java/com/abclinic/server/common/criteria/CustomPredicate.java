@@ -54,6 +54,9 @@ public class CustomPredicate<T> {
                         return path.divide(value).floor().mod(2).eq(1);
                     return path.eq(0);
             }
+        } else if (criteria.getValue().equals("null")) {
+            final NumberPath<Integer> path = entityPath.getNumber(criteria.getKey(), Integer.class);
+            return path.isNull();
         } else if (criteria.getOperation().equalsIgnoreCase(Constant.CONTAIN_SBL)) {
             QPatient qPatient = QPatient.patient;
             return qPatient.subDoctors.contains((User) criteria.getValue());
@@ -64,18 +67,14 @@ public class CustomPredicate<T> {
 
             NumberPath<Long> path = entityPath.getNumber("id", Long.class);
             return path.in(JPAExpressions.selectFrom(qPractitioner)
-                        .where(qPractitioner.specialties.any().name.containsIgnoreCase(criteria.getValue().toString()))
-                        .select(qPractitioner.id))
+                    .where(qPractitioner.specialties.any().name.containsIgnoreCase(criteria.getValue().toString()))
+                    .select(qPractitioner.id))
                     .or(path.in(JPAExpressions.selectFrom(qSpecialist)
                             .where(qSpecialist.specialty.name.containsIgnoreCase(criteria.getValue().toString()))
                             .select(qSpecialist.id)))
                     .or(path.in(JPAExpressions.selectFrom(qDietitian)
                             .where(qDietitian.specialty.name.containsIgnoreCase(criteria.getValue().toString()))
                             .select(qDietitian.id)));
-
-//            return qPractitioner.specialties.any().name.containsIgnoreCase(criteria.getValue().toString())
-//                    .or(qSpecialist.specialty.name.containsIgnoreCase(criteria.getValue().toString()))
-//                    .or(qDietitian.specialty.name.containsIgnoreCase(criteria.getValue().toString()));
         } else {
             final StringPath path = entityPath.getString(criteria.getKey());
             if (criteria.getOperation().equalsIgnoreCase(Constant.EQUAL_SBL)) {

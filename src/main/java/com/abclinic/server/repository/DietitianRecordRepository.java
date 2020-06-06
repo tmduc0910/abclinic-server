@@ -1,11 +1,13 @@
 package com.abclinic.server.repository;
 
 import com.abclinic.server.model.entity.payload.record.DietRecord;
+import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -17,16 +19,6 @@ public interface DietitianRecordRepository extends JpaRepository<DietRecord, Lon
     Optional<DietRecord> findById(long id);
     Optional<Page<DietRecord>> findByInquiryPatientPractitionerId(long id, Pageable pageable);
     Optional<Page<DietRecord>> findByInquiryPatientIdAndStatus(long id, int status, Pageable pageable);
-    Optional<Page<DietRecord>> findByDoctor(User user, Pageable pageable);
-//
-//    @Query("select dr from DietRecord dr " +
-//            "where (:patient is null or dr.patient.name like :patient) " +
-//            "and (:status is null or dr.status = :status)")
-//    Optional<List<DietRecord>> findByPatientAndStatus(@Param("patient") String patientName, @Param("status") int status, Pageable pageable);
-//
-//    @Query("select dr from DietRecord dr " +
-//            "where (:patient is null or dr.patient.name like :patient) " +
-//            "and (:status is null or dr.status = :status) " +
-//            "and dr.practitioner = :practitioner")
-//    Optional<List<DietRecord>> findByPractitionerAndPatientAndStatus(@Param("practitioner") Practitioner practitioner, @Param("patient") String patientName, @Param("status") int status, Pageable pageable);
+    Optional<Page<DietRecord>> findByInquiryPatientIn(List<Patient> patients, Pageable pageable);
+
 }

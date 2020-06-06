@@ -1,8 +1,12 @@
 package com.abclinic.server.service.entity;
 
 import com.abclinic.server.common.constant.MessageType;
+import com.abclinic.server.common.constant.Role;
+import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.common.criteria.HealthIndexSchedulePredicateBuilder;
 import com.abclinic.server.common.criteria.PatientHealthIndexFieldPredicateBuilder;
+import com.abclinic.server.common.utils.StatusUtils;
+import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.dto.GetIndexResultResponseDto;
@@ -142,7 +146,8 @@ public class HealthIndexService {
                 .collect(Collectors.toList());
         PageDto<GetIndexResultResponseDto> r = new PageDto<>(tags.size(), pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
         if (!tags.isEmpty()) {
-            temp = tags.subList(pageable.getPageNumber() * pageable.getPageSize(), (pageable.getPageNumber() + 1) * pageable.getPageSize());
+            int end = (pageable.getPageNumber() + 1) * pageable.getPageSize();
+            temp = tags.subList(pageable.getPageNumber() * pageable.getPageSize(), Math.min(tags.size(), end));
             res = p.stream().filter(i -> temp.contains(i.getTagId())).collect(Collectors.toList());
             r.setContent(getResultResponseDto(res, temp));
         }
@@ -158,7 +163,11 @@ public class HealthIndexService {
     }
 
     public List<PatientHealthIndexField> getValuesList(User user, long id) {
-        return patientHealthIndexFieldComponentService.getList(user, id);
+        List<PatientHealthIndexField> list = patientHealthIndexFieldComponentService.getList(id);
+        if (list.get(0).getSchedule().getPatient().getPractitioner().equals(user) ||
+                list.get(0).getSchedule().getPatient().getSubDoctors().contains(user))
+            return list;
+        else throw new ForbiddenException(user.getId(), "Bệnh nhân không thuộc quyền quản lý");
     }
 
     public HealthIndexSchedule createSchedule(Patient patient, Doctor doctor, long scheduleTime, LocalDateTime startTime, HealthIndex index) {
@@ -174,6 +183,7 @@ public class HealthIndexService {
         return schedule;
     }
 
+    @Transactional
     public HealthIndexSchedule updateSchedule(HealthIndexSchedule schedule) {
         return healthIndexScheduleComponentService.updateSchedule(schedule);
     }
@@ -194,32 +204,34 @@ public class HealthIndexService {
         return index;
     }
 
-    public List<PatientHealthIndexField> createResults(HealthIndexSchedule schedule, List<HealthIndexField> fields, List<String> values) {
+    public List<PatientHealthIndexField> createResults(User user, HealthIndexSchedule schedule, List<HealthIndexField> fields, List<String> values) {
         List<PatientHealthIndexField> results = new ArrayList<>();
-        Patient patient = schedule.getPatient();
         long tagId = -1;
+        boolean isInit = schedule == null && user.getRole() == Role.PATIENT && StatusUtils.containsStatus(user, UserStatus.NEW);
+        Patient patient = schedule != null ? schedule.getPatient() : (Patient) user;
 
-        schedule = updateSchedule(schedule);
+        if (!isInit)
+            schedule = updateSchedule(schedule);
         for (int i = 0; i < fields.size(); i++) {
             PatientHealthIndexField f = createResult(schedule, fields.get(i), values.get(i));
-            f.setSchedule(schedule);
             if (tagId < 0)
                 tagId = f.getId();
             f.setTagId(tagId);
             f = (PatientHealthIndexField) save(f);
             PatientHealthIndexField finalF = f;
-            patient.getSubDoctors().forEach(d -> {
-                notificationService.makeNotification(patient,
-                        NotificationFactory.getMessage(MessageType.SEND_INDEX, d, finalF));
-            });
+            patient.getSubDoctors().forEach(d -> notificationService.makeNotification(patient,
+                    NotificationFactory.getMessage(MessageType.SEND_INDEX, d, finalF)));
             results.add(f);
         }
-        notificationService.makeNotification(patient, NotificationFactory.getMessage(MessageType.SEND_INDEX, patient.getPractitioner(), results.get(0)));
+        if (!isInit)
+            notificationService.makeNotification(patient, NotificationFactory.getMessage(MessageType.SEND_INDEX, patient.getPractitioner(), results.get(0)));
         return results;
     }
 
     private PatientHealthIndexField createResult(HealthIndexSchedule schedule, HealthIndexField field, String value) {
-        if (schedule.getIndex().getFields().contains(field)) {
+        if (schedule == null) {
+            return (PatientHealthIndexField) save(new PatientHealthIndexField(field, value));
+        } else if (schedule.getIndex().getFields().contains(field)) {
             PatientHealthIndexField result = new PatientHealthIndexField(schedule, field, value);
             return (PatientHealthIndexField) save(result);
         } else throw new IllegalArgumentException();
