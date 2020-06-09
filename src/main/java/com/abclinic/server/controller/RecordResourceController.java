@@ -133,7 +133,7 @@ public class RecordResourceController extends CustomController {
     public ResponseEntity<? extends Record> editRecord(@ApiIgnore @RequestAttribute("User") User user,
                                                        @RequestBody RequestUpdateRecordDto requestUpdateRecordDto) {
         try {
-            Record record = recordService.getById(requestUpdateRecordDto.getId());
+            Record record = recordService.getByTypeAndId(requestUpdateRecordDto.getType(), requestUpdateRecordDto.getId());
             if (!record.getDoctor().equals(user)) {
                 if (record.getInquiry().of(user)) {
                     Patient patient = record.getInquiry().getPatient();

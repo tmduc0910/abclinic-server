@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class RequestUpdateRecordDto {
     @JsonProperty("id")
     private long id;
+    private int type;
     private String diagnose = null;
     private String note;
     private String prescription;
@@ -20,6 +21,14 @@ public class RequestUpdateRecordDto {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public String getDiagnose() {
