@@ -223,7 +223,7 @@ public class RecordResourceController extends CustomController {
     })
     @JsonView(Views.Private.class)
     public ResponseEntity getRecordDetail(@ApiIgnore @RequestAttribute("User") User user,
-                                          @PathParam("type") int type,
+                                          @RequestParam("type") int type,
                                           @PathVariable long id) {
         Record record = recordService.getByTypeAndId(type,  id);
         if (record.getInquiry().of(user))

@@ -5,6 +5,7 @@ import com.abclinic.server.common.constant.Role;
 import com.abclinic.server.common.constant.UserStatus;
 import com.abclinic.server.common.criteria.HealthIndexSchedulePredicateBuilder;
 import com.abclinic.server.common.criteria.PatientHealthIndexFieldPredicateBuilder;
+import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.common.utils.StatusUtils;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
@@ -49,14 +50,16 @@ public class HealthIndexService {
     private HealthIndexScheduleComponentService healthIndexScheduleComponentService;
     private PatientHealthIndexFieldComponentService patientHealthIndexFieldComponentService;
     private NotificationService notificationService;
+    private UserService userService;
 
     @Autowired
-    public HealthIndexService(HealthIndexComponentService healthIndexComponentService, HealthIndexFieldComponentService healthIndexFieldComponentService, HealthIndexScheduleComponentService healthIndexScheduleComponentService, PatientHealthIndexFieldComponentService patientHealthIndexFieldComponentService, NotificationService notificationService) {
+    public HealthIndexService(HealthIndexComponentService healthIndexComponentService, HealthIndexFieldComponentService healthIndexFieldComponentService, HealthIndexScheduleComponentService healthIndexScheduleComponentService, PatientHealthIndexFieldComponentService patientHealthIndexFieldComponentService, NotificationService notificationService, UserService userService) {
         this.healthIndexComponentService = healthIndexComponentService;
         this.healthIndexFieldComponentService = healthIndexFieldComponentService;
         this.healthIndexScheduleComponentService = healthIndexScheduleComponentService;
         this.patientHealthIndexFieldComponentService = patientHealthIndexFieldComponentService;
         this.notificationService = notificationService;
+        this.userService = userService;
     }
 
     public HealthIndex getIndex(long id) {
@@ -179,6 +182,8 @@ public class HealthIndexService {
                 .filter(d -> !d.equals(doctor))
                 .forEach(d -> notificationService.makeNotification(doctor,
                         NotificationFactory.getMessage(MessageType.SCHEDULE, d, finalSchedule)));
+        patient = StatusUtils.update(patient, UserStatus.SCHEDULED);
+        patient = (Patient) userService.save(patient);
         notificationService.makeNotification(doctor, NotificationFactory.getMessage(MessageType.SCHEDULE, patient, schedule));
         return schedule;
     }
@@ -210,7 +215,7 @@ public class HealthIndexService {
         boolean isInit = schedule == null && user.getRole() == Role.PATIENT && StatusUtils.containsStatus(user, UserStatus.NEW);
         Patient patient = schedule != null ? schedule.getPatient() : (Patient) user;
 
-        if (!isInit)
+        if (!isInit && DateTimeUtils.getCurrent().isAfter(schedule.getStartedAt()))
             schedule = updateSchedule(schedule);
         for (int i = 0; i < fields.size(); i++) {
             PatientHealthIndexField f = createResult(schedule, fields.get(i), values.get(i));
