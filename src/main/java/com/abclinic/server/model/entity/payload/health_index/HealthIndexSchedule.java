@@ -51,6 +51,9 @@ public class HealthIndexSchedule extends IPayloadIpml {
     @JsonSerialize(using = AbridgedViewSerializer.class)
     private List<PatientHealthIndexField> patientValues;
 
+    @JsonView(Views.Abridged.class)
+    private String description;
+
     @Column(name = "scheduled")
     @JsonView(Views.Abridged.class)
     private long scheduledTime;
@@ -78,10 +81,11 @@ public class HealthIndexSchedule extends IPayloadIpml {
 
     }
 
-    public HealthIndexSchedule(Patient patient, Doctor doctor, HealthIndex index, long scheduledTime, LocalDateTime startedAt) {
+    public HealthIndexSchedule(Patient patient, Doctor doctor, HealthIndex index, String description, long scheduledTime, LocalDateTime startedAt) {
         this.patient = patient;
         this.doctor = doctor;
         this.index = index;
+        this.description = description;
         this.scheduledTime = scheduledTime;
         this.startedAt = startedAt;
         this.endedAt = DateTimeUtils.plusSeconds(startedAt, scheduledTime - 1);
@@ -117,6 +121,14 @@ public class HealthIndexSchedule extends IPayloadIpml {
 
     public void setPatientValues(List<PatientHealthIndexField> patientValues) {
         this.patientValues = patientValues;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public long getScheduledTime() {

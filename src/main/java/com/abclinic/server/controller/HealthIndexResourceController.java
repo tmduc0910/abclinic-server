@@ -257,7 +257,8 @@ public class HealthIndexResourceController extends CustomController {
             LocalDateTime startedAt = DateTimeUtils.parseDateTime(requestCreateHealthIndexScheduleDto.getStart());
             Patient patient = patientService.getById(requestCreateHealthIndexScheduleDto.getPatientId());
             HealthIndex index = healthIndexService.getIndex(requestCreateHealthIndexScheduleDto.getIndexId());
-            return new ResponseEntity<>(healthIndexService.createSchedule(patient, (Doctor) user, requestCreateHealthIndexScheduleDto.getScheduledTime(), startedAt, index), HttpStatus.CREATED);
+            String description = requestCreateHealthIndexScheduleDto.getDescription();
+            return new ResponseEntity<>(healthIndexService.createSchedule(patient, (Doctor) user, description, requestCreateHealthIndexScheduleDto.getScheduledTime(), startedAt, index), HttpStatus.CREATED);
         } catch (DateTimeParseException e) {
             throw new BadRequestException(user.getId(), "Format thời gian không hợp lệ");
         }

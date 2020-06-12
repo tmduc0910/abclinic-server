@@ -173,8 +173,8 @@ public class HealthIndexService {
         else throw new ForbiddenException(user.getId(), "Bệnh nhân không thuộc quyền quản lý");
     }
 
-    public HealthIndexSchedule createSchedule(Patient patient, Doctor doctor, long scheduleTime, LocalDateTime startTime, HealthIndex index) {
-        HealthIndexSchedule schedule = new HealthIndexSchedule(patient, doctor, index, scheduleTime, startTime);
+    public HealthIndexSchedule createSchedule(Patient patient, Doctor doctor, String description, long scheduleTime, LocalDateTime startTime, HealthIndex index) {
+        HealthIndexSchedule schedule = new HealthIndexSchedule(patient, doctor, index, description, scheduleTime, startTime);
         schedule = (HealthIndexSchedule) save(schedule);
         List<User> doctors = patient.getSubDoctors();
         HealthIndexSchedule finalSchedule = schedule;

@@ -12,6 +12,9 @@ public class RequestCreateHealthIndexScheduleDto {
     private long patientId;
     @JsonProperty("index_id")
     private long indexId;
+    @JsonProperty("description")
+    private String description;
+    @JsonProperty("start")
     private String start;
     @JsonProperty("scheduled")
     private long scheduledTime;
@@ -30,6 +33,14 @@ public class RequestCreateHealthIndexScheduleDto {
 
     public void setIndexId(long indexId) {
         this.indexId = indexId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getStart() {
