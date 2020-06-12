@@ -44,21 +44,21 @@ public class DatabaseInitService implements CommandLineRunner {
         if (isDropFirst) {
             try {
                 //INIT USERS
-                authController.processSignUp(null, new RequestSignUpDto(Role.PRACTITIONER.getValue(), "pra01@mail.com", "123456", "Bác sĩ đa khoa 01", 0, "01/01/1981", "01567135178"));
-                authController.processSignUp(null, new RequestSignUpDto(Role.SPECIALIST.getValue(), "spe01@mail.com", "123456", "Bác sĩ chuyên khoa 01", 0, "04/04/1974", "0866215135"));
-                authController.processSignUp(null, new RequestSignUpDto(Role.DIETITIAN.getValue(), "die01@mail.com", "123456", "Bác sĩ dinh dưỡng 01", 1, "10/03/1984", "0466881682"));
+//                authController.processSignUp(null, new RequestSignUpDto(Role.PRACTITIONER.getValue(), "pra01@mail.com", "123456", "Bác sĩ đa khoa 01", 0, "01/01/1981", "01567135178"));
+//                authController.processSignUp(null, new RequestSignUpDto(Role.SPECIALIST.getValue(), "spe01@mail.com", "123456", "Bác sĩ chuyên khoa 01", 0, "04/04/1974", "0866215135"));
+//                authController.processSignUp(null, new RequestSignUpDto(Role.DIETITIAN.getValue(), "die01@mail.com", "123456", "Bác sĩ dinh dưỡng 01", 1, "10/03/1984", "0466881682"));
                 authController.processSignUp(null, new RequestSignUpDto(Role.COORDINATOR.getValue(), "coo01@mail.com", "123456", "Điều phối viên 01", 1, "27/05/1991", "0991138432"));
 
-                User user = userRepository.findById(4).get();
-                authController.processSignUp(user, new RequestSignUpDto(Role.PATIENT.getValue(), "pat01@mail.com", "123456", "Bệnh nhân 01", 1, "03/05/1989", "0986135713"));
-                authController.processSignUp(user, new RequestSignUpDto(Role.PATIENT.getValue(), "pat02@mail.com", "123456", "Bệnh nhân 02", 1, "22/12/1984", "01862135841"));
-                authController.processSignUp(user, new RequestSignUpDto(Role.PATIENT.getValue(), "pat03@mail.com", "123456", "Bệnh nhân 03", 0, "15/03/1989", "0115618846"));
-
-                //INIT DISEASES
-                diseaseRepository.save(new Disease("Viêm thận", "Thận bị viêm"));
-                diseaseRepository.save(new Disease("Viêm gan", "Gan bị viêm"));
-                diseaseRepository.save(new Disease("Viêm màng nhĩ", "Màng nhĩ bị viêm"));
-                diseaseRepository.save(new Disease("Viêm màng túi", "Hết tiền"));
+//                User user = userRepository.findById(4).get();
+//                authController.processSignUp(user, new RequestSignUpDto(Role.PATIENT.getValue(), "pat01@mail.com", "123456", "Bệnh nhân 01", 1, "03/05/1989", "0986135713"));
+//                authController.processSignUp(user, new RequestSignUpDto(Role.PATIENT.getValue(), "pat02@mail.com", "123456", "Bệnh nhân 02", 1, "22/12/1984", "01862135841"));
+//                authController.processSignUp(user, new RequestSignUpDto(Role.PATIENT.getValue(), "pat03@mail.com", "123456", "Bệnh nhân 03", 0, "15/03/1989", "0115618846"));
+//
+//                //INIT DISEASES
+//                diseaseRepository.save(new Disease("Viêm thận", "Thận bị viêm"));
+//                diseaseRepository.save(new Disease("Viêm gan", "Gan bị viêm"));
+//                diseaseRepository.save(new Disease("Viêm màng nhĩ", "Màng nhĩ bị viêm"));
+//                diseaseRepository.save(new Disease("Viêm màng túi", "Hết tiền"));
             } finally {
                 logger.info("Database Init");
             }
