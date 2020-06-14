@@ -10,11 +10,14 @@ import com.querydsl.core.types.dsl.StringPath;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.querydsl.binding.SingleValueBinding;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +35,9 @@ public interface HealthIndexScheduleRepository extends JpaRepository<HealthIndex
     Optional<Page<HealthIndexSchedule>> findByDoctor(Doctor doctor, Pageable pageable);
 
     List<HealthIndexSchedule> findByStatus(int status);
+
+    @Query("select s from HealthIndexSchedule s where s.endedAt < :to")
+    List<HealthIndexSchedule> findByEndedAt(LocalDateTime to);
 
     @Override
     default void customize(QuerydslBindings querydslBindings, QHealthIndexSchedule qHealthIndexSchedule) {

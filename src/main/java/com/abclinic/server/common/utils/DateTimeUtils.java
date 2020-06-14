@@ -2,12 +2,10 @@ package com.abclinic.server.common.utils;
 
 import com.abclinic.server.common.constant.Constant;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.YearMonth;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 /**
  * @author tmduc
@@ -68,5 +66,9 @@ public class DateTimeUtils {
     public static int secondsToMonths(long time) {
         YearMonth yearMonth = YearMonth.now();
         return secondsToDays(time) / yearMonth.lengthOfMonth();
+    }
+
+    public static Date toDate(LocalDateTime time) {
+        return Date.from(time.atZone(ZoneId.systemDefault()).toInstant());
     }
 }

@@ -198,6 +198,11 @@ public class HealthIndexService {
         return healthIndexScheduleComponentService.getAllAvailableSchedules();
     }
 
+    @Transactional
+    public List<HealthIndexSchedule> getTodaySchedules() {
+        return healthIndexScheduleComponentService.getTodaySchedules();
+    }
+
     public HealthIndex createIndex(String indexName, String description, String[] fieldNames) {
         HealthIndex index = new HealthIndex(indexName, description);
         index = (HealthIndex) save(index);

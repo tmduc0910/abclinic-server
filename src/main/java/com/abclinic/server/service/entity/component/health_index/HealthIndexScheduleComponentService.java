@@ -22,6 +22,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -76,6 +78,11 @@ public class HealthIndexScheduleComponentService implements IDataMapperService<H
     @Transactional
     public List<HealthIndexSchedule> getAllAvailableSchedules() {
         return healthIndexScheduleRepository.findByStatus(PayloadStatus.UNREAD);
+    }
+
+    @Transactional
+    public List<HealthIndexSchedule> getTodaySchedules() {
+        return healthIndexScheduleRepository.findByEndedAt(LocalDate.now().plusDays(1).atStartOfDay());
     }
 
     @Override
