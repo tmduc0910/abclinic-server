@@ -11,14 +11,14 @@ spring:
     #    password: broce8lbgjo1w8qm
 
     ##    REMOTE MYSQL
-    #        url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
-    #        username: LQmSwtESHO
-    #        password: DKy7DjMWqG
+            url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
+            username: LQmSwtESHO
+            password: 0vwNED4bIy
 
     #    REMOTE MYSQL
-    url: jdbc:mysql://remotemysql.com:3306/Cm2YXPzx0c
-    username: Cm2YXPzx0c
-    password: vaix6nFyvj
+#    url: jdbc:mysql://remotemysql.com:3306/Cm2YXPzx0c
+#    username: Cm2YXPzx0c
+#    password: vaix6nFyvj
 
   ##    HELIO HOST
   #      url: jdbc:mysql://abclinic.heliohost.org:3306/abclinic_db
