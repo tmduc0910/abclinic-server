@@ -78,6 +78,7 @@ public class UserInfoResourceController extends CustomController {
     }
 
     @GetMapping("/user")
+    @Restricted
     @ApiOperation(
             value = "Xem thông tin cá nhân",
             notes = "Trả về chi tiết thông tin cá nhân"

@@ -56,27 +56,10 @@ public class WebSocketService {
     public void broadcast(String destination, NotificationDto notification) {
         try {
             Gson gson = new Gson();
-//            publisher.getSession().send("/api/app/sendNoti", gson.toJson(notification).getBytes());
             publisher.getSession().send(destination, gson.toJson(notification).getBytes());
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-//        Gson gson = new Gson();
-//        WebSocketStompClient stompClient = new WebSocketStompClient(new SockJsClient(
-//                Arrays.asList(new WebSocketTransport(new StandardWebSocketClient()))));
-////        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-//        try {
-//            StompSession session = stompClient
-//                    .connect(publisher.getUri(), new StompSessionHandlerAdapter() {
-//                    })
-//                    .get(1, SECONDS);
-//            session.subscribe("/topic/users/6", new CustomStompSessionHandler());
-//            session.send(destination, gson.toJson(notification));
-//            session.send("/app/sendNoti", gson.toJson(notification));
-//        } catch (Exception e) {
-//
-//        }
     }
 
     public void broadcast(User receiver, Notification notification, String message) {

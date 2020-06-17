@@ -20,6 +20,7 @@ import java.util.Map;
 @Component
 public class HttpHandshakeInterceptor implements HandshakeInterceptor {
 
+
     private static final Logger logger = LoggerFactory.getLogger(HttpHandshakeInterceptor.class);
 
     @Override
@@ -40,6 +41,4 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
                                Exception ex) {
         logger.info("Call afterHandshake");
     }
-
-
 }
