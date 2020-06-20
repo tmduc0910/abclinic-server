@@ -45,6 +45,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/topic", "/queue");
     }
 
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+//        registration.interceptors(topicSubscriptionInterceptor);
+    }
+
     public static class CustomHandshakeHandler extends DefaultHandshakeHandler {
         @Override
         protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {

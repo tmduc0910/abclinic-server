@@ -15,13 +15,14 @@ import com.google.firebase.messaging.Notification;
 public class FcmUtils {
     public static final String TOPIC = "users-";
 
-    public static void pushNoti(long userId, NotificationDto notificationDto, long payloadId, int type) {
+    public static void pushNoti(long userId, NotificationDto notificationDto, long payloadId, int type, String image) {
         try {
             String json = new ObjectMapper().writeValueAsString(notificationDto);
             Message message = Message.builder()
                     .setNotification(Notification.builder()
                             .setTitle("Tư vấn phòng khám")
                             .setBody(notificationDto.getNotification())
+                            .setImage(image)
                             .build())
                     .putData("content", json)
 //                    .putData("payloadId", String.valueOf(payloadId))
