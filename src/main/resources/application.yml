@@ -1,9 +1,9 @@
 spring:
   datasource:
     ##    LOCAL MYSQL
-    url: jdbc:mysql://localhost:3306/abclinic
-    username: root
-    password: 12345678
+#    url: jdbc:mysql://localhost:3306/abclinic
+#    username: root
+#    password: 12345678
 
   ##  DB Heroku
   #    url: jdbc:mysql://ugkmvsroqz0755hy:broce8lbgjo1w8qm@tviw6wn55xwxejwj.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/qjeyy6ui39xn2z0l
