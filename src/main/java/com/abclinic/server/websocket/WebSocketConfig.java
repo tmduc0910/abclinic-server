@@ -50,7 +50,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(topicSubscriptionInterceptor);
+//        registration.interceptors(topicSubscriptionInterceptor);
     }
 
     public static class CustomHandshakeHandler extends DefaultHandshakeHandler {

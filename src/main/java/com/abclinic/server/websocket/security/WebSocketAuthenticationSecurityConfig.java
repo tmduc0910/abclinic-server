@@ -1,5 +1,7 @@
 package com.abclinic.server.websocket.security;
 
+import com.abclinic.server.websocket.TopicSubscriptionInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -20,6 +22,9 @@ public class WebSocketAuthenticationSecurityConfig implements WebSocketMessageBr
     @Inject
     private AuthChannelInterceptorAdapter authChannelInterceptorAdapter;
 
+    @Autowired
+    private TopicSubscriptionInterceptor topicSubscriptionInterceptor;
+
     @Override
     public void registerStompEndpoints(final StompEndpointRegistry registry) {
         // Endpoints are already registered on WebSocketConfig, no need to add more.
@@ -28,5 +33,6 @@ public class WebSocketAuthenticationSecurityConfig implements WebSocketMessageBr
     @Override
     public void configureClientInboundChannel(final ChannelRegistration registration) {
 //        registration.interceptors(authChannelInterceptorAdapter);
+        registration.interceptors(topicSubscriptionInterceptor);
     }
 }
