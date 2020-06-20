@@ -24,8 +24,8 @@ public class FcmUtils {
                             .setBody(notificationDto.getNotification())
                             .build())
                     .putData("content", json)
-                    .putData("payloadId", String.valueOf(payloadId))
-                    .putData("type", String.valueOf(type))
+//                    .putData("payloadId", String.valueOf(payloadId))
+//                    .putData("type", String.valueOf(type))
                     .setTopic(TOPIC + userId)
                     .build();
             // Send a message to the devices subscribed to the provided topic.

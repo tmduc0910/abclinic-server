@@ -30,9 +30,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Autowired
     private ServletContext servletContext;
 
-    @Autowired
-    private TopicSubscriptionInterceptor topicSubscriptionInterceptor;
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
@@ -46,11 +43,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes(servletContext.getContextPath() + "/app", servletContext.getContextPath() + "/topic");
         registry.enableSimpleBroker("/topic", "/queue");
-    }
-
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(topicSubscriptionInterceptor);
     }
 
     public static class CustomHandshakeHandler extends DefaultHandshakeHandler {
