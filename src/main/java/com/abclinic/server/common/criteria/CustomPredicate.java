@@ -37,6 +37,7 @@ public class CustomPredicate<T> {
     }
 
     public BooleanExpression getPredicate() {
+        //Trường hợp value là số
         if (StringUtils.isNumeric(criteria.getValue().toString())) {
             final NumberPath<Integer> path = entityPath.getNumber(criteria.getKey(), Integer.class);
             final int value = Integer.parseInt(criteria.getValue().toString());
@@ -54,13 +55,20 @@ public class CustomPredicate<T> {
                         return path.divide(value).floor().mod(2).eq(1);
                     return path.eq(0);
             }
-        } else if (criteria.getValue().equals("null")) {
+
+        }
+        //Trường hợp value là null
+        else if (criteria.getValue().equals("null")) {
             final NumberPath<Integer> path = entityPath.getNumber(criteria.getKey(), Integer.class);
             return path.isNull();
-        } else if (criteria.getOperation().equalsIgnoreCase(Constant.CONTAIN_SBL)) {
+        }
+        //Trường hợp tìm kiếm bao gồm
+        else if (criteria.getOperation().equalsIgnoreCase(Constant.CONTAIN_SBL)) {
             QPatient qPatient = QPatient.patient;
             return qPatient.subDoctors.contains((User) criteria.getValue());
-        } else if (criteria.getKey().equalsIgnoreCase(FilterConstant.SPECIALTY.getValue())) {
+        }
+        //Trường hợp tìm kiếm theo chuyên môn
+        else if (criteria.getKey().equalsIgnoreCase(FilterConstant.SPECIALTY.getValue())) {
             QPractitioner qPractitioner = QPractitioner.practitioner;
             QSpecialist qSpecialist = QSpecialist.specialist;
             QDietitian qDietitian = QDietitian.dietitian;

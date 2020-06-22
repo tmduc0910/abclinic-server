@@ -47,16 +47,6 @@ public class NotificationFactory {
         List<NotificationMessage> list = new ArrayList<>();
         Inquiry inquiry = reply.getInquiry();
         Patient patient = inquiry.getPatient();
-//        if (sender.getRole().equals(Role.PATIENT)) {
-//            NotificationMessage message = getMessage(MessageType.REPLY, patient.getPractitioner(), inquiry);
-//            list.add(message);
-//            list.addAll(patient.getSubDoctors().stream().map(d -> {
-//                message.setTargetUser(d);
-//                return message;
-//            }).collect(Collectors.toList())) ;
-//        } else {
-//            list.add(getMessage(MessageType.REPLY, patient, inquiry));
-//        }
 
         list.add(getMessage(MessageType.REPLY, patient.getPractitioner(), inquiry));
         list.addAll(patient.getSubDoctors().stream()

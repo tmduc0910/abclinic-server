@@ -32,7 +32,7 @@ public class UserService implements IDataMapperService<User>, UserDetailsService
 
     @Transactional
     public Optional<User> findByUsernamePassword(String username, String password) {
-        return userRepository.findByEmailAndPasswordOrPhoneNumberAndPassword(username, password, username, password);
+        return userRepository.findByUsernameAndPassword(username, password);
     }
 
     @Transactional

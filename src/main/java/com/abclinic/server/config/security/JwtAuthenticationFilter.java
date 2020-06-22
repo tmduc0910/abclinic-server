@@ -72,6 +72,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 requestUri.contains("api-docs") ||
                 requestUri.equalsIgnoreCase("/api/") ||
                 requestUri.equalsIgnoreCase("/api/csrf") ||
+                requestUri.contains("/misc") ||
                 request.getMethod().contains("OPTIONS"))
             return null;
 
@@ -87,19 +88,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new UnauthorizedActionException(user.getId(), "Tài khoản chưa đăng nhập");
             if (user.getStatus() == UserStatus.DEACTIVATED.getValue())
                 throw new ForbiddenException(user.getId(), "Tài khoản đã bị xóa hoặc vô hiệu hóa");
-//                else if (requestUri.contains("/admin") && user.getRole() == Role.PATIENT)
-//                    throw new UnauthorizedActionException(user.getId(), "Bạn chưa đăng nhập");
             request.setAttribute("User", user);
             return uid;
         } else {
             return null;
-//                String req = request.getReader().lines().collect(Collectors.joining());
-//                RequestLoginDto requestLoginDto = new RequestLoginDto(req);
-//                Optional<User> user = userService.findByUsername(req);
-//                if (user.isPresent()) {
-//                    if (user.get().getUid() != null)
-//                        throw new ForbiddenException(user.get().getId(), "Bạn chưa đăng xuất");
-//                }
         }
     }
 }

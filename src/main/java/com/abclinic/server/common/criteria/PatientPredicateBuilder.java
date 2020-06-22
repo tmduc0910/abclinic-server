@@ -17,7 +17,7 @@ public class PatientPredicateBuilder extends EntityPredicateBuilder<Patient> {
                 .allow(FilterConstant.AGE)
                 .allow(FilterConstant.GENDER)
                 .allow(FilterConstant.STATUS)
-                .setPredicate(new CustomPredicate<Patient>())
+                .setPredicate(new CustomPredicate<>())
                 .setPathBuilder(new PathBuilder<>(Patient.class, "patient"));
     }
 

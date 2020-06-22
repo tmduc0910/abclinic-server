@@ -10,6 +10,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
 @EnableWebMvc
 @Configuration
 @ComponentScan(basePackages = {"com.abclinic.server"})
-public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
+public class WebMvcConfiguration implements WebMvcConfigurer {
     final static Logger log = LoggerFactory.getLogger(WebMvcConfiguration.class);
 
     @Override
@@ -26,5 +27,12 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
         converters.add(new MappingJackson2HttpMessageConverter(mapper));
         log.info("Jackson Configured");
         log.info(converters.toString());
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
     }
 }

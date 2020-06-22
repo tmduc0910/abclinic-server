@@ -9,6 +9,7 @@ import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.config.security.CustomUserDetails;
 import com.abclinic.server.config.security.JwtTokenProvider;
 import com.abclinic.server.exception.DuplicateValueException;
+import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.exception.WrongCredentialException;
 import com.abclinic.server.model.dto.request.post.RequestLoginDto;
 import com.abclinic.server.model.dto.request.post.RequestSignUpDto;
@@ -49,33 +50,10 @@ public class AuthController extends CustomController {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
-    //TODO: Implements Spring Security + AWT
-
     @Override
     public void init() {
         logger = LoggerFactory.getLogger(AuthController.class);
     }
-
-//    @PostMapping(value = "/login/phone")
-//    @ApiOperation(value = "Người dùng đăng nhập qua SĐT", notes = "Trả về chuỗi UID hoặc 404 NOT FOUND.\n" +
-//            "Trường UID được trả về sẽ được gán vào header Authorization ở tất cả các API sau đó.")
-//    @ApiImplicitParams(value = {
-//            @ApiImplicitParam(name = "phone", value = "SĐT của người dùng", required = true, dataType = "string"),
-//            @ApiImplicitParam(name = "password", value = "Mật khẩu của người dùng", required = true, dataType = "string")
-//    })
-//    @ApiResponses({
-//            @ApiResponse(code = 200, message = "Đăng nhập thành công"),
-//            @ApiResponse(code = 404, message = "Đăng nhập thất bại")
-//    })
-//    @JsonView(Views.Private.class)
-//    public ResponseEntity<String> processLoginByPhoneNumber(@RequestParam(name = "phone") String phoneNumber,
-//                                                            @RequestParam(name = "password") String password) {
-//        return userRepository.findByPhoneNumberAndPassword(phoneNumber, password).map(u -> {
-//            u.setUid(UUID.randomUUID().toString());
-//            save(u);
-//            return new ResponseEntity<>(u.getUid(), HttpStatus.OK);
-//        }).orElseThrow(WrongCredentialException::new);
-//    }
 
     @PostMapping(value = "/login")
     @ApiOperation(value = "Người dùng đăng nhập qua account", notes = "Trả về chuỗi UID hoặc 404 NOT FOUND\n" +
@@ -90,13 +68,6 @@ public class AuthController extends CustomController {
     @JsonView(Views.Private.class)
     public ResponseEntity<String> processLogin(@RequestHeader("Client-Type") String type,
                                                @RequestBody RequestLoginDto requestLoginDto) {
-//        return userService.findByUsernamePassword(requestLoginDto.getAccount(), requestLoginDto.getPassword()).map(u -> {
-//            if ((!type.equalsIgnoreCase("Mobile") || u.getRole() == Role.PATIENT) && u.getStatus() != UserStatus.DEACTIVATED.getValue()) {
-//                u.setUid(UUID.randomUUID().toString());
-//                userService.save(u);
-//                return new ResponseEntity<>(u.getUid(), HttpStatus.OK);
-//            } else return null;
-//        }).orElseThrow(WrongCredentialException::new);
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         requestLoginDto.getAccount(),
@@ -106,6 +77,9 @@ public class AuthController extends CustomController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         User user = userService.findByUsername((String) authentication.getPrincipal()).get();
+        if (user.getRole() != Role.PATIENT && type.equalsIgnoreCase("mobile"))
+            throw new NotFoundException();
+
         String jwt = tokenProvider.generateToken(new CustomUserDetails(user));
         user.setUid(jwt);
         userService.save(user);

@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.StringPath;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
@@ -25,7 +26,8 @@ public interface UserRepository extends JpaRepository<User, Long>,
 
     Optional<User> findByPhoneNumberAndPassword(String phoneNumber, String password);
 
-    Optional<User> findByEmailAndPasswordOrPhoneNumberAndPassword(String email, String password1, String phoneNumber, String password2);
+    @Query("select u from User u where (u.email = :username and u.password = :password) or (u.phoneNumber = :username and u.password = :password)")
+    Optional<User> findByUsernameAndPassword(String username, String password);
 
     Optional<User> findByPhoneNumber(String phoneNumber);
 

@@ -16,6 +16,6 @@ public class DiseasePredicateBuilder extends EntityPredicateBuilder<Disease> {
         this.allow(FilterConstant.NAME)
                 .allow(FilterConstant.DESCRIPTION)
                 .setPredicate(new CustomPredicate<>())
-                .setPathBuilder(new PathBuilder<Disease>(Disease.class, "disease"));
+                .setPathBuilder(new PathBuilder<>(Disease.class, "disease"));
     }
 }
