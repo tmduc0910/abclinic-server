@@ -263,7 +263,7 @@ public class UserInfoResourceController extends CustomController {
         else return editSpecialties(u, requestUpdateDoctorSpecialtyDto);
     }
 
-    @PutMapping("/user/{id}/diseases")
+    @PostMapping("/user/{id}/diseases")
     @ApiOperation(
             value = "Lập tiền sử bệnh án của bệnh nhân",
             notes = "Trả về 200 OK hoặc 400 BAD REQUEST",

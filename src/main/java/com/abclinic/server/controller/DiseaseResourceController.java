@@ -90,7 +90,7 @@ public class DiseaseResourceController extends CustomController {
     }
 
     @PutMapping("")
-    @Restricted(included = Coordinator.class)
+    @Restricted(included = {Coordinator.class, Practitioner.class})
     @ApiOperation(
             value = "Sửa đổi thông tin bệnh",
             notes = "Trả về 200 OK",

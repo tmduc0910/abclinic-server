@@ -38,7 +38,7 @@ public class TopicSubscriptionInterceptor implements ChannelInterceptor {
                     throw new IllegalArgumentException();
             }
         } catch (NullPointerException e) {
-            throw new IllegalArgumentException();
+//            throw new IllegalArgumentException();
         }
         return message;
     }

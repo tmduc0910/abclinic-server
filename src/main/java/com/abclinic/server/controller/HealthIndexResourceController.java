@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/health_indexes")
-public class HealthIndexResourceController extends CustomController {
+public class    HealthIndexResourceController extends CustomController {
     @Autowired
     private HealthIndexService healthIndexService;
 
@@ -241,7 +241,7 @@ public class HealthIndexResourceController extends CustomController {
     @PostMapping("/schedule")
     @Restricted(included = {Practitioner.class, Specialist.class, Dietitian.class})
     @ApiOperation(
-            value = "Tạp lịch gửi chỉ số sức khỏe",
+            value = "Tạo lịch gửi chỉ số sức khỏe",
             notes = "Trả về 201 CREATED hoặc 400 BAD REQUEST",
             tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
     )
