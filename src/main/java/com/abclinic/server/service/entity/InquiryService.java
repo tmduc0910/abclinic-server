@@ -51,20 +51,23 @@ public class InquiryService implements IDataMapperService<Inquiry> {
         return inquiry;
     }
 
-    @Override
     @Transactional
-    public Page<Inquiry> getList(User user, boolean assigned, Pageable pageable) {
+    public Page<Inquiry> getList(User user, Integer type, boolean assigned, Pageable pageable) {
         Optional<Page<Inquiry>> inquiries = Optional.empty();
         switch (user.getRole()) {
             case COORDINATOR:
-                inquiries = inquiryRepository.findByPatientPractitioner(null, pageable);
+                if (type == null)
+                    inquiries = inquiryRepository.findByPatientPractitioner(null, pageable);
+                else inquiries = inquiryRepository.findByPatientPractitionerAndType(null, type, pageable);
                 break;
             case PRACTITIONER:
                 Practitioner practitioner = (Practitioner) doctorService.getById(user.getId());
                 if (!assigned) {
                     pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
                     inquiries = inquiryRepository.findByPractitionerIdAndPatientSubDoctorsIsNull(practitioner.getId(), pageable);
-                } else inquiries = inquiryRepository.findByPatientPractitioner(practitioner, pageable);
+                } else if (type == null)
+                    inquiries = inquiryRepository.findByPatientPractitioner(practitioner, pageable);
+                else inquiries = inquiryRepository.findByPatientPractitionerAndType(practitioner, type, pageable);
                 break;
             case SPECIALIST:
                 Specialist specialist = (Specialist) doctorService.getById(user.getId());

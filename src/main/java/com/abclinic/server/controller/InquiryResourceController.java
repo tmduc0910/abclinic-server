@@ -108,6 +108,7 @@ public class InquiryResourceController extends CustomController {
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "assigned", value = "Tìm bệnh nhân đã được đa khoa gán cho cấp dưới", paramType = "query", dataType = "boolean", allowableValues = "true, false"),
+            @ApiImplicitParam(name = "type", value = "Kiểu yêu cầu tư vấn", paramType = "query", allowableValues = "0, 1", example = "0"),
             @ApiImplicitParam(name = "page", value = "Số thứ tự trang", required = true, paramType = "query", allowableValues = "range[1, infinity]", example = "1"),
             @ApiImplicitParam(name = "size", value = "Kích thước trang", required = true, paramType = "query", example = "4")
     })
@@ -117,11 +118,12 @@ public class InquiryResourceController extends CustomController {
     })
     @JsonView(Views.Private.class)
     public ResponseEntity<Page<Inquiry>> getInquiryList(@ApiIgnore @RequestAttribute("User") User user,
+                                                        @RequestParam(value = "type") Integer type,
                                                         @RequestParam(value = "assigned", defaultValue = "false") boolean assigned,
                                                         @RequestParam("page") int page,
                                                         @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
-        return new ResponseEntity<>(inquiryService.getList(user, assigned, pageable), HttpStatus.OK);
+        return new ResponseEntity<>(inquiryService.getList(user, type, assigned, pageable), HttpStatus.OK);
     }
 
     @GetMapping("/inquiries/monthly")

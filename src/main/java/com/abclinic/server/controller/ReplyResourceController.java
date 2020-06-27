@@ -11,6 +11,7 @@ import com.abclinic.server.model.dto.request.post.RequestCreateReplyDto;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.payload.Reply;
 import com.abclinic.server.model.entity.user.Coordinator;
+import com.abclinic.server.model.entity.user.Specialist;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.service.NotificationService;
 import com.abclinic.server.service.entity.InquiryService;
@@ -50,11 +51,11 @@ public class ReplyResourceController extends CustomController {
     }
 
     @PostMapping("/replies")
-    @Restricted(excluded = Coordinator.class)
+    @Restricted(excluded = {Coordinator.class, Specialist.class})
     @ApiOperation(
             value = "Tạo câu trả lời tư vấn",
             notes = "Trả về 201 CREATED hoặc 400 BAD REQUEST hoặc 403 FORBIDDEN",
-            tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng", "Bệnh nhân"}
+            tags = {"Đa khoa", "Dinh dưỡng", "Bệnh nhân"}
     )
     @ApiResponses({
             @ApiResponse(code = 201, message = "Tạo câu trả lời thành công"),

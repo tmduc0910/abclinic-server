@@ -18,10 +18,6 @@ public interface IDataMapperService<T> {
         throw new UnsupportedOperationException();
     }
 
-    default Page<T> getList(User user, boolean assigned, Pageable pageable) {
-        throw new UnsupportedOperationException();
-    }
-
     default Page<T> getList(User user, Pageable pageable) {
         throw new UnsupportedOperationException();
     }

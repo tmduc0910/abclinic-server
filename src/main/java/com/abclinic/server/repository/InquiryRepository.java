@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +22,7 @@ public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
     Optional<Page<Inquiry>> findByPatientAndStatus(Patient patient, int status, Pageable pageable);
 
     Optional<Page<Inquiry>> findByPatientPractitioner(Practitioner practitioner, Pageable pageable);
+    Optional<Page<Inquiry>> findByPatientPractitionerAndType(Practitioner practitioner, int type, Pageable pageable);
 
     Optional<Page<Inquiry>> findByPatientInAndType(List<Patient> patients, int type, Pageable pageable);
 
