@@ -1,10 +1,15 @@
 package com.abclinic.server.config.security;
 
+import com.abclinic.server.common.base.CustomRuntimeException;
 import com.abclinic.server.common.constant.UserStatus;
+import com.abclinic.server.controller.AuthController;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.UnauthorizedActionException;
+import com.abclinic.server.model.dto.ErrorDto;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.service.entity.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtTokenProvider tokenProvider;
 
     @Autowired
+    private AuthController controller;
+
+    @Autowired
     private UserService userService;
     private Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
@@ -42,8 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             // Lấy jwt từ request
             String jwt = getJwtFromRequest(request);
-
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+            if (StringUtils.hasText(jwt) && !jwt.equalsIgnoreCase("init") && tokenProvider.validateToken(jwt)) {
                 // Lấy id user từ chuỗi jwt
                 Long userId = tokenProvider.getUserIdFromJWT(jwt);
                 // Lấy thông tin người dùng từ id
@@ -57,10 +64,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
+        } catch (CustomRuntimeException e) {
+            logger.error(e.getMessage());
+            ErrorDto errorDto = new ErrorDto(e.getMessage());
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.setStatus(e.getStatus().value());
+            response.getWriter().write(new Gson().toJson(errorDto));
+            return;
         } catch (Exception ex) {
             log.error("failed on set user authentication", ex);
         }
-
         filterChain.doFilter(request, response);
     }
 
@@ -78,8 +92,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (!requestUri.contains("/api/auth/login") && !requestUri.contains("/ws")) {
             String uid = request.getHeader("Authorization");
-            if (requestUri.contains("/api/auth/sign_up") && uid == null && userService.getCoordinatorsCount() != 0) {
-                throw new ForbiddenException(-1, "Tài khoản gốc đã được đăng ký");
+            if (requestUri.contains("/api/auth/sign_up")) {
+                if (uid == null) {
+                    if (userService.getCoordinatorsCount() != 0)
+                        throw new ForbiddenException(-1, "Tài khoản gốc đã được đăng ký");
+                    else {
+                        request.setAttribute("User", null);
+                        return "init";
+                    }
+                }
             }
 
             if (uid == null || uid.trim().isEmpty())

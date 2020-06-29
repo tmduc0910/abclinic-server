@@ -9,6 +9,7 @@ import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.config.security.CustomUserDetails;
 import com.abclinic.server.config.security.JwtTokenProvider;
 import com.abclinic.server.exception.DuplicateValueException;
+import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.exception.WrongCredentialException;
 import com.abclinic.server.model.dto.request.post.RequestLoginDto;
@@ -96,6 +97,9 @@ public class AuthController extends CustomController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity processSignUp(@Nullable @ApiIgnore @RequestAttribute(name = "User") User user,
                                         @RequestBody RequestSignUpDto requestSignUpDto) {
+        if (user == null && requestSignUpDto.getRole() != Role.COORDINATOR.getValue())
+            throw new ForbiddenException(-1, "Đăng ký thất bại");
+
         if (userService.findByEmail(requestSignUpDto.getEmail()).isPresent() ||
                 userService.findByPhoneNumber(requestSignUpDto.getPhone()).isPresent())
             throw new DuplicateValueException();
