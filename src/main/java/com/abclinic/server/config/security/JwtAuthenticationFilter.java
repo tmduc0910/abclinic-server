@@ -78,6 +78,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (!requestUri.contains("/api/auth/login") && !requestUri.contains("/ws")) {
             String uid = request.getHeader("Authorization");
+            if (requestUri.contains("/api/auth/sign_up") && uid == null && userService.getCoordinatorsCount() != 0) {
+                throw new ForbiddenException(-1, "Tài khoản gốc đã được đăng ký");
+            }
+
             if (uid == null || uid.trim().isEmpty())
                 throw new UnauthorizedActionException(-1, "Thông tin xác thực rỗng");
             Optional<User> op = userService.findByUID(uid);

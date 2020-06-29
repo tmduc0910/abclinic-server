@@ -118,7 +118,7 @@ public class InquiryResourceController extends CustomController {
     })
     @JsonView(Views.Private.class)
     public ResponseEntity<Page<Inquiry>> getInquiryList(@ApiIgnore @RequestAttribute("User") User user,
-                                                        @RequestParam(value = "type") Integer type,
+                                                        @RequestParam(value = "type", required = false) Integer type,
                                                         @RequestParam(value = "assigned", defaultValue = "false") boolean assigned,
                                                         @RequestParam("page") int page,
                                                         @RequestParam("size") int size) {

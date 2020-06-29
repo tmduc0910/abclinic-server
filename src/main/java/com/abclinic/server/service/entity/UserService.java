@@ -97,6 +97,11 @@ public class UserService implements IDataMapperService<User>, UserDetailsService
         return userRepository.findById(id).orElseThrow(NotFoundException::new);
     }
 
+    @Transactional
+    public int getCoordinatorsCount() {
+        return userRepository.countByRole(Role.COORDINATOR.getValue());
+    }
+
     @Override
     @Transactional
     public User save(User obj) {
