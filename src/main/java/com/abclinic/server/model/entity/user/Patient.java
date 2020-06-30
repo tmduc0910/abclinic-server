@@ -113,17 +113,21 @@ public class Patient extends User implements IPayload {
     @JsonView(Views.Private.class)
     @JsonSerialize(using = AbridgedViewSerializer.class)
     public List<User> getSpecialists() {
-        return subDoctors.stream()
-                .filter(u -> u.getRole().equals(Role.SPECIALIST))
-                .collect(Collectors.toList());
+        if (subDoctors != null)
+            return subDoctors.stream()
+                    .filter(u -> u.getRole().equals(Role.SPECIALIST))
+                    .collect(Collectors.toList());
+        return null;
     }
 
     @JsonView(Views.Private.class)
     @JsonSerialize(using = AbridgedViewSerializer.class)
     public List<User> getDietitians() {
-        return subDoctors.stream()
-                .filter(u -> u.getRole().equals(Role.DIETITIAN))
-                .collect(Collectors.toList());
+        if (subDoctors != null)
+            return subDoctors.stream()
+                    .filter(u -> u.getRole().equals(Role.DIETITIAN))
+                    .collect(Collectors.toList());
+        return null;
     }
 
     public void addSubDoc(User doctor) {
