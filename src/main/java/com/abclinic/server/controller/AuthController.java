@@ -95,7 +95,7 @@ public class AuthController extends CustomController {
             @ApiResponse(code = 409, message = "Email hoặc SĐT này đã được sử dụng")
     })
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity processSignUp(@Nullable @ApiIgnore @RequestAttribute(name = "User") User user,
+    public ResponseEntity<User> processSignUp(@Nullable @ApiIgnore @RequestAttribute(name = "User") User user,
                                         @RequestBody RequestSignUpDto requestSignUpDto) {
         if (user == null && requestSignUpDto.getRole() != Role.COORDINATOR.getValue())
             throw new ForbiddenException(-1, "Đăng ký thất bại");
@@ -147,7 +147,7 @@ public class AuthController extends CustomController {
                 break;
         }
         userService.save(u);
-        return new ResponseEntity(HttpStatus.CREATED);
+        return new ResponseEntity<>(u, HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/sign_out")
