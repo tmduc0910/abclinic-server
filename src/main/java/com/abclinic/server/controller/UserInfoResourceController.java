@@ -11,6 +11,7 @@ import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.dto.IndexResultResponseDto;
+import com.abclinic.server.model.dto.request.delete.RequestDeleteDiseaseDto;
 import com.abclinic.server.model.dto.request.delete.RequestDeleteDto;
 import com.abclinic.server.model.dto.request.post.RequestCreateHealthIndexResultDto;
 import com.abclinic.server.model.dto.request.post.RequestCreateOtherHealthIndexResultDto;
@@ -263,25 +264,50 @@ public class UserInfoResourceController extends CustomController {
         else return editSpecialties(u, requestUpdateDoctorSpecialtyDto);
     }
 
-    @PutMapping("/user/{id}/diseases")
+    @PostMapping("/user/{id}/diseases")
     @ApiOperation(
-            value = "Chỉnh sửa tiền sử bệnh án của bệnh nhân",
-            notes = "Trả về 200 OK hoặc 400 BAD REQUEST",
+            value = "Lập tiền sử bệnh án của bệnh nhân",
+            notes = "Trả về 201 CREATED hoặc 400 BAD REQUEST",
             tags = "Điều phối viên"
     )
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Lập thành công"),
+            @ApiResponse(code = 201, message = "Lập thành công"),
             @ApiResponse(code = 400, message = "Mã ID của bệnh không hợp lệ")
     })
     @Restricted(included = Coordinator.class)
     @JsonView(Views.Public.class)
-    public ResponseEntity<Patient> editPatientDisease(@ApiIgnore @RequestAttribute("User") User user,
+    public ResponseEntity<Patient> addPatientDisease(@ApiIgnore @RequestAttribute("User") User user,
                                                       @RequestBody RequestUpdatePatientDiseaseDto requestUpdatePatientDiseaseDto,
                                                       @PathVariable("id") long id) {
         Patient patient = patientService.getById(id);
         try {
             requestUpdatePatientDiseaseDto.getDiseaseIds().forEach(diseaseId ->
                 patient.addDisease(diseaseService.getById(diseaseId)));
+            return new ResponseEntity<>(patientService.save(patient), HttpStatus.CREATED);
+        } catch (NotFoundException e) {
+            throw new BadRequestException(user.getId(), "Mã ID của bệnh không hợp lệ");
+        }
+    }
+
+    @DeleteMapping("/user/{id}/diseases")
+    @ApiOperation(
+            value = "Xóa tiền sử bệnh án của bệnh nhân",
+            notes = "Trả về 200 OK hoặc 400 BAD REQUEST",
+            tags = "Điều phối viên"
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Xóa thành công"),
+            @ApiResponse(code = 400, message = "Mã ID của bệnh không hợp lệ")
+    })
+    @Restricted(included = Coordinator.class)
+    @JsonView(Views.Public.class)
+    public ResponseEntity<Patient> deletePatientDisease(@ApiIgnore @RequestAttribute("User") User user,
+                                                     @RequestBody RequestDeleteDiseaseDto requestDeleteDiseaseDto,
+                                                     @PathVariable("id") long id) {
+        Patient patient = patientService.getById(id);
+        try {
+            requestDeleteDiseaseDto.getDiseaseIds().forEach(diseaseId ->
+                    patient.deleteDisease(diseaseService.getById(diseaseId)));
             return new ResponseEntity<>(patientService.save(patient), HttpStatus.OK);
         } catch (NotFoundException e) {
             throw new BadRequestException(user.getId(), "Mã ID của bệnh không hợp lệ");

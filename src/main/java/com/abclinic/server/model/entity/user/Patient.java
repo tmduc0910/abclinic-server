@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
@@ -42,7 +43,7 @@ public class Patient extends User implements IPayload {
     )
     @JsonView(Views.Public.class)
     @JsonSerialize(using = AbridgedViewSerializer.class)
-    private List<Disease> diseases;
+    private Set<Disease> diseases;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -90,16 +91,20 @@ public class Patient extends User implements IPayload {
         this.practitioner = practitioner;
     }
 
-    public List<Disease> getDiseases() {
+    public Set<Disease> getDiseases() {
         return diseases;
     }
 
-    public void setDiseases(List<Disease> diseases) {
+    public void setDiseases(Set<Disease> diseases) {
         this.diseases = diseases;
     }
 
     public void addDisease(Disease disease) {
         this.diseases.add(disease);
+    }
+
+    public void deleteDisease(Disease disease) {
+        this.diseases.remove(disease);
     }
 
     public List<User> getSubDoctors() {

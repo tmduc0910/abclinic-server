@@ -50,4 +50,11 @@ public class Disease {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Disease)
+            return this.id == ((Disease) obj).id;
+        return false;
+    }
 }
