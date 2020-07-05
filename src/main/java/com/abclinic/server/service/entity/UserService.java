@@ -99,7 +99,7 @@ public class UserService implements IDataMapperService<User>, UserDetailsService
 
     @Transactional
     public int getCoordinatorsCount() {
-        return userRepository.countByRole(Role.COORDINATOR.getValue());
+        return userRepository.countByRoleAndStatus(Role.COORDINATOR.getValue(), UserStatus.NEW.getValue());
     }
 
     @Override

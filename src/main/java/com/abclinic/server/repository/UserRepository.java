@@ -43,7 +43,7 @@ public interface UserRepository extends JpaRepository<User, Long>,
 
     Optional<Page<User>> findByStatus(int status, Pageable pageable);
 
-    int countByRole(int role);
+    int countByRoleAndStatus(int role, int status);
 
     @Override
     default void customize(QuerydslBindings querydslBindings, QUser qUser) {
