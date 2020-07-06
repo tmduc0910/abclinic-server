@@ -26,6 +26,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -50,6 +51,9 @@ public class AuthController extends CustomController {
 
     @Autowired
     private JwtTokenProvider tokenProvider;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public void init() {
@@ -110,7 +114,7 @@ public class AuthController extends CustomController {
                         requestSignUpDto.getEmail(),
                         requestSignUpDto.getGender(),
                         DateTimeUtils.parseDate(requestSignUpDto.getDateOfBirth()),
-                        requestSignUpDto.getPassword(),
+                        passwordEncoder.encode(requestSignUpDto.getPassword()),
                         requestSignUpDto.getPhone());
                 break;
             case RoleValue.COORDINATOR:
@@ -118,7 +122,7 @@ public class AuthController extends CustomController {
                         requestSignUpDto.getEmail(),
                         requestSignUpDto.getGender(),
                         DateTimeUtils.parseDate(requestSignUpDto.getDateOfBirth()),
-                        requestSignUpDto.getPassword(),
+                        passwordEncoder.encode(requestSignUpDto.getPassword()),
                         requestSignUpDto.getPhone());
                 break;
             case RoleValue.DIETITIAN:
@@ -126,7 +130,7 @@ public class AuthController extends CustomController {
                         requestSignUpDto.getEmail(),
                         requestSignUpDto.getGender(),
                         DateTimeUtils.parseDate(requestSignUpDto.getDateOfBirth()),
-                        requestSignUpDto.getPassword(),
+                        passwordEncoder.encode(requestSignUpDto.getPassword()),
                         requestSignUpDto.getPhone());
                 break;
             case RoleValue.SPECIALIST:
@@ -134,7 +138,7 @@ public class AuthController extends CustomController {
                         requestSignUpDto.getEmail(),
                         requestSignUpDto.getGender(),
                         DateTimeUtils.parseDate(requestSignUpDto.getDateOfBirth()),
-                        requestSignUpDto.getPassword(),
+                        passwordEncoder.encode(requestSignUpDto.getPassword()),
                         requestSignUpDto.getPhone());
                 break;
             case RoleValue.PATIENT:
@@ -142,7 +146,7 @@ public class AuthController extends CustomController {
                         requestSignUpDto.getEmail(),
                         requestSignUpDto.getGender(),
                         DateTimeUtils.parseDate(requestSignUpDto.getDateOfBirth()),
-                        requestSignUpDto.getPassword(),
+                        passwordEncoder.encode(requestSignUpDto.getPassword()),
                         requestSignUpDto.getPhone());
                 break;
         }
