@@ -48,7 +48,8 @@ public class NotificationFactory {
         Inquiry inquiry = reply.getInquiry();
         Patient patient = inquiry.getPatient();
 
-        list.add(getMessage(MessageType.REPLY, patient.getPractitioner(), inquiry));
+        if (patient.getPractitioner() != null)
+            list.add(getMessage(MessageType.REPLY, patient.getPractitioner(), inquiry));
         list.addAll(patient.getSubDoctors().stream()
                 .map(d -> getMessage(MessageType.REPLY, d, inquiry))
                 .collect(Collectors.toList()));

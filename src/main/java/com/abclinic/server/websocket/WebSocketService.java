@@ -24,6 +24,7 @@ import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
+import javax.validation.constraints.Null;
 import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -65,9 +66,13 @@ public class WebSocketService {
     public void broadcast(User receiver, Notification notification, String message) {
         logger.debug("Noti: " + notification);
         logger.debug("Receiver: " + notification.getReceiver());
-        NotificationDto n = new NotificationDto(notification.getId(), notification.getReceiver().getId(), message, notification.getType());
-        broadcast(getTopicUrl(receiver), n);
-        FcmUtils.pushNoti(receiver.getId(), n, notification.getPayloadId(), notification.getType(), notification.getSender().getAvatar());
+        try {
+            NotificationDto n = new NotificationDto(notification.getId(), notification.getReceiver().getId(), message, notification.getType());
+            broadcast(getTopicUrl(receiver), n);
+            FcmUtils.pushNoti(receiver.getId(), n, notification.getPayloadId(), notification.getType(), notification.getSender().getAvatar());
+        } catch (NullPointerException ignored) {
+
+        }
     }
 
     private class CustomStompSessionHandler extends StompSessionHandlerAdapter {
