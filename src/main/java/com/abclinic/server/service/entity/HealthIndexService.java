@@ -7,13 +7,12 @@ import com.abclinic.server.common.criteria.HealthIndexSchedulePredicateBuilder;
 import com.abclinic.server.common.criteria.PatientHealthIndexFieldPredicateBuilder;
 import com.abclinic.server.common.utils.DateTimeUtils;
 import com.abclinic.server.common.utils.StatusUtils;
+import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.exception.NotFoundException;
 import com.abclinic.server.factory.NotificationFactory;
-import com.abclinic.server.model.dto.GetIndexResultResponseDto;
-import com.abclinic.server.model.dto.PageDto;
-import com.abclinic.server.model.dto.ResultDto;
-import com.abclinic.server.model.dto.TagDto;
+import com.abclinic.server.model.dto.*;
+import com.abclinic.server.model.dto.request.post.RequestCreateHealthIndexResultDto;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndex;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexField;
 import com.abclinic.server.model.entity.payload.health_index.HealthIndexSchedule;
@@ -29,6 +28,8 @@ import com.abclinic.server.service.entity.component.health_index.PatientHealthIn
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -220,7 +221,7 @@ public class HealthIndexService {
         boolean isInit = schedule == null && user.getRole() == Role.PATIENT && StatusUtils.containsStatus(user, UserStatus.NEW);
         Patient patient = schedule != null ? schedule.getPatient() : (Patient) user;
 
-        if (!isInit && DateTimeUtils.getCurrent().isAfter(schedule.getStartedAt()))
+        if (!isInit && schedule != null && DateTimeUtils.getCurrent().isAfter(schedule.getStartedAt()))
             schedule = updateSchedule(schedule);
         for (int i = 0; i < fields.size(); i++) {
             PatientHealthIndexField f = createResult(schedule, fields.get(i), values.get(i));
@@ -245,6 +246,28 @@ public class HealthIndexService {
             PatientHealthIndexField result = new PatientHealthIndexField(schedule, field, value);
             return (PatientHealthIndexField) save(result);
         } else throw new IllegalArgumentException();
+    }
+
+    public IndexResultResponseDto createResult(User user,
+                                                RequestCreateHealthIndexResultDto requestCreateHealthIndexResultDto,
+                                                HealthIndex index) {
+        HealthIndexSchedule schedule;
+        if (requestCreateHealthIndexResultDto.getScheduleId() != 0)
+            schedule = getSchedule(requestCreateHealthIndexResultDto.getScheduleId());
+        else schedule = null;
+        List<IndexResultRequestDto> requestDtos = requestCreateHealthIndexResultDto.getResults();
+        if ((schedule != null && schedule.getIndex().getFields().size() == requestDtos.size()) ||
+                (index != null && index.getFields().size() == requestDtos.size())) {
+            List<PatientHealthIndexField> values =
+                    createResults(user, schedule,
+                            requestDtos.stream()
+                                    .map(r -> getField(r.getFieldId()))
+                                    .collect(Collectors.toList()),
+                            requestDtos.stream()
+                                    .map(IndexResultRequestDto::getValue)
+                                    .collect(Collectors.toList()));
+            return new IndexResultResponseDto(schedule, values, DateTimeUtils.getCurrent());
+        } else throw new BadRequestException(user.getId(), "Số lượng giá trị không hợp lệ");
     }
 
     public Object save(Object obj) {

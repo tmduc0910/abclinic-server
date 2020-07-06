@@ -25,8 +25,6 @@ public class FcmUtils {
                             .setImage(image)
                             .build())
                     .putData("content", json)
-//                    .putData("payloadId", String.valueOf(payloadId))
-//                    .putData("type", String.valueOf(type))
                     .setTopic(TOPIC + userId)
                     .build();
             // Send a message to the devices subscribed to the provided topic.

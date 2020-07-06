@@ -352,22 +352,6 @@ public class    HealthIndexResourceController extends CustomController {
     public ResponseEntity<IndexResultResponseDto> createResult(@ApiIgnore @RequestAttribute("User") User user,
                                                                @ApiIgnore HealthIndex index,
                                                                @RequestBody RequestCreateHealthIndexResultDto requestCreateHealthIndexResultDto) {
-        HealthIndexSchedule schedule;
-        if (requestCreateHealthIndexResultDto.getScheduleId() != 0)
-            schedule = healthIndexService.getSchedule(requestCreateHealthIndexResultDto.getScheduleId());
-        else schedule = null;
-        List<IndexResultRequestDto> requestDtos = requestCreateHealthIndexResultDto.getResults();
-        if ((schedule != null && schedule.getIndex().getFields().size() == requestDtos.size()) ||
-                (index != null && index.getFields().size() == requestDtos.size())) {
-            List<PatientHealthIndexField> values =
-                    healthIndexService.createResults(user, schedule,
-                            requestDtos.stream()
-                                    .map(r -> healthIndexService.getField(r.getFieldId()))
-                                    .collect(Collectors.toList()),
-                            requestDtos.stream()
-                                    .map(IndexResultRequestDto::getValue)
-                                    .collect(Collectors.toList()));
-            return new ResponseEntity<>(new IndexResultResponseDto(schedule, values, DateTimeUtils.getCurrent()), HttpStatus.CREATED);
-        } else throw new BadRequestException(user.getId(), "Số lượng giá trị không hợp lệ");
+        return new ResponseEntity<>(healthIndexService.createResult(user, requestCreateHealthIndexResultDto, index), HttpStatus.CREATED);
     }
 }

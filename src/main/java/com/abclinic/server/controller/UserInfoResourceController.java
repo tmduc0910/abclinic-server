@@ -69,9 +69,6 @@ public class UserInfoResourceController extends CustomController {
     @Autowired
     private HealthIndexService healthIndexService;
 
-    @Autowired
-    private HealthIndexResourceController healthIndexResourceController;
-
     @Override
     public void init() {
         this.logger = LoggerFactory.getLogger(UserInfoResourceController.class);
@@ -309,7 +306,7 @@ public class UserInfoResourceController extends CustomController {
             RequestCreateHealthIndexResultDto request = new RequestCreateHealthIndexResultDto();
             request.setScheduleId(0);
             request.setResults(new ArrayList<>(dto.getRequestDtos()));
-            result.add(healthIndexResourceController.createResult(p, index, request).getBody());
+            result.add(healthIndexService.createResult(p, request, index));
         });
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
