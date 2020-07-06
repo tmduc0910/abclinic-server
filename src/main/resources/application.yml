@@ -8,7 +8,7 @@ spring:
   ##    REMOTE MYSQL
       url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
       username: LQmSwtESHO
-      password: 0vwNED4bIy
+      password: bsTH8SwIgY
 
   ##    REMOTE MYSQL
 #        url: jdbc:mysql://remotemysql.com:3306/Cm2YXPzx0c
