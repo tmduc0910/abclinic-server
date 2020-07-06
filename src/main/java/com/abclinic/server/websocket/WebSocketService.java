@@ -63,6 +63,8 @@ public class WebSocketService {
     }
 
     public void broadcast(User receiver, Notification notification, String message) {
+        logger.debug("Noti: " + notification);
+        logger.debug("Receiver: " + notification.getReceiver());
         NotificationDto n = new NotificationDto(notification.getId(), notification.getReceiver().getId(), message, notification.getType());
         broadcast(getTopicUrl(receiver), n);
         FcmUtils.pushNoti(receiver.getId(), n, notification.getPayloadId(), notification.getType(), notification.getSender().getAvatar());
