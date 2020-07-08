@@ -3,6 +3,9 @@ package com.abclinic.server.common.criteria;
 import com.abclinic.server.common.constant.Constant;
 import com.abclinic.server.common.constant.FilterConstant;
 import com.abclinic.server.common.utils.StringUtils;
+import com.abclinic.server.model.entity.payload.QInquiry;
+import com.abclinic.server.model.entity.payload.record.QDietRecord;
+import com.abclinic.server.model.entity.payload.record.QMedicalRecord;
 import com.abclinic.server.model.entity.user.*;
 import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.JPAExpressions;
@@ -64,8 +67,14 @@ public class CustomPredicate<T> {
         }
         //Trường hợp tìm kiếm bao gồm
         else if (criteria.getOperation().equalsIgnoreCase(Constant.CONTAIN_SBL)) {
-            QPatient qPatient = QPatient.patient;
-            return qPatient.subDoctors.contains((User) criteria.getValue());
+            if (criteria.getKey().equals(FilterConstant.SPECIALIST.getValue()) || criteria.getKey().equals(FilterConstant.DIETITIAN.getValue())) {
+                QPatient qPatient = QPatient.patient;
+                return qPatient.subDoctors.contains((User) criteria.getValue());
+            } else if (criteria.getKey().equals(FilterConstant.MED_INQUIRY_PAT.getValue())) {
+                return QMedicalRecord.medicalRecord.inquiry.patient.subDoctors.contains((User) criteria.getValue());
+            } else if (criteria.getKey().equals(FilterConstant.DIET_INQUIRY_PAT.getValue())) {
+                return QDietRecord.dietRecord.inquiry.patient.subDoctors.contains((User) criteria.getValue());
+            }
         }
         //Trường hợp tìm kiếm theo chuyên môn
         else if (criteria.getKey().equalsIgnoreCase(FilterConstant.SPECIALTY.getValue())) {

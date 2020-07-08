@@ -52,7 +52,7 @@ public class DiseaseResourceController extends CustomController {
             tags = "Nhân viên phòng khám"
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "search", value = "Filter lọc bệnh nhân (name, description)", paramType = "query", example = "name=Đau,"),
+            @ApiImplicitParam(name = "search", value = "Filter lọc bệnh (name, description)", paramType = "query", example = "name=Đau,"),
             @ApiImplicitParam(name = "page", value = "Số thứ tự trang", required = true, paramType = "query", allowableValues = "range[1, infinity]", example = "1"),
             @ApiImplicitParam(name = "size", value = "Kích thước trang", required = true, paramType = "query", example = "4")
     })

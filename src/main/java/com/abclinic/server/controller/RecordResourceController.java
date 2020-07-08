@@ -27,7 +27,6 @@ import io.swagger.annotations.*;
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -35,10 +34,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
-import javax.websocket.server.PathParam;
-
-import java.util.Arrays;
 
 import static com.abclinic.server.common.constant.RecordType.DIET;
 import static com.abclinic.server.common.constant.RecordType.MEDICAL;
@@ -141,7 +136,7 @@ public class RecordResourceController extends CustomController {
                     clone.setId(0);
                     clone.setNote(requestUpdateRecordDto.getNote());
                     clone.setPrescription(requestUpdateRecordDto.getPrescription());
-                    if (record.getRecordType() == MEDICAL.getValue()) {
+                    if (record.getType() == MEDICAL.getValue()) {
                         ((MedicalRecord) clone).setDiagnose(requestUpdateRecordDto.getDiagnose());
                     }
                     clone.setDoctor(user);
@@ -150,11 +145,11 @@ public class RecordResourceController extends CustomController {
                         clone = recordService.save(clone);
                     } else {
                         clone = recordService.save(clone);
-                        notificationService.makeNotification(user, NotificationFactory.getMessage(getType(record.getRecordType()), patient.getPractitioner(), clone));
+                        notificationService.makeNotification(user, NotificationFactory.getMessage(getType(record.getType()), patient.getPractitioner(), clone));
                     }
                     record.setStatus(PayloadStatus.IN_PROCESS);
                     recordService.save(record);
-                    notificationService.makeNotification(user, NotificationFactory.getMessage(getType(record.getRecordType()), patient, clone));
+                    notificationService.makeNotification(user, NotificationFactory.getMessage(getType(record.getType()), patient, clone));
                     return new ResponseEntity<>(recordService.save(clone), HttpStatus.CREATED);
                 } else throw new ForbiddenException(user.getId(), "Bác sĩ không phụ trách bệnh nhân này");
             } else throw new ForbiddenException(user.getId(), "Bác sĩ đa khoa không được phép duyệt chính tư vấn của mình");
@@ -171,7 +166,7 @@ public class RecordResourceController extends CustomController {
             tags = {"Đa khoa", "Chuyên khoa", "Dinh dưỡng", "Bệnh nhân"}
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "type", value = "Loại tư vấn(0: khám bệnh, 1: dinh dưỡng)", allowableValues = "0, 1", dataType = "int", example = "0"),
+            @ApiImplicitParam(name = "search", value = "Filter lọc tư vấn (type, id)", paramType = "query", example = "type=0,"),
             @ApiImplicitParam(name = "page", value = "Số thứ tự trang", required = true, paramType = "query", allowableValues = "range[1, infinity]", example = "1"),
             @ApiImplicitParam(name = "size", value = "Kích thước trang", required = true, paramType = "query", example = "4")
     })
@@ -181,28 +176,28 @@ public class RecordResourceController extends CustomController {
     })
     @JsonView(Views.Abridged.class)
     public ResponseEntity getRecordList(@ApiIgnore @RequestAttribute("User") User user,
-                                        @RequestParam(value = "type", defaultValue = "0") int type,
+                                        @RequestParam("search") String search,
                                         @RequestParam("page") int page,
                                         @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
-        Page result = null;
-        switch (user.getRole()) {
-            case PRACTITIONER:
-            case PATIENT:
-                if (type == MEDICAL.getValue())
-                    result = recordService.getMedicalRecordsByUser(user, pageable);
-                else if (type == DIET.getValue())
-                    result = recordService.getDietitianRecordsByUser(user, pageable);
-                else throw new BadRequestException(user.getId(), "Kiểu chỉ có thể là Khám bệnh hoặc Dinh dưỡng");
-                break;
-            case SPECIALIST:
-                result = recordService.getMedicalRecordsByUser(user, pageable);
-                break;
-            case DIETITIAN:
-                result = recordService.getDietitianRecordsByUser(user, pageable);
-                break;
-        }
-        return new ResponseEntity(result, HttpStatus.OK);
+//        Page result = null;
+//        switch (user.getRole()) {
+//            case PRACTITIONER:
+//            case PATIENT:
+//                if (type == MEDICAL.getValue())
+//                    result = recordService.getMedicalRecordsByUser(user, inquiryId, pageable);
+//                else if (type == DIET.getValue())
+//                    result = recordService.getDietitianRecordsByUser(user, inquiryId, pageable);
+//                else throw new BadRequestException(user.getId(), "Kiểu chỉ có thể là Khám bệnh hoặc Dinh dưỡng");
+//                break;
+//            case SPECIALIST:
+//                result = recordService.getMedicalRecordsByUser(user, inquiryId, pageable);
+//                break;
+//            case DIETITIAN:
+//                result = recordService.getDietitianRecordsByUser(user, inquiryId, pageable);
+//                break;
+//        }
+        return new ResponseEntity(recordService.getList(user, search, pageable), HttpStatus.OK);
     }
 
     @GetMapping("/records/{id}")

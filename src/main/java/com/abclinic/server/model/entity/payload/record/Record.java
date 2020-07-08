@@ -35,8 +35,9 @@ public class Record extends IPayloadIpml {
     @JsonSerialize(using = PublicViewSerializer.class)
     private User doctor;
 
+    @Column(name = "record_type")
     @JsonView(Views.Abridged.class)
-    private int recordType;
+    private int type;
 
     @JsonView(Views.Abridged.class)
     private int status;
@@ -60,10 +61,10 @@ public class Record extends IPayloadIpml {
 
     }
 
-    public Record(Inquiry inquiry, User doctor, int recordType, String note, String prescription) {
+    public Record(Inquiry inquiry, User doctor, int type, String note, String prescription) {
         this.inquiry = inquiry;
         this.doctor = doctor;
-        this.recordType = recordType;
+        this.type = type;
         this.note = note;
         this.prescription = prescription;
     }
@@ -84,12 +85,12 @@ public class Record extends IPayloadIpml {
         this.doctor = doctor;
     }
 
-    public int getRecordType() {
-        return recordType;
+    public int getType() {
+        return type;
     }
 
-    public void setRecordType(int recordType) {
-        this.recordType = recordType;
+    public void setType(int type) {
+        this.type = type;
     }
 
     public int getStatus() {
