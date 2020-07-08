@@ -6,14 +6,14 @@ spring:
 #      password: 12345678
 
   ##    REMOTE MYSQL
-      url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
-      username: LQmSwtESHO
-      password: bsTH8SwIgY
+#      url: jdbc:mysql://remotemysql.com:3306/LQmSwtESHO
+#      username: LQmSwtESHO
+#      password: bsTH8SwIgY
 
   ##    REMOTE MYSQL
-#        url: jdbc:mysql://remotemysql.com:3306/Cm2YXPzx0c
-#        username: Cm2YXPzx0c
-#        password: MknGXm8CTR
+        url: jdbc:mysql://remotemysql.com:3306/Cm2YXPzx0c
+        username: Cm2YXPzx0c
+        password: MknGXm8CTR
 
   ##    CLOUD SQL
 #    url: jdbc:mysql://35.240.198.227:3306/abclinic

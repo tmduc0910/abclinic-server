@@ -150,6 +150,7 @@ public class User implements Serializable {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+        this.age = DateTimeUtils.getDistanceByYear(dateOfBirth);
     }
 
     public int getAge() {
