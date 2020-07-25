@@ -1,0 +1,27 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="inquiry_chain_changeset" author="ductm">
+        <createTable tableName="inquiry_chain">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="type" type="int(1)"/>
+            <column name="patient_id" type="int(11)">
+                <constraints foreignKeyName="fk_ic_patient" references="user(id)"/>
+            </column>
+            <column name="chain_id" type="int(11)"/>
+            <column name="inquiry_id" type="int(11)">
+                <constraints foreignKeyName="fk_ic_inquiry1" references="inquiry(id)"/>
+            </column>
+            <column name="prev_id" type="int(11)">
+                <constraints foreignKeyName="fk_ic_inquiry2" references="inquiry(id)" nullable="true"/>
+            </column>
+            <column name="next_id" type="int(11)">
+                <constraints foreignKeyName="fk_ic_inquiry3" references="inquiry(id)" nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

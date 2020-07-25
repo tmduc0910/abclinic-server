@@ -16,4 +16,5 @@
     <include file="liquibase/patient_disease_changeset.xml"/>
     <include file="liquibase/health_index_schedule_changeset.xml"/>
     <include file="liquibase/user_changeset_2.xml"/>
+    <include file="liquibase/inquiry_chain_changeset.xml"/>
 </databaseChangeLog>

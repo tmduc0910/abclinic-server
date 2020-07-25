@@ -8,6 +8,8 @@ import com.abclinic.server.model.entity.user.Patient;
 import com.abclinic.server.model.entity.user.User;
 import com.abclinic.server.serializer.AbridgedViewSerializer;
 import com.abclinic.server.serializer.PrivateViewSerializer;
+import com.abclinic.server.serializer.PublicViewSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.CreationTimestamp;
@@ -20,6 +22,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "inquiry")
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 public class Inquiry extends IPayloadIpml {
     private static final long serialVersionUID = 1L;
 
@@ -31,6 +34,11 @@ public class Inquiry extends IPayloadIpml {
 
     @JsonView(Views.Private.class)
     private String albumId;
+
+    @OneToOne(fetch = FetchType.EAGER, targetEntity = Chain.class, mappedBy = "inquiry")
+    @JsonView(Views.Public.class)
+    @JsonSerialize(using = AbridgedViewSerializer.class)
+    private Chain chain;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Reply.class, mappedBy = "inquiry")
     @JsonView(Views.Private.class)
@@ -166,6 +174,14 @@ public class Inquiry extends IPayloadIpml {
 
     public void setAlbumId(String albumId) {
         this.albumId = albumId;
+    }
+
+    public Chain getChain() {
+        return chain;
+    }
+
+    public void setChain(Chain chain) {
+        this.chain = chain;
     }
 
     public boolean of(User user) {

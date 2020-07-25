@@ -65,26 +65,6 @@ public class RecordService implements IDataMapperService<Record> {
     }
 
     @Transactional
-    public Page<MedicalRecord> getMedicalRecordsByUser(User user, long inquiryId, Pageable pageable) {
-        Optional<Page<MedicalRecord>> op;
-        switch (user.getRole()) {
-            case PRACTITIONER:
-                op = medicalRecordRepository.findByInquiryPatientPractitionerIdAndInquiryId(user.getId(), inquiryId, pageable);
-                break;
-            case SPECIALIST:
-                Specialist sp = (Specialist) doctorService.getById(user.getId());
-                op = medicalRecordRepository.findByInquiryPatientInAndInquiryId(sp.getPatients(), inquiryId, pageable);
-                break;
-            case PATIENT:
-                op = medicalRecordRepository.findByInquiryPatientIdAndStatus(user.getId(), PayloadStatus.PROCESSED, pageable);
-                break;
-            default:
-                throw new ForbiddenException(user.getId(), "Bạn không thể truy cập vào kiểu tư vấn này");
-        }
-        return op.orElseThrow(NotFoundException::new);
-    }
-
-    @Transactional
     public Page getList(User user, String search, Pageable pageable) {
         if (search.contains(FilterConstant.TYPE.getValue() + Constant.EQUAL_SBL + RecordType.MEDICAL.getValue())) {
             search = search.replace("id", FilterConstant.INQUIRY_ID.getValue());
@@ -135,26 +115,6 @@ public class RecordService implements IDataMapperService<Record> {
         if (expression != null)
             return dietitianRecordRepository.findAll(expression, pageable);
         return dietitianRecordRepository.findAll(pageable);
-    }
-
-    @Transactional
-    public Page<DietRecord> getDietitianRecordsByUser(User user, long inquiryId, Pageable pageable) {
-        Optional<Page<DietRecord>> op;
-        switch (user.getRole()) {
-            case PRACTITIONER:
-                op = dietitianRecordRepository.findByInquiryPatientPractitionerIdAndInquiryId(user.getId(), inquiryId, pageable);
-                break;
-            case DIETITIAN:
-                Dietitian di = (Dietitian) doctorService.getById(user.getId());
-                op = dietitianRecordRepository.findByInquiryPatientInAndInquiryId(di.getPatients(), inquiryId, pageable);
-                break;
-            case PATIENT:
-                op = dietitianRecordRepository.findByInquiryPatientIdAndStatus(user.getId(), PayloadStatus.PROCESSED, pageable);
-                break;
-            default:
-                throw new ForbiddenException(user.getId(), "Bạn không thể truy cập vào kiểu tư vấn này");
-        }
-        return op.orElseThrow(NotFoundException::new);
     }
 
     @Override

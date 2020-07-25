@@ -3,7 +3,7 @@ package com.abclinic.server.common.criteria;
 import com.abclinic.server.common.constant.Constant;
 import com.abclinic.server.common.constant.FilterConstant;
 import com.abclinic.server.common.utils.StringUtils;
-import com.abclinic.server.model.entity.payload.QInquiry;
+import com.abclinic.server.model.entity.payload.QChain;
 import com.abclinic.server.model.entity.payload.record.QDietRecord;
 import com.abclinic.server.model.entity.payload.record.QMedicalRecord;
 import com.abclinic.server.model.entity.user.*;
@@ -74,6 +74,8 @@ public class CustomPredicate<T> {
                 return QMedicalRecord.medicalRecord.inquiry.patient.subDoctors.contains((User) criteria.getValue());
             } else if (criteria.getKey().equals(FilterConstant.DIET_INQUIRY_PAT.getValue())) {
                 return QDietRecord.dietRecord.inquiry.patient.subDoctors.contains((User) criteria.getValue());
+            } else if (criteria.getKey().equals(FilterConstant.CHAIN_SUBDOCTOR.getValue())) {
+                return QChain.chain.inquiry.patient.subDoctors.contains((User) criteria.getValue());
             }
         }
         //Trường hợp tìm kiếm theo chuyên môn

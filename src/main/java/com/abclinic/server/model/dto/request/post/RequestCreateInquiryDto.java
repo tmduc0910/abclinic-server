@@ -15,6 +15,10 @@ public class RequestCreateInquiryDto {
     @JsonProperty("album_id")
     private String albumId = null;
     private int type;
+
+    @JsonProperty("chain_id")
+    private long chainId = 0;
+
     private String content;
     private String date;
 
@@ -32,6 +36,14 @@ public class RequestCreateInquiryDto {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public long getChainId() {
+        return chainId;
+    }
+
+    public void setChainId(long chainId) {
+        this.chainId = chainId;
     }
 
     public String getContent() {

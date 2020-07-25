@@ -33,26 +33,6 @@ public class PatientService implements IDataMapperService<Patient> {
         this.doctorDAO = doctorDAO;
     }
 
-//    @Transactional
-//    public Page<Patient> getPatientsByDoctor(User user, Pageable pageable) throws NotFoundException {
-//        Optional<Page<Patient>> op = Optional.empty();
-//        switch (user.getRole()) {
-//            case COORDINATOR:
-//                op = patientRepository.findByPractitioner(null, pageable);
-//                break;
-//            case PRACTITIONER:
-//                op = patientRepository.findByPractitioner((Practitioner) user, pageable);
-//                break;
-//            case SPECIALIST:
-//                op = patientRepository.findBySpecialists((Specialist) user, pageable);
-//                break;
-//            case DIETITIAN:
-//                op = patientRepository.findByDietitians((Dietitian) user, pageable);
-//                break;
-//        }
-//        return op.orElseThrow(() -> new NotFoundException(user.getId()));
-//    }
-
     @Override
     @Transactional
     public Page<Patient> getList(User user, String search, EntityPredicateBuilder builder, Pageable pageable) {

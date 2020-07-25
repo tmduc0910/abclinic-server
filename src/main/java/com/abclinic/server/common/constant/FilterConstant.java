@@ -28,7 +28,11 @@ public enum FilterConstant {
     INQUIRY_ID("inquiry.id"),
     MED_INQUIRY_PAT("inquiry.patient.id"),
     DIET_INQUIRY_PAT("inquiry.patient.id"),
-    INQUIRY_PAT_PRAC_ID("inquiry.patient.practitioner.id");
+    INQUIRY_PAT_PRAC_ID("inquiry.patient.practitioner.id"),
+    CHAIN_INQUIRY_ID("inquiry.id"),
+    CHAIN_PATIENT_ID("inquiry.patient.id"),
+    CHAIN_PRACTITIONER_ID("inquiry.patient.practitioner.id"),
+    CHAIN_SUBDOCTOR("inquiry.patient.subDoctors");
 
     private final String value;
 

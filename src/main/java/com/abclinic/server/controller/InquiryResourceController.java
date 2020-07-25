@@ -3,17 +3,21 @@ package com.abclinic.server.controller;
 import com.abclinic.server.annotation.authorized.Restricted;
 import com.abclinic.server.common.base.CustomController;
 import com.abclinic.server.common.base.Views;
+import com.abclinic.server.common.constant.FilterConstant;
 import com.abclinic.server.common.constant.MessageType;
 import com.abclinic.server.common.constant.RecordType;
 import com.abclinic.server.common.constant.UserStatus;
+import com.abclinic.server.common.criteria.InquiryChainPredicateBuilder;
 import com.abclinic.server.common.utils.StatusUtils;
 import com.abclinic.server.exception.BadRequestException;
 import com.abclinic.server.exception.ForbiddenException;
 import com.abclinic.server.factory.NotificationFactory;
 import com.abclinic.server.model.dto.request.post.RequestCreateInquiryDto;
+import com.abclinic.server.model.entity.payload.Chain;
 import com.abclinic.server.model.entity.payload.Inquiry;
 import com.abclinic.server.model.entity.user.*;
 import com.abclinic.server.service.NotificationService;
+import com.abclinic.server.service.entity.ChainService;
 import com.abclinic.server.service.entity.InquiryService;
 import com.abclinic.server.service.entity.PatientService;
 import com.abclinic.server.service.entity.UserService;
@@ -52,6 +56,9 @@ public class InquiryResourceController extends CustomController {
     @Autowired
     private InquiryService inquiryService;
 
+    @Autowired
+    private ChainService chainService;
+
     @Override
     public void init() {
         this.logger = LoggerFactory.getLogger(InquiryResourceController.class);
@@ -85,6 +92,7 @@ public class InquiryResourceController extends CustomController {
                         requestCreateInquiryDto.getType(),
                         requestCreateInquiryDto.getDate());
                 inquiry = inquiryService.save(inquiry);
+                inquiry.setChain(chainService.create(inquiry, requestCreateInquiryDto.getChainId()));
 
                 //Send notification
                 if (!StatusUtils.containsStatus(patient, UserStatus.NEW))
@@ -187,5 +195,56 @@ public class InquiryResourceController extends CustomController {
                     throw new ForbiddenException(user.getId(), "Bệnh nhân không được truy cập vào yêu cầu từ bệnh nhân khác");
         }
         return new ResponseEntity<>(inquiry, HttpStatus.OK);
+    }
+
+    @GetMapping("/inquiries/chain")
+    @ApiOperation(
+            value = "Lấy danh sách chuỗi tư vấn",
+            notes = "Trả về danh sách chuỗi tư vấn hoặc 404 NOT FOUND",
+            tags = {"Bệnh nhân", "Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "search", value = "Filter lọc chuỗi (inquiry, patient)", dataType = "string", example = "inquiry=1"),
+            @ApiImplicitParam(name = "page", value = "Số thứ tự trang", required = true, paramType = "query", allowableValues = "range[1, infinity]", example = "1"),
+            @ApiImplicitParam(name = "size", value = "Kích thước trang", required = true, paramType = "query", example = "4")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Trả về danh sách chuỗi thành công"),
+            @ApiResponse(code = 404, message = "Không có chuỗi nào tồn tại theo yêu cầu")
+    })
+    @Restricted(excluded = Coordinator.class)
+    @JsonView(Views.Private.class)
+    public ResponseEntity<Page<Chain>> getChainList(@ApiIgnore @RequestAttribute("User") User user,
+                                                    @RequestParam(name = "search", defaultValue = "") String search,
+                                                    @RequestParam("page") int page,
+                                                    @RequestParam("size") int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("id").ascending());
+        search = search.replace("inquiry", FilterConstant.CHAIN_INQUIRY_ID.getValue())
+                .replace("patient", FilterConstant.CHAIN_PATIENT_ID.getValue());
+        return new ResponseEntity<>(chainService.getList(user, search, new InquiryChainPredicateBuilder(), pageable), HttpStatus.OK);
+    }
+
+    @GetMapping("/inquiries/chain/{id}")
+    @ApiOperation(
+            value = "Lấy danh sách các yêu cầu của một chuỗi",
+            notes = "Trả về danh sách yêu cầu hoặc 403 FORBIDDEN hoặc 404 NOT FOUND",
+            tags = {"Bệnh nhân", "Đa khoa", "Chuyên khoa", "Dinh dưỡng"}
+    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "Mã ID của chuỗi", required = true, dataType = "long", paramType = "path", example = "1")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Trả về danh sách yêu cầu thành công"),
+            @ApiResponse(code = 403, message = "Chuỗi tư vấn không thuộc quyền quản lý"),
+            @ApiResponse(code = 404, message = "Mã ID của chuỗi không tồn tại")
+    })
+    @Restricted(excluded = Coordinator.class)
+    @JsonView(Views.Abridged.class)
+    public ResponseEntity<List<Inquiry>> getInquiriesByChain(@ApiIgnore @RequestAttribute("User") User user,
+                                                             @PathVariable("id") long id) {
+        List<Inquiry> list = chainService.getInquiries(id);
+        if (list.get(0).of(user))
+            return new ResponseEntity<>(list, HttpStatus.OK);
+        else throw new ForbiddenException(user.getId(), "Chuỗi tư vấn không thuộc quyền quản lý");
     }
 }
