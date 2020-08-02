@@ -25,7 +25,7 @@ public interface ChainRepository extends JpaRepository<Chain, Long>,
         QuerydslPredicateExecutor<Chain>, QuerydslBinderCustomizer<QChain> {
     Optional<Chain> findById(long id);
     Optional<List<Chain>> findByChainId(long chainId);
-    Optional<Chain> findTopByPatientOrderByChainIdDesc(Patient patient);
+    Optional<Chain> findTopByPatientAndChainIdOrderByIdDesc(Patient patient, long chainId);
     Optional<Chain> findByIdGreaterThan(long id);
     Optional<Chain> findByIdLessThan(long id);
 

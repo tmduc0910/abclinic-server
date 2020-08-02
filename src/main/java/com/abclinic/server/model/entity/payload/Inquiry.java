@@ -37,7 +37,7 @@ public class Inquiry extends IPayloadIpml {
 
     @OneToOne(fetch = FetchType.EAGER, targetEntity = Chain.class, mappedBy = "inquiry")
     @JsonView(Views.Public.class)
-    @JsonSerialize(using = AbridgedViewSerializer.class)
+    @JsonSerialize(using = PublicViewSerializer.class)
     private Chain chain;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Reply.class, mappedBy = "inquiry")

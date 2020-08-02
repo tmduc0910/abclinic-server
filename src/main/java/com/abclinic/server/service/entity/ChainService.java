@@ -71,10 +71,10 @@ public class ChainService implements IDataMapperService<Chain> {
         Chain chain;
         if (chainId == 0) {
             chain = new Chain(inquiry);
-            chainRepository.findTopByPatientOrderByChainIdDesc(inquiry.getPatient())
+            chainRepository.findTopByPatientAndChainIdOrderByIdDesc(inquiry.getPatient(), chainId)
                     .ifPresent(c -> chain.setChainId(c.getChainId() + 1));
         } else {
-            Chain c = chainRepository.findTopByPatientOrderByChainIdDesc(inquiry.getPatient())
+            Chain c = chainRepository.findTopByPatientAndChainIdOrderByIdDesc(inquiry.getPatient(), chainId)
                     .orElseThrow(NotFoundException::new);
             chain = c.clone();
             c.setNextInquiry(inquiry);
