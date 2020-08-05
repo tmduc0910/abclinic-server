@@ -200,7 +200,6 @@ public class PatientResourceController extends CustomController {
         }
     }
 
-    //TODO: Optimize
     @PutMapping("/patients/{id}/doctor")
     @Restricted(included = {Practitioner.class, Specialist.class, Dietitian.class})
     @ApiOperation(

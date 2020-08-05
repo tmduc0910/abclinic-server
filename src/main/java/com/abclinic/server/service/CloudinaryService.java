@@ -8,8 +8,11 @@ import com.cloudinary.Api;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.http44.ApiStrategy;
 import com.cloudinary.utils.ObjectUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -20,22 +23,18 @@ import java.util.stream.Collectors;
  * @package com.abclinic.server.service
  * @created 5/13/2020 8:10 PM
  */
+@Service
 public class CloudinaryService {
-    private static CloudinaryService instance;
-
-    private Cloudinary cloudinary;
+    @Value("${file.upload-dir}")
     private String uploadDirectory;
+    private Cloudinary cloudinary;
 
-    public static CloudinaryService getInstance(String uploadDirectory) {
-        if (instance == null)
-            instance = new CloudinaryService();
-        instance.cloudinary = new Cloudinary(ObjectUtils.asMap(
+    @PostConstruct
+    public void init() {
+        cloudinary = new Cloudinary(ObjectUtils.asMap(
                 CloudinaryConstant.KEY_CLOUD_NAME, CloudinaryConstant.CLOUD_NAME,
                 CloudinaryConstant.KEY_API_KEY, CloudinaryConstant.API_KEY,
-                CloudinaryConstant.KEY_API_SEC, CloudinaryConstant.API_SEC
-        ));
-        instance.uploadDirectory = uploadDirectory;
-        return instance;
+                CloudinaryConstant.KEY_API_SEC, CloudinaryConstant.API_SEC));
     }
 
     private Map upload(File file, String tag, boolean isAvatar) throws IOException {
@@ -55,20 +54,16 @@ public class CloudinaryService {
     }
 
     public List<Image> uploadImages(MultipartFile[] files, String tag) throws IOException {
-//        AlbumDto albumDto = new AlbumDto();
         List<Image> images = new ArrayList<>();
         Map res;
         for (MultipartFile f : files) {
             File file = getTempFile(f);
             res = upload(file, tag, false);
-//            albumDto.addImage((String) res.get(CloudinaryConstant.KEY_URL));
             images.add(new Image(
                     (String) res.get(CloudinaryConstant.KEY_URL),
                     getFileName(f),
                     getFileType(f)));
         }
-//        albumDto.setAlbumId((String) ((List) res.get(CloudinaryConstant.KEY_TAGS)).get(0));
-//        return albumDto;
         return images;
     }
 

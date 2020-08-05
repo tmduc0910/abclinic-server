@@ -180,23 +180,6 @@ public class RecordResourceController extends CustomController {
                                         @RequestParam("page") int page,
                                         @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
-//        Page result = null;
-//        switch (user.getRole()) {
-//            case PRACTITIONER:
-//            case PATIENT:
-//                if (type == MEDICAL.getValue())
-//                    result = recordService.getMedicalRecordsByUser(user, inquiryId, pageable);
-//                else if (type == DIET.getValue())
-//                    result = recordService.getDietitianRecordsByUser(user, inquiryId, pageable);
-//                else throw new BadRequestException(user.getId(), "Kiểu chỉ có thể là Khám bệnh hoặc Dinh dưỡng");
-//                break;
-//            case SPECIALIST:
-//                result = recordService.getMedicalRecordsByUser(user, inquiryId, pageable);
-//                break;
-//            case DIETITIAN:
-//                result = recordService.getDietitianRecordsByUser(user, inquiryId, pageable);
-//                break;
-//        }
         return new ResponseEntity(recordService.getList(user, search, pageable), HttpStatus.OK);
     }
 

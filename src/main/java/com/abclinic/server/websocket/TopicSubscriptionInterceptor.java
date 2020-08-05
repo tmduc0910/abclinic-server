@@ -37,8 +37,7 @@ public class TopicSubscriptionInterceptor implements ChannelInterceptor {
                 if (!validate(accessor.getSessionId(), accessor.getDestination()))
                     throw new IllegalArgumentException();
             }
-        } catch (NullPointerException e) {
-//            throw new IllegalArgumentException();
+        } catch (NullPointerException ignored) {
         }
         return message;
     }

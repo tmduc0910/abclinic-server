@@ -57,7 +57,6 @@ public class WebSocketTest {
         try {
             WebSocketStompClient stompClient = new WebSocketStompClient(new SockJsClient(
                     Arrays.asList(new WebSocketTransport(new StandardWebSocketClient()))));
-//        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
             StompSession session = stompClient
                     .connect(URL, new StompSessionHandlerAdapter() {
                     })

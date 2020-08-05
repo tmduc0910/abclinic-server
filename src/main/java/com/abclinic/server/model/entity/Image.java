@@ -18,11 +18,6 @@ public class Image {
     @JsonView(Views.Abridged.class)
     private String path;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "album_id")
-//    @JsonView(Views.Private.class)
-//    private ImageAlbum imageAlbum;
-
     @JsonView(Views.Public.class)
     private String fileName;
 

@@ -64,6 +64,9 @@ public class ImageController extends CustomController {
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    private CloudinaryService cloudinaryService;
+
     @Override
     public void init() {
         logger = LoggerFactory.getLogger(ImageController.class);
@@ -80,22 +83,15 @@ public class ImageController extends CustomController {
         Patient patient = patientService.getById(user.getId());
         if (files.length == 0)
             throw new BadRequestException(patient.getId(), "phải ít nhất upload lên 1 ảnh");
-//        Album album = GooglePhotosService.makeAlbum();
 
         try {
-            CloudinaryService service = CloudinaryService.getInstance(fileService.getUploadDirectory());
-//            List<Image> images = new ArrayList<>();
-//            for (MultipartFile file : files) {
-//                images.add(upload(file, album));
-//            }
-//            AlbumDto albumDto = new AlbumDto(album.getId(), images.stream()
-            String albumId = service.getTag(false);
-            List<Image> images = service.uploadImages(files, albumId);
+            String albumId = cloudinaryService.getTag(false);
+            List<Image> images = cloudinaryService.uploadImages(files, albumId);
             AlbumDto albumDto = new AlbumDto(albumId, images.stream()
                     .map(i -> i = imageService.save(i))
                     .map(Image::getPath)
                     .collect(Collectors.toList()));
-            service.getImages(albumId);
+            cloudinaryService.getImages(albumId);
 
             return new ResponseEntity<>(albumDto, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -112,13 +108,8 @@ public class ImageController extends CustomController {
     @JsonView(Views.Public.class)
     public ResponseEntity<String> processUploadAvatar(@ApiIgnore @RequestAttribute("User") User user,
                                                       @RequestPart("files") MultipartFile[] files) {
-//        Album album;
-//        Optional<Album> op = GooglePhotosService.getAlbumByName("Avatar");
-//        album = op.orElseGet(() -> GooglePhotosService.makeAlbum("Avatar"));
         try {
-//            Image avatar = upload(file, album);
-            CloudinaryService service = CloudinaryService.getInstance(fileService.getUploadDirectory());
-            Image avatar = service.uploadAvatar(files[0]);
+            Image avatar = cloudinaryService.uploadAvatar(files[0]);
             user.setAvatar(avatar.getPath());
             userService.save(user);
             return new ResponseEntity<>(avatar.getPath(), HttpStatus.CREATED);
@@ -142,46 +133,10 @@ public class ImageController extends CustomController {
     @GetMapping("")
     @Restricted(excluded = Coordinator.class)
     public ResponseEntity<List<String>> getImages(@RequestParam("album_id") String albumId) {
-        CloudinaryService service = CloudinaryService.getInstance(fileService.getUploadDirectory());
         try {
-            return new ResponseEntity<>(service.getImages(albumId), HttpStatus.OK);
+            return new ResponseEntity<>(cloudinaryService.getImages(albumId), HttpStatus.OK);
         } catch (Exception e) {
             throw new NotFoundException();
         }
     }
-
-//    @GetMapping(value = "/albums")
-//    @ApiOperation(value = "Lấy tất cả album ảnh của cá nhân", notes = "Trả về danh sách album ảnh hoặc 404 NOT FOUND")
-//    @ApiResponses({
-//            @ApiResponse(code = 200, message = "Lấy danh sách album thành công"),
-//            @ApiResponse(code = 400, message = "Người dùng không có ảnh nào")
-//    })
-//    @ResponseStatus(HttpStatus.OK)
-//    @JsonView(Views.Public.class)
-//    public ResponseEntity<List<Inquiry>> processGetAllAlbums(@ApiIgnore @RequestAttribute("User") User user) {
-//        Patient patient = patientService.getById(user.getId());
-//        return new ResponseEntity<>(inquiryService.getByPatient(patient), HttpStatus.OK);
-//    }
-
-//    @GetMapping(value = "/albums/{album-id}")
-//    @ApiOperation(value = "Lấy tất cả ảnh của một album", notes = "Trả về danh sách link ảnh hoặc 404 NOT FOUND")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "album-id", value = "Mã ID của album", required = true, dataType = "long", paramType = "path", example = "1")
-//    })
-//    @ApiResponses({
-//            @ApiResponse(code = 200, message = "Lấy danh sách ảnh thành công"),
-//            @ApiResponse(code = 400, message = "Album không có ảnh nào hoặc không tồn tại"),
-//            @ApiResponse(code = 404, message = "Người dùng không được xem ảnh trong album của người khác")
-//    })
-//    @ResponseStatus(HttpStatus.OK)
-//    @JsonView(Views.Public.class)
-//    public ResponseEntity<List<String>> processGetAlbum(@ApiIgnore @RequestAttribute("User") User user,
-//                                                        @PathVariable("album-id") long albumId) {
-//        Patient patient = patientService.getById(user.getId());
-//        Inquiry inquiry = inquiryService.getById(albumId);
-//        if (inquiry.getPatient().equals(patient)) {
-////                List<String> images = GooglePhotosService.getAlbumImages(opt.get().getAlbum());
-//            return new ResponseEntity<>(inquiry.getAlbum(), HttpStatus.OK);
-//        } else throw new ForbiddenException(patient.getId());
-//    }
 }

@@ -94,7 +94,6 @@ public class InquiryResourceController extends CustomController {
                 inquiry = inquiryService.save(inquiry);
                 inquiry.setChain(chainService.create(inquiry, requestCreateInquiryDto.getChainId()));
 
-                //Send notification
                 if (!StatusUtils.containsStatus(patient, UserStatus.NEW))
                     notificationService.makeNotification(user, NotificationFactory.getInquiryMessages(inquiry));
                 else {

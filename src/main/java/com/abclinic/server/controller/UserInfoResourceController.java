@@ -277,8 +277,6 @@ public class UserInfoResourceController extends CustomController {
                                                       @PathVariable("id") long id) {
         Patient patient = patientService.getById(id);
         try {
-//            requestUpdatePatientDiseaseDto.getDiseaseIds().forEach(diseaseId ->
-//                patient.addDisease(diseaseService.getById(diseaseId)));
             patient.setDiseases(requestUpdatePatientDiseaseDto.getDiseaseIds().stream()
                     .map(diseaseService::getById)
                     .collect(Collectors.toSet()));

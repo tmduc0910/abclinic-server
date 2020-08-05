@@ -67,28 +67,6 @@ public class DoctorResourceController extends CustomController {
         return new ResponseEntity(doctorService.getList(user, search, new DoctorPredicateBuilder(), pageable), HttpStatus.OK);
     }
 
-//    @DeleteMapping("/doctors")
-//    @Restricted(included = Coordinator.class)
-//    @ApiOperation(
-//            value = "Xóa một bác sĩ",
-//            notes = "Trả về 200 OK hoặc 404 NOT FOUND",
-//            tags = {"Điều phối viên"}
-//    )
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "id", value = "ID của bác sĩ cần xóa", dataType = "int", example = "1")
-//    })
-//    @ApiResponses({
-//            @ApiResponse(code = 200, message = "Xóa bác sĩ thành công"),
-//            @ApiResponse(code = 404, message = "ID của bác sĩ không tồn tại")
-//    })
-//    public ResponseEntity deleteDoctor(@ApiIgnore @RequestAttribute("User") User user,
-//                                       @RequestParam("id") long id) {
-//        User doctor = doctorService.getById(id);
-//        doctor.setStatus(UserStatus.DEACTIVATED.getValue());
-//        doctorService.save(doctor);
-//        return new ResponseEntity(HttpStatus.OK);
-//    }
-
     @GetMapping("/doctors/{id}")
     @Transactional
     @ApiOperation(

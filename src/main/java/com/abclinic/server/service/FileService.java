@@ -28,17 +28,6 @@ public class FileService {
     @Value("${file.upload-dir}")
     private String uploadDirectory;
     private Logger logger = LoggerFactory.getLogger(FileService.class);
-//    private static FileService instance = null;
-//
-//    public static FileService getInstance() {
-//        if (instance != null)
-//            return instance;
-//        return new FileService();
-//    }
-//
-//    public String getUploadDirectory() {
-//        return uploadDirectory;
-//    }
 
     @Scheduled(fixedDelay = 1000 * 60 * 60)
     public void deleteFilesScheduledTask() throws IOException {
