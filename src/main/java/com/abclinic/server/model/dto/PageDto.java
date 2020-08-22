@@ -29,14 +29,11 @@ public class PageDto<T> {
         this.isLast = page >= totalPages - 1;
     }
 
-    public PageDto(long totalElements, int page, int size, Sort sort) {
+    public PageDto(int page, int size, Sort sort) {
         this.content = new ArrayList<>();
-        this.totalElements = totalElements;
         this.page = page;
         this.size = size;
         this.sort = sort;
-        this.totalPages = (int) Math.ceil((double) totalElements / size);
-        this.isLast = page >= totalPages - 1;
     }
 
     public List<T> getContent() {
@@ -61,6 +58,8 @@ public class PageDto<T> {
 
     public void setTotalElements(long totalElements) {
         this.totalElements = totalElements;
+        this.totalPages = (int) Math.ceil((double) totalElements / size);
+        this.isLast = page >= totalPages - 1;
     }
 
     public int getPage() {

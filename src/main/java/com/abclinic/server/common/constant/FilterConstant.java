@@ -24,6 +24,8 @@ public enum FilterConstant {
     VAL_INDEX_ID("schedule.index.id"),
     VAL_SCHEDULE_ID("schedule.id"),
     VAL_INDEX_NAME("schedule.index.name"),
+    VAL_DOC_ID("schedule.doctor.id"),
+    VAL_PRAC_ID("schedule.patient.practitioner.id"),
     TYPE("type"),
     INQUIRY_ID("inquiry.id"),
     MED_INQUIRY_PAT("inquiry.patient.id"),

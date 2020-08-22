@@ -1,5 +1,6 @@
 package com.abclinic.server.service.entity.component.health_index;
 
+import com.abclinic.server.common.constant.Constant;
 import com.abclinic.server.common.constant.FilterConstant;
 import com.abclinic.server.common.criteria.EntityPredicateBuilder;
 import com.abclinic.server.common.criteria.PatientHealthIndexFieldPredicateBuilder;
@@ -14,6 +15,7 @@ import com.abclinic.server.service.entity.DoctorService;
 import com.abclinic.server.service.entity.IDataMapperService;
 import com.abclinic.server.service.entity.PatientService;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,14 +33,10 @@ import java.util.List;
 @Component
 public class PatientHealthIndexFieldComponentService implements IDataMapperService<PatientHealthIndexField> {
     private PatientHealthIndexFieldRepository patientHealthIndexFieldRepository;
-    private PatientService patientService;
-    private DoctorService doctorService;
 
     @Autowired
-    public PatientHealthIndexFieldComponentService(PatientHealthIndexFieldRepository patientHealthIndexFieldRepository, PatientService patientService, DoctorService doctorService) {
+    public PatientHealthIndexFieldComponentService(PatientHealthIndexFieldRepository patientHealthIndexFieldRepository) {
         this.patientHealthIndexFieldRepository = patientHealthIndexFieldRepository;
-        this.patientService = patientService;
-        this.doctorService = doctorService;
     }
 
     @Override
@@ -95,6 +93,18 @@ public class PatientHealthIndexFieldComponentService implements IDataMapperServi
             key = search.replace("index_name", FilterConstant.VAL_INDEX_NAME.getValue());
         if (search.contains("schedule_id"))
             key = search.replace("schedule_id", FilterConstant.VAL_SCHEDULE_ID.getValue());
+        switch (user.getRole()) {
+            case PATIENT:
+                builder.with(FilterConstant.VAL_PAT_ID.getValue(), Constant.EQUAL_SBL, user.getId());
+                break;
+            case SPECIALIST:
+            case DIETITIAN:
+                builder.with(FilterConstant.VAL_DOC_ID.getValue(), Constant.EQUAL_SBL, user.getId());
+                break;
+            case PRACTITIONER:
+                builder.with(FilterConstant.VAL_PRAC_ID.getValue(), Constant.EQUAL_SBL, user.getId());
+                break;
+        }
         PatientHealthIndexFieldPredicateBuilder predBuilder = (PatientHealthIndexFieldPredicateBuilder) builder.init(key);
         BooleanExpression expression = predBuilder.build();
         if (expression != null)
@@ -123,16 +133,6 @@ public class PatientHealthIndexFieldComponentService implements IDataMapperServi
     @Transactional
     public Page<TagDto> getTagIds(User user, Pageable pageable) {
         return patientHealthIndexFieldRepository.findDistinctTagIdByUserId(user.getId(), pageable);
-    }
-
-    public int countDistinctTagId() {
-        return patientHealthIndexFieldRepository.countDistinctTagId();
-    }
-
-
-    @Transactional
-    public int countByTag(List<Long> tags) {
-        return patientHealthIndexFieldRepository.countIdByTag(tags);
     }
 
     @Transactional
